@@ -39,7 +39,7 @@ cp hello.c arena/seed/src/
 pushd arena/stage/1/obj
 	mkdir -p protomusl/crt
 	mkdir -p protomusl/src/{env,errno,exit,internal,locale}
-	mkdir -p protomusl/src/{math,multibyte}
+	mkdir -p protomusl/src/{malloc/mallocng,math,mman,multibyte}
 	mkdir -p protomusl/src/{signal,stdio,string,thread,unistd}
 popd
 

@@ -123,8 +123,8 @@ int run_(char* cmd, char** args, char** env) {
 #define amkdir(p) do { assert_msg(mkdir(p, 0777) == 0, p); } while (0)
 
 
-char linking_args_storage[8192];
-char* linking_args_pointers[128] = {NULL};
+char linking_args_storage[32768];
+char* linking_args_pointers[512] = {NULL};
 char* __linking_args_char_curr = linking_args_storage;
 char** __linking_args_ptr_curr = linking_args_pointers;
 
@@ -245,21 +245,62 @@ int _start() {
 	compile_c_multi("src/internal",
 			"defsysinfo", "libc", "syscall_ret");
 	compile_c("src/locale", "__lctrans");
+	compile_c_multi("src/malloc", "free", "lite_malloc");
+	compile_c_multi("src/malloc/mallocng", "free", "malloc");
 	compile_c_multi("src/math",
 			"__fpclassifyl", "__signbitl", "frexpl");
+	compile_c_multi("src/mman",
+			"madvise",
+			"mprotect",
+			"munmap",
+			"mmap"
+	);
 	compile_c_multi("src/multibyte",
 			"wcrtomb", "wctomb");
 	compile_c_multi("src/signal",
 			"block", "raise");
+	compile_c_multi("src/stdio",
+			"__fdopen",
+			"__fmodeflags",
+			"__lockfile",
+			"__stdio_read",
+			"__overflow",
+			"__stdio_close",
+			"__stdio_exit",
+			"__stdio_seek",
+			"__stdio_write",
+			"__stdout_write",
+			"__toread",
+			"__towrite",
+			"__uflow",
+			"fclose",
+			"feof",
+			"ferror",
+			"fflush",
+			"fgetc",
+			"fopen",
+			"fputc",
+			"fputs",
+			"fwrite",
+			"ofl",
+			"ofl_add",
+			"printf",
+			"putchar",
+			"puts",
+			"stdout",
+			"vfprintf");
+	compile_c_multi("src/string",
+			"memchr",
+			"memcpy",
+			"memmove",
+			"memset",
+			"strchr",
+			"strchrnul",
+			"strlen",
+			"strnlen");
 	compile_c_multi("src/thread",
 			"__lock", "default_attr");
 	compile_c("src/unistd", "lseek");
-	char** p;
-	for (p = MUSL_STDIO_FILES; *p; p++)
-		compile_c("src/stdio", *p);
-	for (p = MUSL_STRING_FILES; *p; p++)
-		compile_c("src/string", *p);
-
 	log(STDOUT, "Linking...");
 	char* env[] = {NULL};
 	long __i;
