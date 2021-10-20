@@ -1,4 +1,4 @@
-/input-tcc
+/tcc-seed
 
 /arena
 /downloads
@@ -6,3 +6,5 @@
 /result*
 /scratch
 /stage*.tar
+
+/TODO

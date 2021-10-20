@@ -139,27 +139,27 @@ void linking_arg_add(char* new_arg) {
 void compile_c(char* dir, char* file) {
 	char path_in[64], path_out[64];
 	char* p;
-	p = strcpy(path_in, "/musl/");
+	p = strcpy(path_in, "/seed/src/musl/");
 	p = strcpy(p, dir);
 	p = strcpy(p, "/");
 	p = strcpy(p, file);
 	p = strcpy(p, ".c");
 
-	p = strcpy(path_out, "/musl/obj/");
+	p = strcpy(path_out, "/stage/1/obj/musl/");
 	p = strcpy(p, dir);
 	p = strcpy(p, "/");
 	p = strcpy(p, file);
 	p = strcpy(p, ".o");
 
-	run0("/input-tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
+	run0("/seed/bin/tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
 		"-D_XOPEN_SOURCE=700",
-		"-I/musl/src/include",
-		"-I/musl/src/internal",
-		"-I/musl/arch/x86_64",
-		"-I/musl/stage0-generated/sed1",
-		"-I/musl/stage0-generated/sed2",
-		"-I/musl/arch/generic",
-		"-I/musl/include",
+		"-I/seed/src/musl/src/include",
+		"-I/seed/src/musl/src/internal",
+		"-I/seed/src/musl/arch/x86_64",
+		"-I/seed/src/musl/stage0-generated/sed1",
+		"-I/seed/src/musl/stage0-generated/sed2",
+		"-I/seed/src/musl/arch/generic",
+		"-I/seed/src/musl/include",
 		"-fPIC",
 		"-c", path_in, "-o", path_out);
 	linking_arg_add(path_out);
@@ -208,20 +208,21 @@ int _start() {
 
 	log(STDOUT, "Testing run()...");
 	log(STDOUT, "* testing run() -> retcode 0...");
-	run0("/input-tcc", "--help");
+	run0("/seed/bin/tcc", "--help");
 	log(STDOUT, "* testing run() -> retcode 1...");
-	run(1, "/input-tcc", "-ar", "--help");
+	run(1, "/seed/bin/tcc", "-ar", "--help");
 	log(STDOUT, "run() seems to work OK");
 
 	log(STDOUT, "Compiling va_list.c...");
-	run0("/input-tcc", "-c", "/va_list.c", "-o", "/va_list.o");
+	run0("/seed/bin/tcc", "-c", "/seed/src/va_list.c",
+		"-o", "/stage/1/obj/va_list.o");
 
 	log(STDOUT, "Compiling bits of musl with tcc...");
 
-	linking_arg_add("/input-tcc");
+	linking_arg_add("/seed/bin/tcc");
 	linking_arg_add("-ar");
-	linking_arg_add("/musl/obj/libc.a");
-	linking_arg_add("/va_list.o");
+	linking_arg_add("/stage/1/lib/protomusl.a");
+	linking_arg_add("/stage/1/obj/va_list.o");
 
 	/*
 	run0(TCC, "-fPIC", "-DCRT",
@@ -231,46 +232,46 @@ int _start() {
 		"-c", "/musl/crt/crt1.c",
 		"-o", "/musl/obj/crt/crt1.o");
 	*/
-	run0("/input-tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
-		"-I/musl/src/include",
-		"-I/musl/src/internal",
-		"-I/musl/arch/x86_64",
-		"-I/musl/stage0-generated/sed1",
-		"-I/musl/include",
+	run0("/seed/bin/tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
+		"-I/seed/src/musl/src/include",
+		"-I/seed/src/musl/src/internal",
+		"-I/seed/src/musl/arch/x86_64",
+		"-I/seed/src/musl/stage0-generated/sed1",
+		"-I/seed/src/musl/include",
 		"-DCRT",
-		"-c", "/musl/crt/crt1.c",
-		"-o", "/musl/obj/crt/crt1.o");
+		"-c", "/seed/src/musl/crt/crt1.c",
+		"-o", "/stage/1/obj/musl/crt/crt1.o");
 	/*
-	run0("/input-tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
-		"-I/musl/src/include",
-		"-I/musl/src/internal",
-		"-I/musl/arch/x86_64",
-		"-I/musl/stage0-generated/sed1",
-		"-I/musl/include",
+	run0("/seed/bin/tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
+		"-I/seed/src/musl/src/include",
+		"-I/seed/src/musl/src/internal",
+		"-I/seed/src/musl/arch/x86_64",
+		"-I/seed/src/musl/stage0-generated/sed1",
+		"-I/seed/src/musl/include",
 		"-DCRT",
-		"-c", "/musl/crt/x86_64/crti.s",
-		"-o", "/musl/obj/crt/crti.o");
-	run0("/input-tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
-		"-I/musl/src/include",
-		"-I/musl/src/internal",
-		"-I/musl/arch/x86_64",
-		"-I/musl/stage0-generated/sed1",
-		"-I/musl/include",
+		"-c", "/seed/src/musl/crt/x86_64/crti.s",
+		"-o", "/stage/1/obj/musl/crt/crti.o");
+	run0("/seed/bin/tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
+		"-I/seed/src/musl/src/include",
+		"-I/seed/src/musl/src/internal",
+		"-I/seed/src/musl/arch/x86_64",
+		"-I/seed/src/musl/stage0-generated/sed1",
+		"-I/seed/src/musl/include",
 		"-DCRT",
-		"-c", "/musl/crt/x86_64/crtn.s",
-		"-o", "/musl/obj/crt/crtn.o");
+		"-c", "/seed/src/musl/crt/x86_64/crtn.s",
+		"-o", "/stage/1/obj/musl/crt/crtn.o");
 	*/
 
-	run0("/input-tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
-		"-I/musl/src/include",
-		"-I/musl/src/internal",
-		"-I/musl/arch/x86_64",
-		"-I/musl/stage0-generated/sed1",
-		"-I/musl/include",
+	run0("/seed/bin/tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
+		"-I/seed/src/musl/src/include",
+		"-I/seed/src/musl/src/internal",
+		"-I/seed/src/musl/arch/x86_64",
+		"-I/seed/src/musl/stage0-generated/sed1",
+		"-I/seed/src/musl/include",
 		"-DCRT",
-		"-c", "/musl/src/thread/x86_64/__set_thread_area.s",
-		"-o", "/musl/obj/__set_thread_area.o");
-	linking_arg_add("/musl/obj/__set_thread_area.o");
+		"-c", "/seed/src/musl/src/thread/x86_64/__set_thread_area.s",
+		"-o", "/stage/1/obj/musl/__set_thread_area.o");
+	linking_arg_add("/stage/1/obj/musl/__set_thread_area.o");
 
 	compile_c_multi("src/env",
 			"__environ", "__init_tls", "__libc_start_main");
@@ -301,21 +302,23 @@ int _start() {
 	long __i;
 	for(__i = 0; linking_args_pointers[__i]; __i++)
 		log(STDOUT, linking_args_pointers[__i]);
-	assert_msg(run_("/input-tcc", linking_args_pointers, env) == 0, "link");
+	assert_msg(run_("/seed/bin/tcc", linking_args_pointers, env) == 0,
+		"link");
 
 	log(STDOUT, "Executing an example...");
-	run0("/input-tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99", "-static",
+	run0("/seed/bin/tcc",
+		"-g", "-nostdlib", "-nostdinc", "-std=c99", "-static",
 		"-D_XOPEN_SOURCE=700",
-		"-I/musl/src/include",
-		"-I/musl/stage0-generated/sed1",
+		"-I/seed/src/musl/src/include",
+		"-I/seed/src/musl/stage0-generated/sed1",
 		"-Wl,-whole-archive",
-		"/musl/obj/libc.a",
-		"/musl/obj/crt/crt1.o",
-		//"/musl/obj/crt/crti.o",
-		"/test.c",
-		//"/musl/obj/crt/crtn.o",
-		"-o", "/test"
+		"/stage/1/lib/protomusl.a",
+		"/stage/1/obj/musl/crt/crt1.o",
+		//"/stage/1/obj/musl/crt/crti.o",
+		"/seed/src/hello.c",
+		//"/stage/1/obj/musl/crt/crtn.o",
+		"-o", "/stage/1/bin/protomusl-hello"
 		);
-	run(42, "/test", "1");
+	run(42, "/stage/1/bin/protomusl-hello", "1");
 	return 0;
 }

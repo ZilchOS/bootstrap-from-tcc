@@ -3,7 +3,7 @@
 ## What
 
 Bootstrap as much of an operating system as possible
-starting from a random trusted statically linked tcc
+starting from a random trusted statically linked seed tcc
 (+ trusted kernel on trusted hardware, of course).
 
 `x86_64`-only for now.
@@ -20,7 +20,7 @@ but I'm not as hardcore as them, so, let's start small
 
 ### In brief
 
-input-tcc -> protomusl -> hello world -> ??? -> gcc
+`tcc-seed` -> `protomusl` -> hello world -> ??? -> gcc
 
 where each arrow adds new sources and a new buildscript into the mix
 
@@ -28,30 +28,32 @@ where each arrow adds new sources and a new buildscript into the mix
 
 given:
 
-* **statically linked tcc (`input-tcc`, you have to provide it)**
-* `wget`, `tar`, `gzip`, `bzip2`, `sha256sum`, `tar`
+* **statically linked target tcc (`tcc-seed`, you have to provide it)**
+* host `unshare` for `chroot`ing and isolation
+* host `wget`, `tar`, `gzip`, `bzip2`, `sha256sum`, `tar`
   for optional convenient fetching of source files in stage 0
-* `unshare` for optional isolation
+* host `sed` to preprocess the sources, unfortunately
 * a replacement for `musl/arch/x86_64/syscall_arch.h` that works with tcc
   (`syscall.h`)
 * `va_list.c` from tcc distribution (`downloads/va_list.c`)
 * a bunch of sources to execute along the way
 
-downloads:
+`download.sh" downloads:
 
 * musl sources (`downloads/musl-1.2.2.tar.gz`)
 * `va_list.c` from tcc distribution (`downloads/va_list.c`)
 
-stage 0 (populating the arena):
+`seed.sh` seeds (populates the arena):
 
-* unpack musl sources into the arena
-* FIXME: use `sed` for preprocessing musl source code (cold stare towards musl)
-* copy trusted tcc into the arena
+* unpacks musl sources into the arena
+* FIXME: uses `sed` for preprocessing musl source code (cold stare towards musl)
+* copies `seed-tcc`, the only starting binary, into the arena
 
-stage 1 (musl & hello world):
+`stage1.sh` builds protomusl and a hello world:
 
-* musl sources, `va_list.c` -> very basic musl
-* very basic musl + `test.c` -> hello world
+* executes `stage1.c` (including `syscalls.h` inside the arena, which:
+  * compiles a protomusl from musl sources, `va_list.c`
+  * compiles, links against protomusl and executes a hello world (`test.c`)
 
 stage 2 (better musl): ???
 

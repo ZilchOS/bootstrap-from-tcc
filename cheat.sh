@@ -37,8 +37,8 @@ if [[ ! -e arena/cheat/busybox ]]; then
 	rm result
 fi
 
-[[ -h arena/cheat/tcc ]] || ln -s /input-tcc arena/cheat/tcc
-[[ -h arena/cheat/cc ]] || ln -s /input-tcc arena/cheat/cc
+[[ -h arena/cheat/tcc ]] || ln -s /seed/bin/tcc arena/cheat/tcc
+[[ -h arena/cheat/cc ]] || ln -s /seed/bin/tcc arena/cheat/cc
 
 if [[ $# == 1 && $1 == 'sh' ]]; then
 	env -i CC='tcc -nostdlib -nostdinc' 'AR=tcc -ar' PATH=/cheat:/ \
