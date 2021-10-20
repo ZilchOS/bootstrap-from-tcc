@@ -165,36 +165,6 @@ void compile_c(char* dir, char* file) {
 	linking_arg_add(path_out);
 }
 
-char* MUSL_STDIO_FILES[] = {
-	"__lockfile",
-	"__overflow",
-	"__stdio_close",
-	"__stdio_exit",
-	"__stdio_seek",
-	"__stdio_write",
-	"__stdout_write",
-	"__towrite",
-	"fputs",
-	"fwrite",
-	"ofl",
-	"printf",
-	"putchar",
-	"puts",
-	"stdout",
-	"vfprintf",
-	NULL,
-};
-
-char* MUSL_STRING_FILES[] = {
-	"memchr",
-	"memcpy",
-	"memmove",
-	"memset",
-	"strlen",
-	"strnlen",
-	NULL,
-};
-
 #define compile_c_multi(dir, ...) do { \
 	char* __filelist[] = { __VA_ARGS__, NULL }; \
 	char** __p; \
