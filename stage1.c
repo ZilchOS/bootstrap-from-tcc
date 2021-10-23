@@ -5,10 +5,12 @@
 
 #include "syscall.h"
 #define SYS_write 1
+#define SYS_open 2
 #define SYS_fork 57
 #define SYS_execve 59
 #define SYS_exit 60
 #define SYS_wait4 61
+#define SYS_getdents 78
 #define SYS_mkdir 83
 
 long write(int fd, void* buf, long cnt) {
@@ -34,12 +36,30 @@ int mkdir(char *pathname, unsigned mode) {
 	return __syscall2(SYS_mkdir, (long) pathname, mode);
 }
 
+int open(char *pathname, int flags, int mode) {
+	return __syscall3(SYS_open, (long) pathname, flags, mode);
+}
+
+struct linux_dirent {
+	long d_ino;
+	long d_off;
+	unsigned short d_reclen;
+	char d_name[];
+};
+int getdents(unsigned int fd, struct linux_dirent *dirp,
+		unsigned int count) {
+	return __syscall3(SYS_getdents, fd, (long) dirp, count);
+}
+
 
 // random defines
 
 #define NULL ((void*) 0)
 #define STDOUT 1
 #define STDERR 2
+#define O_RDONLY 0
+#define O_DIRECTORY 0200000
+#define DT_REG 8
 
 
 // basic QoL
@@ -50,26 +70,34 @@ unsigned strlen(char* s) {
 	return l;
 }
 
-void assert_msg(long v, char* msg) {
-	if (!v) {
-		write(STDERR, "Assertion failed!\n", 18);
-		if (msg) {
-			write(STDERR, msg, strlen(msg));
-			write(STDERR, "\n", 1);
-		}
-		exit(134);  // real assert calls abort() -> 128 + SIGABRT
+int write_(int fd, char* msg) {
+	return write(fd, msg, strlen(msg));
+}
+
+#define __quote(x) #x
+#define _quote(x) __quote(x)
+// real assert calls abort() -> 128 + SIGABRT = 134
+#define assert(v) \
+	while (!(v)) { \
+		write_(STDERR, "Assertion "); \
+		write_(STDERR, _quote(v)); write_(STDERR, " failed at "); \
+		write_(STDERR, __FILE__); write_(STDERR, ":"); \
+		write_(STDERR, __func__); write_(STDERR, ":"); \
+		write_(STDERR, _quote(__LINE__)); write_(STDERR, "!\n"); \
+		exit(134);  \
 	}
+
+void log_(int fd, char* msg) {
+	assert(write_(fd, msg) == strlen(msg));
 }
 
 void log(int fd, char* msg) {
-	assert_msg(write(fd, msg, strlen(msg)) == strlen(msg), "write#1@log");
-	assert_msg(write(fd, "\n", 1) == 1, "write#2@log");
+	log_(fd, msg);
+	log_(fd, "\n");
 }
 
 
 // library function substitutes (besides strlen)
-
-void assert(long v) { assert_msg(v, NULL); }
 
 void memset(char* ptr, int with, long len) {
 	long i;
@@ -85,12 +113,12 @@ char* strcpy(char* dest, char* src) {
 }
 
 
-// my functions
+// my convenience functions: fork + exec
 
 int run_(char* cmd, char** args, char** env) {
 	int pid, status, termsig;
 	if (pid = fork()) {
-		assert_msg(wait4(pid, &status, 0, NULL) == pid, "wait4@run_");
+		assert(wait4(pid, &status, 0, NULL) == pid);
 		termsig = status & 0x7f;  // WTERMSIG
 		if (!termsig) {
 			return (status & 0xff00) >> 8;  // WEXITSTATUS
@@ -104,215 +132,260 @@ int run_(char* cmd, char** args, char** env) {
 	return 0;  // unreacheable
 }
 
-#define run(expected_retcode, first_arg, ...) do { \
-	char* __env[] = {NULL}; \
-	char* __args[] = {first_arg, __VA_ARGS__, NULL}; \
-	int __i; \
-	assert_msg(write(STDOUT, "running ", 8) == 8, "write#1@run"); \
-	for(__i = 0; __args[__i]; __i++) { \
-		assert_msg(write(STDOUT, __args[__i], strlen(__args[__i])) \
-					== strlen(__args[__i]), \
-				"write#2@run"); \
-		assert_msg(write(STDOUT, " ", 1) == 1, "write#3@run"); \
-	} \
-	assert_msg(write(STDOUT, "\n", 1) == 1, "write#4@run"); \
-	assert(run_(first_arg, __args, __env) == expected_retcode); \
-} while (0)
-#define run0(first_arg, ...) run(0, first_arg, __VA_ARGS__)
-
-#define amkdir(p) do { assert_msg(mkdir(p, 0777) == 0, p); } while (0)
+#define run(expected_retcode, first_arg, ...) \
+	do { \
+		char* __env[] = {NULL}; \
+		char* __args[] = {(first_arg), __VA_ARGS__, NULL}; \
+		int __i; \
+		log_(STDOUT, "run() running: "); \
+		for(__i = 0; __args[__i]; __i++) { \
+			log_(STDOUT, __args[__i]); \
+			log_(STDOUT, " "); \
+		} \
+		log_(STDOUT, "\n"); \
+		assert(run_(first_arg, __args, __env) == (expected_retcode)); \
+	} while (0)
+#define run0(first_arg, ...) run(0, (first_arg), __VA_ARGS__)
 
 
-char linking_args_storage[32768];
-char* linking_args_pointers[512] = {NULL};
-char* __linking_args_char_curr = linking_args_storage;
-char** __linking_args_ptr_curr = linking_args_pointers;
+// my convenience functions: dynamic args accumulation / command execution
 
-void linking_arg_add(char* new_arg) {
-	*__linking_args_ptr_curr = __linking_args_char_curr;
-	__linking_args_ptr_curr++;
-	__linking_args_char_curr = strcpy(__linking_args_char_curr, new_arg);
-	__linking_args_char_curr++;
+struct args_accumulator {
+	char storage[131072];
+	char* pointers[2048];
+	char* char_curr;
+	char** ptr_curr;
+};
+void aa_init(struct args_accumulator* aa) {
+	aa->char_curr = aa->storage;
+	aa->ptr_curr = aa->pointers;
+	*aa->ptr_curr = NULL;
+}
+void aa_add(struct args_accumulator* aa, char* new_arg) {
+	*aa->ptr_curr = aa->char_curr;
+	aa->ptr_curr++;
+	*aa->ptr_curr = NULL;
+	//*++aa->ptr_curr = 0;
+	aa->char_curr = strcpy(aa->char_curr, new_arg);
+	aa->char_curr++;
+}
+void aa_add_arr(struct args_accumulator* aa, char** p) {
+	while (*p)
+		aa_add(aa, *p++);
+}
+#define aa_add_const(aa_ptr, ...) \
+	do { \
+		char* __args[] = { __VA_ARGS__, NULL }; \
+		aa_add_arr(aa_ptr, __args); \
+	} while (0)
+int aa_run(struct args_accumulator* aa) {
+	char* __env[] = { NULL };
+	int i;
+	log_(STDOUT, "aa_run() running: ");
+	for (i = 0; aa->pointers[i]; i++) {
+		log_(STDOUT, aa->pointers[i]);
+		log_(STDOUT, " ");
+	}
+	log_(STDOUT, "\n");
+	return run_(aa->pointers[0], aa->pointers, __env);
+}
+#define aa_run0(aa_ptr) do { assert(aa_run(aa_ptr) == 0); } while (0)
+
+
+// my convenience functions: compiling whole directories worth of files
+
+int is_compileable(char* fname) {
+	int i = 0;
+	while (fname[i])
+		i++;
+	if (i > 2)
+		if (fname[i - 2] == '.')
+			if (fname[i - 1] == 'c' || fname[i-1] == 's')
+				return 1;
+	return 0;
 }
 
 
-void compile_c(char* dir, char* file) {
-	char path_in[64], path_out[64];
-	char* p;
-	p = strcpy(path_in, "/seed/src/protomusl/");
-	p = strcpy(p, dir);
-	p = strcpy(p, "/");
-	p = strcpy(p, file);
-	p = strcpy(p, ".c");
+void compile_dir(char** compile_args, struct args_accumulator* linking_aa,
+		char* in_dir_path, char* out_dir_path) {
+	char in_file_path_buf[128], out_file_path_buf[128];
+	char* in_file_path;
+	char* out_file_path;
+	struct args_accumulator aa;
 
-	p = strcpy(path_out, "/stage/1/obj/protomusl/");
-	p = strcpy(p, dir);
-	p = strcpy(p, "/");
-	p = strcpy(p, file);
-	p = strcpy(p, ".o");
+	char d_buf[256];
+	struct linux_dirent* d;
+	int fd, r;
+	char d_type;
 
-	run0("/seed/bin/tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
-		"-D_XOPEN_SOURCE=700",
-		"-I/seed/src/protomusl/src/include",
-		"-I/seed/src/protomusl/src/internal",
-		"-I/seed/src/protomusl/arch/x86_64",
-		"-I/seed/src/protomusl/stage0-generated/sed1",
-		"-I/seed/src/protomusl/stage0-generated/sed2",
-		"-I/seed/src/protomusl/arch/generic",
-		"-I/seed/src/protomusl/include",
-		"-fPIC",
-		"-c", path_in, "-o", path_out);
-	linking_arg_add(path_out);
+	mkdir(out_dir_path, 0777);  // the lack of error-checking is deliberate
+
+	fd = open(in_dir_path, O_RDONLY | O_DIRECTORY, 0);
+	assert(fd != -1);
+
+	while (1) {
+		d = (struct linux_dirent*) d_buf;
+		r = getdents(fd, d, 256);
+		assert(r != -1);
+		if (!r)
+			break;
+		while ((char*) d - d_buf < r) {
+			d_type = *((char*) d + d->d_reclen - 1);
+			if (d_type == DT_REG && is_compileable(d->d_name)) {
+				in_file_path = strcpy(in_file_path_buf,
+						in_dir_path);
+				in_file_path = strcpy(in_file_path, "/");
+				in_file_path = strcpy(in_file_path, d->d_name);
+
+				out_file_path = strcpy(out_file_path_buf,
+						out_dir_path);
+				out_file_path = strcpy(out_file_path, "/");
+				out_file_path = strcpy(out_file_path,
+						d->d_name);
+				out_file_path = strcpy(out_file_path,
+						".o");
+
+				aa_init(&aa);
+				aa_add_arr(&aa, compile_args);
+				aa_add(&aa, "-c");
+				aa_add(&aa, in_file_path_buf);
+				aa_add(&aa, "-o");
+				aa_add(&aa, out_file_path_buf);
+				aa_run0(&aa);
+
+				aa_add(linking_aa, out_file_path_buf);
+			}
+			d = (struct linux_dirent*) ((char*) d + d->d_reclen);
+		}
+	}
 }
 
-#define compile_c_multi(dir, ...) do { \
-	char* __filelist[] = { __VA_ARGS__, NULL }; \
-	char** __p; \
-	for (__p = __filelist; *__p; __p++) \
-		compile_c(dir, *__p); \
-} while (0)
 
+#define TCC "/seed/bin/tcc"
+#define TCC_ARGS "-g", "-nostdlib", "-nostdinc", "-std=c99"
+#define PROTOMUSL_INCLUDES \
+		"-I/seed/src/protomusl/src/include", \
+		"-I/seed/src/protomusl/src/internal", \
+		"-I/seed/src/protomusl/arch/x86_64", \
+		"-I/seed/src/protomusl/stage0-generated/sed1", \
+		"-I/seed/src/protomusl/stage0-generated/sed2", \
+		"-I/seed/src/protomusl/arch/generic", \
+		"-I/seed/src/protomusl/include"
 
 int _start() {
+	struct args_accumulator aa;
+
 	log(STDOUT, "Hello from stage1!");
 
 	log(STDOUT, "Testing run()...");
 	log(STDOUT, "* testing run() -> retcode 0...");
-	run0("/seed/bin/tcc", "--help");
+	run0(TCC, "--help");
 	log(STDOUT, "* testing run() -> retcode 1...");
-	run(1, "/seed/bin/tcc", "-ar", "--help");
+	run(1, TCC, "-ar", "--help");
 	log(STDOUT, "run() seems to work OK");
 
-	log(STDOUT, "Compiling va_list.c...");
-	run0("/seed/bin/tcc", "-c", "/seed/src/va_list.c",
+	log(STDOUT, "Testing args accumulator...");
+	log(STDOUT, "* testing aa_add and aa_run0...");
+	aa_init(&aa);
+	aa_add(&aa, TCC);
+	aa_add(&aa, "--help");
+	aa_run0(&aa);
+
+	log(STDOUT, "* testing aa_multi and aa_run for 1...");
+	aa_init(&aa);
+	aa_add_const(&aa, TCC, "-ar", "--help");
+	assert(aa_run(&aa) == 1);
+
+
+	// Preparing to assemble musl linking cmdline
+	aa_init(&aa);
+	aa_add(&aa, TCC);
+	aa_add(&aa, "-ar");
+	aa_add(&aa, "/stage/1/lib/protomusl.a");
+
+
+	log(STDOUT, "Compiling tcc's external runtime bits...");
+	run0(TCC, TCC_ARGS,
+		"-c", "/seed/src/alloca.S",
+		"-o", "/stage/1/obj/alloca.o");
+	aa_add(&aa, "/stage/1/obj/alloca.o");
+
+	run0(TCC, TCC_ARGS,
+		"-c", "/seed/src/libtcc1.c",
+		"-o", "/stage/1/obj/libtcc1.o");
+	aa_add(&aa, "/stage/1/obj/libtcc1.o");
+
+	run0(TCC, TCC_ARGS,
+		"-c", "/seed/src/va_list.c",
 		"-o", "/stage/1/obj/va_list.o");
+	aa_add(&aa, "/stage/1/obj/va_list.o");
 
-	log(STDOUT, "Compiling bits of protomusl with tcc...");
 
-	linking_arg_add("/seed/bin/tcc");
-	linking_arg_add("-ar");
-	linking_arg_add("/stage/1/lib/protomusl.a");
-	linking_arg_add("/stage/1/obj/va_list.o");
 
-	run0("/seed/bin/tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
-		"-I/seed/src/protomusl/src/include",
-		"-I/seed/src/protomusl/src/internal",
-		"-I/seed/src/protomusl/arch/x86_64",
-		"-I/seed/src/protomusl/stage0-generated/sed1",
-		"-I/seed/src/protomusl/include",
-		"-DCRT",
+	log(STDOUT, "Compiling the most part of musl...");
+	char* MUSL_COMPILE[] = {
+		TCC, PROTOMUSL_INCLUDES,
+		"-D_XOPEN_SOURCE=700",
+		NULL
+	};
+	#define compile_protomusl_dir(dir) \
+			compile_dir(MUSL_COMPILE, &aa, \
+				"/seed/src/protomusl/src/" dir, \
+				"/stage/1/obj/protomusl/obj/" dir);
+	compile_protomusl_dir("ctype");
+	compile_protomusl_dir("dirent");
+	compile_protomusl_dir("env");
+	compile_protomusl_dir("errno");
+	compile_protomusl_dir("exit");
+	compile_protomusl_dir("fcntl");
+	compile_protomusl_dir("fenv");
+	compile_protomusl_dir("internal");
+	compile_protomusl_dir("linux");
+	compile_protomusl_dir("locale");
+	compile_protomusl_dir("malloc");
+	compile_protomusl_dir("malloc/mallocng");
+	compile_protomusl_dir("math");
+	compile_protomusl_dir("misc");
+	compile_protomusl_dir("mman");
+	compile_protomusl_dir("multibyte");
+	compile_protomusl_dir("network");
+	compile_protomusl_dir("passwd");
+	compile_protomusl_dir("prng");
+	compile_protomusl_dir("process");
+	compile_protomusl_dir("select");
+	compile_protomusl_dir("setjmp/x86_64");
+	compile_protomusl_dir("signal");
+	compile_protomusl_dir("stat");
+	compile_protomusl_dir("stdio");
+	compile_protomusl_dir("stdlib");
+	compile_protomusl_dir("string");
+	compile_protomusl_dir("temp");
+	compile_protomusl_dir("termios");
+	compile_protomusl_dir("thread");
+	compile_protomusl_dir("thread/x86_64");
+	compile_protomusl_dir("time");
+	compile_protomusl_dir("unistd");
+
+	log(STDOUT, "Compiling crt bits of musl...");
+	run0(TCC, PROTOMUSL_INCLUDES, "-DCRT",
 		"-c", "/seed/src/protomusl/crt/crt1.c",
 		"-o", "/stage/1/obj/protomusl/crt/crt1.o");
-	/*
-	run0("/seed/bin/tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
-		"-I/seed/src/protomusl/src/include",
-		"-I/seed/src/protomusl/src/internal",
-		"-I/seed/src/protomusl/arch/x86_64",
-		"-I/seed/src/protomusl/stage0-generated/sed1",
-		"-I/seed/src/protomusl/include",
-		"-DCRT",
-		"-c", "/seed/src/protomusl/crt/x86_64/crti.s",
-		"-o", "/stage/1/obj/protomusl/crt/crti.o");
-	run0("/seed/bin/tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
-		"-I/seed/src/protomusl/src/include",
-		"-I/seed/src/protomusl/src/internal",
-		"-I/seed/src/protomusl/arch/x86_64",
-		"-I/seed/src/protomusl/stage0-generated/sed1",
-		"-I/seed/src/protomusl/include",
-		"-DCRT",
-		"-c", "/seed/src/protomusl/crt/x86_64/crtn.s",
-		"-o", "/stage/1/obj/protomusl/crt/crtn.o");
-	*/
+	//run0(TCC, PROTOMUSL_INCLUDES, "-DCRT",
+	//	"-c", "/seed/src/protomusl/crt/x86_64/crti.s",
+	//	"-o", "/stage/1/obj/protomusl/crt/crti.o");
+	//run0(TCC, PROTOMUSL_INCLUDES, "-DCRT",
+	//	"-c", "/seed/src/protomusl/crt/x86_64/crtn.s",
+	//	"-o", "/stage/1/obj/protomusl/crt/crtn.o");
 
-	run0("/seed/bin/tcc", "-g", "-nostdlib", "-nostdinc", "-std=c99",
-		"-I/seed/src/protomusl/src/include",
-		"-I/seed/src/protomusl/src/internal",
-		"-I/seed/src/protomusl/arch/x86_64",
-		"-I/seed/src/protomusl/stage0-generated/sed1",
-		"-I/seed/src/protomusl/include",
-		"-DCRT",
-		"-c",
-		"/seed/src/protomusl/src/thread/x86_64/__set_thread_area.s",
-		"-o", "/stage/1/obj/protomusl/__set_thread_area.o");
-	linking_arg_add("/stage/1/obj/protomusl/__set_thread_area.o");
+	log(STDOUT, "Linking musl...");
+	aa_run0(&aa);
 
-	compile_c_multi("src/env",
-			"__environ", "__init_tls", "__libc_start_main");
-	compile_c_multi("src/errno",
-			"__errno_location", "strerror");
-	compile_c_multi("src/exit",
-			"_Exit", "abort", "abort_lock", "exit");
-	compile_c_multi("src/internal",
-			"defsysinfo", "libc", "syscall_ret");
-	compile_c("src/locale", "__lctrans");
-	compile_c_multi("src/malloc", "free", "lite_malloc");
-	compile_c_multi("src/malloc/mallocng", "free", "malloc");
-	compile_c_multi("src/math",
-			"__fpclassifyl", "__signbitl", "frexpl");
-	compile_c_multi("src/mman",
-			"madvise",
-			"mprotect",
-			"munmap",
-			"mmap"
-	);
-	compile_c_multi("src/multibyte",
-			"wcrtomb", "wctomb");
-	compile_c_multi("src/signal",
-			"block", "raise");
-	compile_c_multi("src/stdio",
-			"__fdopen",
-			"__fmodeflags",
-			"__lockfile",
-			"__stdio_read",
-			"__overflow",
-			"__stdio_close",
-			"__stdio_exit",
-			"__stdio_seek",
-			"__stdio_write",
-			"__stdout_write",
-			"__toread",
-			"__towrite",
-			"__uflow",
-			"fclose",
-			"feof",
-			"ferror",
-			"fflush",
-			"fgetc",
-			"fopen",
-			"fputc",
-			"fputs",
-			"fwrite",
-			"ofl",
-			"ofl_add",
-			"printf",
-			"putchar",
-			"puts",
-			"stdout",
-			"vfprintf");
-	compile_c_multi("src/string",
-			"memchr",
-			"memcpy",
-			"memmove",
-			"memset",
-			"strchr",
-			"strchrnul",
-			"strlen",
-			"strnlen");
-	compile_c_multi("src/thread",
-			"__lock", "default_attr");
-	compile_c("src/unistd", "lseek");
-	log(STDOUT, "Linking...");
-	char* env[] = {NULL};
-	long __i;
-	for(__i = 0; linking_args_pointers[__i]; __i++)
-		log(STDOUT, linking_args_pointers[__i]);
-	assert_msg(run_("/seed/bin/tcc", linking_args_pointers, env) == 0,
-		"link");
 
-	log(STDOUT, "Executing an example...");
+	log(STDOUT, "Linking an example...");
 	run0("/seed/bin/tcc",
 		"-g", "-nostdlib", "-nostdinc", "-std=c99", "-static",
 		"-D_XOPEN_SOURCE=700",
+		"-I/seed/src/protomusl/include",
 		"-I/seed/src/protomusl/src/include",
 		"-I/seed/src/protomusl/stage0-generated/sed1",
 		"-Wl,-whole-archive",
@@ -323,6 +396,8 @@ int _start() {
 		//"/stage/1/obj/protomusl/crt/crtn.o",
 		"-o", "/stage/1/bin/protomusl-hello"
 		);
+
+	log(STDOUT, "Executing an example...");
 	run(42, "/stage/1/bin/protomusl-hello", "1");
 	return 0;
 }

@@ -35,7 +35,7 @@ given:
 * host `sed` to preprocess the sources, unfortunately
 * a replacement for `musl/arch/x86_64/syscall_arch.h` that works with tcc
   (`syscall.h`)
-* `va_list.c` from tcc distribution (`downloads/va_list.c`)
+* `alloca.S`/`libtcc1.c`/`va_list.c` from tcc distribution
 * a bunch of sources to execute along the way
 
 `download.sh" downloads:
