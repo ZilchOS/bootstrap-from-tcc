@@ -1,34 +1,36 @@
 #!/bin/sh
 set -ue
 
+NIXPKGS=nixpkgs/8eeae5320e741d55ec1b891853fa48419e3a5a26
+
 mkdir -p arena/cheat
 
 if [[ ! -e arena/cheat/make ]]; then
-	nix build 'nixpkgs#pkgsStatic.gnumake'
+	nix build "$NIXPKGS#pkgsStatic.gnumake"
 	cp result/bin/make arena/cheat/make
 	rm result
 fi
 
 #if [[ ! -e arena/cheat/dash ]]; then
-#	nix build 'nixpkgs#pkgsStatic.dash'
+#	nix build "$NIXPKGS#pkgsStatic.dash"
 #	cp result/bin/dash arena/cheat/dash
 #	rm result
 #fi
 
 if [[ ! -e arena/cheat/bash ]]; then
-	nix build 'nixpkgs#pkgsStatic.bash'
+	nix build "$NIXPKGS#pkgsStatic.bash"
 	cp result/bin/bash arena/cheat/bash
 	rm result
 fi
 
 #if [[ ! -e arena/cheat/sed ]]; then
-#	nix build 'nixpkgs#pkgsStatic.gnused'
+#	nix build "$NIXPKGS#pkgsStatic.gnused"
 #	cp result/bin/sed arena/cheat/sed
 #	rm result
 #fi
 
 if [[ ! -e arena/cheat/busybox ]]; then
-	nix build 'nixpkgs#pkgsStatic.busybox'
+	nix build "$NIXPKGS#pkgsStatic.busybox"
 	cp result/bin/busybox arena/cheat/busybox
 	for f in $(ls result/bin/); do
 		[[ $(basename $f) == busybox ]] ||
