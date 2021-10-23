@@ -10,7 +10,7 @@ set -uex
 
 # Create directory structure for the inputs
 mkdir -p arena/seed/{bin,src}
-mkdir -p arena/seed/src/{protomusl,make,busybox,linux}
+mkdir -p arena/seed/src/{protomusl,sash,make,busybox,linux}
 # Create basic directory structure for the outputs
 mkdir -p arena/stage/1/{src,obj,lib,bin}
 
@@ -20,10 +20,12 @@ mkdir -p arena/stage/1/{src,obj,lib,bin}
 # Seed sources from downloads/
 tar -C arena/seed/src/protomusl --strip-components=1 -xzf \
 	downloads/musl-1.2.2.tar.gz
+tar -C arena/seed/src/sash --strip-components=1 -xzf \
+	downloads/sash-3.8.tar.gz
 tar -C arena/seed/src/make --strip-components=1 -xzf \
 	downloads/make-4.3.tar.gz
-#tar -C arena/seed/src/busybox --strip-components=1 -xjf \
-#	downloads/busybox-1.34.1.tar.bz2
+tar -C arena/seed/src/busybox --strip-components=1 -xjf \
+	downloads/busybox-1.34.1.tar.bz2
 #tar -C arena/seed/src/linux --strip-components=1 -xJf \
 #       downloads/linux-5.10.74.tar.xz
 
@@ -53,8 +55,10 @@ pushd arena/stage/1/obj
 	mkdir -p protomusl/obj/{select,signal,stat,stdio,stdlib,string}
 	mkdir -p protomusl/obj/{temp,termios,time,unistd}
 
-	mkdir -p protomusl/obj/{thread,setjmp}/x86_64
+	mkdir -p protomusl/obj/{thread,setjmp,signal}/x86_64
 popd
+
+mkdir arena/stage/1/obj/sash
 
 
 # Code host-processing hacks and workarounds
@@ -79,8 +83,14 @@ pushd arena/seed/src/protomusl
 
 	echo '#define VERSION "1.2.2"' > src/internal/version.h
 
+	sed -i 's/@PLT//' src/signal/x86_64/sigsetjmp.s
+
 	rm src/thread/__set_thread_area.c  # possible double-define
 	rm src/thread/__unmapself.c  # double-define
 	rm src/math/sqrtl.c  # tcc-incompatible
 	rm src/math/{acoshl,acosl,asinhl,asinl,hypotl}.c  # want sqrtl
+popd
+
+pushd arena/seed/src/sash
+	sed -i 's|#include <linux/loop.h>||' cmds.c
 popd

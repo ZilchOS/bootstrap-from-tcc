@@ -49,11 +49,12 @@ given:
 * FIXME: uses `sed` for preprocessing musl source code (cold stare towards musl)
 * copies `seed-tcc`, the only starting binary, into the arena
 
-`stage1.sh` builds protomusl and a hello world:
+`stage1.sh` builds protomusl and `sash`:
 
 * executes `stage1.c` (including `syscalls.h` inside the arena, which:
   * compiles a protomusl from musl sources, `va_list.c`
   * compiles, links against protomusl and executes a hello world (`test.c`)
+  * compiles, links against protomusl and executes stand-alone shell (`sash`)
 
 stage 2 (better musl): ???
 

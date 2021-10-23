@@ -178,6 +178,8 @@ void aa_add_arr(struct args_accumulator* aa, char** p) {
 		char* __args[] = { __VA_ARGS__, NULL }; \
 		aa_add_arr(aa_ptr, __args); \
 	} while (0)
+#define aa_init_const(aa_ptr, ...) \
+	do { aa_init(aa_ptr); aa_add_const(aa_ptr, __VA_ARGS__); } while (0)
 int aa_run(struct args_accumulator* aa) {
 	char* __env[] = { NULL };
 	int i;
@@ -262,7 +264,8 @@ void compile_dir(char** compile_args, struct args_accumulator* linking_aa,
 
 
 #define TCC "/seed/bin/tcc"
-#define TCC_ARGS "-g", "-nostdlib", "-nostdinc", "-std=c99"
+#define TCC_ARGS "-g", "-nostdlib", "-nostdinc", "-std=c99", \
+		"-D_XOPEN_SOURCE=700"
 #define PROTOMUSL_INCLUDES \
 		"-I/seed/src/protomusl/src/include", \
 		"-I/seed/src/protomusl/src/internal", \
@@ -271,6 +274,10 @@ void compile_dir(char** compile_args, struct args_accumulator* linking_aa,
 		"-I/seed/src/protomusl/stage0-generated/sed2", \
 		"-I/seed/src/protomusl/arch/generic", \
 		"-I/seed/src/protomusl/include"
+#define PROTOMUSL_LINK_ARGS \
+		"-Wl,-whole-archive", \
+		"/stage/1/lib/protomusl.a", \
+		"/stage/1/obj/protomusl/crt/crt1.o"
 
 int _start() {
 	struct args_accumulator aa;
@@ -292,16 +299,12 @@ int _start() {
 	aa_run0(&aa);
 
 	log(STDOUT, "* testing aa_multi and aa_run for 1...");
-	aa_init(&aa);
-	aa_add_const(&aa, TCC, "-ar", "--help");
+	aa_init_const(&aa, TCC, "-ar", "--help");
 	assert(aa_run(&aa) == 1);
 
 
 	// Preparing to assemble musl linking cmdline
-	aa_init(&aa);
-	aa_add(&aa, TCC);
-	aa_add(&aa, "-ar");
-	aa_add(&aa, "/stage/1/lib/protomusl.a");
+	aa_init_const(&aa, TCC, "-ar", "/stage/1/lib/protomusl.a");
 
 
 	log(STDOUT, "Compiling tcc's external runtime bits...");
@@ -321,13 +324,8 @@ int _start() {
 	aa_add(&aa, "/stage/1/obj/va_list.o");
 
 
-
 	log(STDOUT, "Compiling the most part of musl...");
-	char* MUSL_COMPILE[] = {
-		TCC, PROTOMUSL_INCLUDES,
-		"-D_XOPEN_SOURCE=700",
-		NULL
-	};
+	char* MUSL_COMPILE[] = { TCC, TCC_ARGS, PROTOMUSL_INCLUDES, NULL };
 	#define compile_protomusl_dir(dir) \
 			compile_dir(MUSL_COMPILE, &aa, \
 				"/seed/src/protomusl/src/" dir, \
@@ -355,6 +353,7 @@ int _start() {
 	compile_protomusl_dir("select");
 	compile_protomusl_dir("setjmp/x86_64");
 	compile_protomusl_dir("signal");
+	compile_protomusl_dir("signal/x86_64");
 	compile_protomusl_dir("stat");
 	compile_protomusl_dir("stdio");
 	compile_protomusl_dir("stdlib");
@@ -367,13 +366,13 @@ int _start() {
 	compile_protomusl_dir("unistd");
 
 	log(STDOUT, "Compiling crt bits of musl...");
-	run0(TCC, PROTOMUSL_INCLUDES, "-DCRT",
+	run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-DCRT",
 		"-c", "/seed/src/protomusl/crt/crt1.c",
 		"-o", "/stage/1/obj/protomusl/crt/crt1.o");
-	//run0(TCC, PROTOMUSL_INCLUDES, "-DCRT",
+	//run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-DCRT",
 	//	"-c", "/seed/src/protomusl/crt/x86_64/crti.s",
 	//	"-o", "/stage/1/obj/protomusl/crt/crti.o");
-	//run0(TCC, PROTOMUSL_INCLUDES, "-DCRT",
+	//run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-DCRT",
 	//	"-c", "/seed/src/protomusl/crt/x86_64/crtn.s",
 	//	"-o", "/stage/1/obj/protomusl/crt/crtn.o");
 
@@ -382,15 +381,7 @@ int _start() {
 
 
 	log(STDOUT, "Linking an example...");
-	run0("/seed/bin/tcc",
-		"-g", "-nostdlib", "-nostdinc", "-std=c99", "-static",
-		"-D_XOPEN_SOURCE=700",
-		"-I/seed/src/protomusl/include",
-		"-I/seed/src/protomusl/src/include",
-		"-I/seed/src/protomusl/stage0-generated/sed1",
-		"-Wl,-whole-archive",
-		"/stage/1/lib/protomusl.a",
-		"/stage/1/obj/protomusl/crt/crt1.o",
+	run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, PROTOMUSL_LINK_ARGS, "-static",
 		//"/stage/1/obj/protomusl/crt/crti.o",
 		"/seed/src/hello.c",
 		//"/stage/1/obj/protomusl/crt/crtn.o",
@@ -399,5 +390,23 @@ int _start() {
 
 	log(STDOUT, "Executing an example...");
 	run(42, "/stage/1/bin/protomusl-hello", "1");
+
+	log(STDOUT, "Compiling sash...");
+	aa_init_const(&aa, TCC, TCC_ARGS, "-static", PROTOMUSL_LINK_ARGS,
+			"-o", "/stage/1/bin/sash");
+	//aa_add_const(&aa, "/stage/1/obj/protomusl/crt/crti.o");
+	char* SASH_COMPILE[] = {
+		TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-D_GNU_SOURCE",
+		"-DHAVE_LINUX_MOUNT=0", "-DMOUNT_TYPE=\"btrfs\"",
+		NULL
+	};
+	compile_dir(SASH_COMPILE, &aa, "/seed/src/sash", "/stage/1/obj/sash");
+	//aa_add_const(&aa, "/stage/1/obj/protomusl/crt/crtn.o");
+	aa_run0(&aa);
+
+	log(STDOUT, "Testing sash...");
+	run(1, "/stage/1/bin/sash", "--help");
+	run0("/stage/1/bin/sash", "-c", "-pwd");
+
 	return 0;
 }
