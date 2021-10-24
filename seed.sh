@@ -40,24 +40,8 @@ cp hello.c arena/seed/src/
 
 # Create per-component output directory structure
 
-pushd arena/stage/1/obj
-	mkdir -p protomusl/crt
-	mkdir -p protomusl/obj/ctype
-	mkdir -p protomusl/obj/dirent
-	mkdir -p protomusl/obj/{env,errno,exit}
-	mkdir -p protomusl/obj/{fcntl,fenv}
-	mkdir -p protomusl/obj/internal
-	mkdir -p protomusl/obj/{locale,linux}
-	mkdir -p protomusl/obj/{malloc/mallocng,math,misc,mman,multibyte}
-	mkdir -p protomusl/obj/network
-	mkdir -p protomusl/obj/passwd
-	mkdir -p protomusl/obj/{process,prng}
-	mkdir -p protomusl/obj/{select,signal,stat,stdio,stdlib,string}
-	mkdir -p protomusl/obj/{temp,termios,time,unistd}
-
-	mkdir -p protomusl/obj/{thread,setjmp,signal}/x86_64
-popd
-
+mkdir -p arena/stage/1/obj/protomusl/crt
+mkdir -p arena/stage/1/obj/protomusl/setjmp/x86_64
 mkdir arena/stage/1/obj/sash
 
 

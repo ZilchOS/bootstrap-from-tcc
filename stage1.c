@@ -329,7 +329,7 @@ int _start() {
 	#define compile_protomusl_dir(dir) \
 			compile_dir(MUSL_COMPILE, &aa, \
 				"/seed/src/protomusl/src/" dir, \
-				"/stage/1/obj/protomusl/obj/" dir);
+				"/stage/1/obj/protomusl/" dir);
 	compile_protomusl_dir("ctype");
 	compile_protomusl_dir("dirent");
 	compile_protomusl_dir("env");
