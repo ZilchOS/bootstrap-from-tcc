@@ -1,12 +1,23 @@
 // SPDX-FileCopyrightText: 2021 Alexander Sosedkin <monk@unboiled.info>
 // SPDX-License-Identifier: MIT
 
-// defines the same macro/funcs as musl-1.2.2's arch/x86_64/syscall_arch.h
-// to double as a drop-in tcc-compatible replacement for it,
-// yet the implementation is very different
+
+// constants/macro for this file to serve as a drop-in replacement
+// for musl-1.2.2's arch/x86_64/syscall_arch.h
 
 #define __SYSCALL_LL_E(x) (x)
 #define __SYSCALL_LL_O(x) (x)
+
+#define VDSO_USEFUL
+#define VDSO_CGT_SYM "__vdso_clock_gettime"
+#define VDSO_CGT_VER "LINUX_2.6"
+#define VDSO_GETCPU_SYM "__vdso_getcpu"
+#define VDSO_GETCPU_VER "LINUX_2.6"
+
+#define IPC_64 0
+
+
+// a different, tcc-compatible implementation of syscall invocations functions
 
 static long __syscall6(long n, long a1, long a2, long a3, long a4, long a5, long a6);
 asm (
@@ -47,11 +58,3 @@ static __inline long __syscall1(long n, long a1) {
 static __inline long __syscall0(long n) {
 	return __syscall6(n, 0, 0, 0, 0, 0, 0);
 }
-
-#define VDSO_USEFUL
-#define VDSO_CGT_SYM "__vdso_clock_gettime"
-#define VDSO_CGT_VER "LINUX_2.6"
-#define VDSO_GETCPU_SYM "__vdso_getcpu"
-#define VDSO_GETCPU_VER "LINUX_2.6"
-
-#define IPC_64 0
