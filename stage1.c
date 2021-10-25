@@ -268,11 +268,11 @@ void compile_dir(char** compile_args, struct args_accumulator* linking_aa,
 		"-D_XOPEN_SOURCE=700"
 #define PROTOMUSL_INCLUDES \
 		"-I/seed/src/protomusl/src/include", \
-		"-I/seed/src/protomusl/src/internal", \
 		"-I/seed/src/protomusl/arch/x86_64", \
 		"-I/seed/src/protomusl/stage0-generated/sed1", \
 		"-I/seed/src/protomusl/stage0-generated/sed2", \
 		"-I/seed/src/protomusl/arch/generic", \
+		"-I/seed/src/protomusl/src/internal", \
 		"-I/seed/src/protomusl/include"
 #define PROTOMUSL_LINK_ARGS \
 		"-Wl,-whole-archive", \

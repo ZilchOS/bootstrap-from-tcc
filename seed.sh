@@ -69,6 +69,8 @@ pushd arena/seed/src/protomusl
 
 	sed -i 's/@PLT//' src/signal/x86_64/sigsetjmp.s
 
+	rm src/signal/restore.c  # *BIG URGH*
+
 	rm src/thread/__set_thread_area.c  # possible double-define
 	rm src/thread/__unmapself.c  # double-define
 	rm src/math/sqrtl.c  # tcc-incompatible
