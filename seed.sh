@@ -10,7 +10,7 @@ set -uex
 
 # Create directory structure for the inputs
 mkdir -p arena/seed/{bin,src}
-mkdir -p arena/seed/src/{protomusl,sash,make,busybox,linux}
+mkdir -p arena/seed/src/{protomusl,sash,make,protobusybox,linux}
 # Create basic directory structure for the outputs
 mkdir -p arena/stage/1/{src,obj,lib,bin}
 
@@ -24,7 +24,7 @@ tar -C arena/seed/src/sash --strip-components=1 -xzf \
 	downloads/sash-3.8.tar.gz
 tar -C arena/seed/src/make --strip-components=1 -xzf \
 	downloads/make-4.3.tar.gz
-tar -C arena/seed/src/busybox --strip-components=1 -xjf \
+tar -C arena/seed/src/protobusybox --strip-components=1 -xjf \
 	downloads/busybox-1.34.1.tar.bz2
 #tar -C arena/seed/src/linux --strip-components=1 -xJf \
 #       downloads/linux-5.10.74.tar.xz
@@ -36,7 +36,7 @@ cp stage1.c arena/seed/src/
 cp downloads/{libtcc1.c,va_list.c,alloca.S} arena/seed/src/
 cp syscall.h arena/seed/src/  # dual-role
 cp hello.c arena/seed/src/
-cp ash.c arena/seed/src/busybox/
+cp protobusybox.c arena/seed/src/protobusybox/
 
 
 # Create per-component output directory structure
@@ -83,7 +83,7 @@ pushd arena/seed/src/sash
 	sed -i 's|#include <linux/loop.h>||' cmds.c
 popd
 
-pushd arena/seed/src/busybox
+pushd arena/seed/src/protobusybox
 	rm libbb/capability.c
 	rm libbb/hash_md5prime.c
 	rm libbb/hash_md5_sha.c

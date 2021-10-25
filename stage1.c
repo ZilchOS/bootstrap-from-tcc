@@ -412,13 +412,18 @@ int _start() {
 	run0("/stage/1/bin/sash", "-c", "-pwd");
 
 
-	log(STDOUT, "Compiling busybox ash...");
+	log(STDOUT, "Compiling protobusybox...");
 	run0(TCC, TCC_ARGS, "-static", PROTOMUSL_LINK_ARGS, PROTOMUSL_INCLUDES,
 			//"/stage/1/obj/protomusl/crt/crti.o",
-			"-I/seed/src/busybox/include",
-			"/seed/src/busybox/ash.c",
+			"-I/seed/src/protobusybox/include",
+			"/seed/src/protobusybox/protobusybox.c",
 			//"/stage/1/obj/protomusl/crt/crtn.o",
-			"-o", "/stage/1/bin/ash");
+			"-o", "/stage/1/bin/cp");
+
+	log(STDOUT, "Creating protobusybox files...");
+	run0("/stage/1/bin/cp", "/stage/1/bin/cp", "/stage/1/bin/protobbox");
+	run0("/stage/1/bin/cp", "/stage/1/bin/protobbox", "/stage/1/bin/mv");
+	run0("/stage/1/bin/cp", "/stage/1/bin/protobbox", "/stage/1/bin/ash");
 
 	log(STDOUT, "Testing busybox ash...");
 	run0("/stage/1/bin/ash", "-c", "/seed/bin/tcc;/seed/bin/tcc");

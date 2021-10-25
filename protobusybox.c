@@ -1,3 +1,7 @@
+#include <errno.h>
+static inline int *get_perrno(void) { return &errno; }
+int *const bb_errno;
+
 #define CONFIG_FEATURE_EDITING_MAX_LEN 1024
 #define CONFIG_FEATURE_COPYBUF_KB 16
 #define ENABLE_ASH_ALIAS 0
@@ -10,12 +14,15 @@
 #define ENABLE_ASH_TEST 0
 #define ENABLE_DEBUG 0
 #define ENABLE_FEATURE_CLEAN_UP 0
+#define ENABLE_FEATURE_CP_REFLINK 0
 #define ENABLE_FEATURE_CROND_D 0
 #define ENABLE_FEATURE_EDITING 0
+#define ENABLE_FEATURE_NON_POSIX_CP 0
+#define ENABLE_FEATURE_PRESERVE_HARDLINKS 0
 #define ENABLE_FEATURE_PS_ADDITIONAL_COLUMNS 0
 #define ENABLE_FEATURE_SHOW_THREADS 0
-#define ENABLE_FEATURE_SH_READ_FRAC 0
 #define ENABLE_FEATURE_SH_MATH 0
+#define ENABLE_FEATURE_SH_READ_FRAC 0
 #define ENABLE_FEATURE_SYSLOG 0
 #define ENABLE_FEATURE_TOPMEM 1
 #define ENABLE_FEATURE_TOP_SMP_PROCESS 0
@@ -51,6 +58,7 @@
 #define IF_DPKG_DEB(...)
 #define IF_DUMPKMAP(...)
 #define IF_ECHO(...) __VA_ARGS__
+#define IF_FEATURE_CP_REFLINK(...)
 #define IF_FEATURE_SHOW_THREADS(...)
 #define IF_FEATURE_SH_MATH(...)
 #define IF_FEATURE_TIMEZONE(...)
@@ -99,31 +107,19 @@
 #define FAST_FUNC
 #include <stdio.h>
 #include <string.h>
-//#define HAVE_UNLOCKED_LINE_OPS
-//#include "libbb/appletlib.c"
-//#include "libbb/ask_confirmation.c"
-//#include "libbb/auto_string.c"
-//#include "libbb/bb_askpass.c"
-//#include "libbb/bb_bswap_64.c"
-//#include "libbb/bb_cat.c"
-//#include "libbb/bb_do_delay.c"
-//#include "libbb/bb_getgroups.c"
-//#include "libbb/bb_getsockname.c"
-//#include "libbb/bb_pwd.c"
-//#include "libbb/bb_qsort.c"
-//#include "libbb/bb_strtod.c"
 #include "libbb/bb_strtonum.c"
+#include "libbb/ask_confirmation.c"
 //#include "libbb/bbunit.c"
 //#include "libbb/capability.c"
 //#include "libbb/change_identity.c"
 //#include "libbb/chomp.c"
 //#include "libbb/common_bufsiz.c"
 #include "libbb/compare_string_array.c"
-//#include "libbb/concat_path_file.c"
-//#include "libbb/concat_subpath_file.c"
+#include "libbb/concat_path_file.c"
+#include "libbb/concat_subpath_file.c"
 //#include "libbb/const_hack.c"
 #include "libbb/copyfd.c"
-//#include "libbb/copy_file.c"
+#include "libbb/copy_file.c"
 //#include "libbb/correct_password.c"
 //#include "libbb/crc32.c"
 #include "libbb/default_error_retval.c"
@@ -142,9 +138,9 @@
 #include "libbb/full_write.c"
 //#include "libbb/get_console.c"
 //#include "libbb/get_cpu_count.c"
-//#include "libbb/get_last_path_component.c"
+#include "libbb/get_last_path_component.c"
 //#include "libbb/get_line_from_file.c"
-//#include "libbb/getopt32.c"
+#include "libbb/getopt32.c"
 //#include "libbb/getopt_allopts.c"
 //#include "libbb/getpty.c"
 //#include "libbb/get_shell_name.c"
@@ -156,15 +152,15 @@
 //#include "libbb/inet_cksum.c"
 //#include "libbb/inet_common.c"
 //#include "libbb/in_ether.c"
-//#include "libbb/inode_hash.c"
+#include "libbb/inode_hash.c"
 //#include "libbb/isdirectory.c"
 //#include "libbb/isqrt.c"
 //#include "libbb/iterate_on_dir.c"
 //#include "libbb/kernel_version.c"
-//#include "libbb/last_char_is.c"
+#include "libbb/last_char_is.c"
 //#include "libbb/lineedit.c"
 //#include "libbb/lineedit_ptr_hack.c"
-//#include "libbb/llist.c"
+#include "libbb/llist.c"
 //#include "libbb/logenv.c"
 //#include "libbb/login.c"
 //#include "libbb/loop.c"
@@ -201,7 +197,7 @@
 //#include "libbb/read_key.c"
 #include "libbb/read_printf.c"
 //#include "libbb/recursive_action.c"
-//#include "libbb/remove_file.c"
+#include "libbb/remove_file.c"
 //#include "libbb/replace.c"
 //#include "libbb/rtc.c"
 //#include "libbb/run_shell.c"
@@ -241,37 +237,56 @@
 #include "libbb/xfunc_die.c"
 #include "libbb/xfuncs.c"
 #include "libbb/xfuncs_printf.c"
-//#include "libbb/xgetcwd.c"
+#include "libbb/xgetcwd.c"
 //#include "libbb/xgethostbyname.c"
-//#include "libbb/xreadlink.c"
+#include "libbb/xreadlink.c"
 //#include "libbb/xrealloc_vector.c"
 //#include "libbb/xregcomp.c"
 
-int _bb_errno;
-int *const bb_errno = &_bb_errno;
-
 //#include "platform.h"
-#define ENABLE_FEATURE_INDIVIDUAL 1
+//#define ENABLE_FEATURE_INDIVIDUAL 1
+
 #include "include/libbb.h"
+
+// appletlib
+unsigned string_array_len(char **argv) {
+	unsigned i;
+	for (i = 0; argv[i]; i++);
+	return i;
+}
+
+void bb_show_usage(void) {
+	write(2 /* STDERR */, "protobusybox's show_usage stub\n", 31);
+}
+
 #include "shell/shell_common.c"
 #include "shell/ash.c"
 #include "shell/ash_ptr_hack.c"
 
-const char *applet_name; // appletlib
+#include "coreutils/libcoreutils/cp_mv_stat.c"
+#include "coreutils/cp.c"
+#include "coreutils/mv.c"
+//#include "editors/sed.c"
 
-// appletlib
-unsigned FAST_FUNC string_array_len(char **argv)
-{
-	char **start = argv;
-
-	while (*argv)
-		argv++;
-
-	return argv - start;
-}
-
-
-
+const char *applet_name;
 int main(int argc, char** argv) {
-	return ash_main(argc, argv);
+	int** bb_errno_ptr = &((int*) bb_errno);
+	*bb_errno_ptr = ((int*) get_perrno());
+	barrier();
+
+	applet_name = argv[0];
+	while (*applet_name)
+		applet_name++;
+	while (applet_name > argv[0] && *applet_name != '/')
+		applet_name--;
+	if (*applet_name == '/')
+		applet_name ++;
+
+	if (!strcmp(applet_name, "ash"))
+		return ash_main(argc, argv);
+	if (!strcmp(applet_name, "cp"))
+		return cp_main(argc, argv);
+	if (!strcmp(applet_name, "mv"))
+		return mv_main(argc, argv);
+	return 255;
 }
