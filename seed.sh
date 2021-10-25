@@ -36,6 +36,7 @@ cp stage1.c arena/seed/src/
 cp downloads/{libtcc1.c,va_list.c,alloca.S} arena/seed/src/
 cp syscall.h arena/seed/src/  # dual-role
 cp hello.c arena/seed/src/
+cp ash.c arena/seed/src/busybox/
 
 
 # Create per-component output directory structure
@@ -48,7 +49,8 @@ mkdir arena/stage/1/obj/sash
 # Code host-processing hacks and workarounds
 
 pushd arena/seed/src/protomusl
-	# original syscall.h is not tcc-compatible, the one we use is dual-role
+	# original syscall_arch.h is not tcc-compatible,
+	# the syscall.h we use is dual-role
 	cp ../syscall.h arch/x86_64/syscall_arch.h
 
 	# three files have to be generated with host sed
@@ -79,4 +81,17 @@ popd
 
 pushd arena/seed/src/sash
 	sed -i 's|#include <linux/loop.h>||' cmds.c
+popd
+
+pushd arena/seed/src/busybox
+	rm libbb/capability.c
+	rm libbb/hash_md5prime.c
+	rm libbb/hash_md5_sha.c
+	rm libbb/loop.c
+	rm libbb/obscure.c
+	rm libbb/pw_encrypt_des.c
+	rm libbb/pw_encrypt_sha.c
+	rm libbb/selinux_common.c
+	rm libbb/utmp.c
+	echo "#define NUM_APPLETS 1" > include/NUM_APPLETS.h
 popd

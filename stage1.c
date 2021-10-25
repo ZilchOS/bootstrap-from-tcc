@@ -151,8 +151,8 @@ int run_(char* cmd, char** args, char** env) {
 // my convenience functions: dynamic args accumulation / command execution
 
 struct args_accumulator {
-	char storage[131072];
-	char* pointers[2048];
+	char storage[262144];
+	char* pointers[4096];
 	char* char_curr;
 	char** ptr_curr;
 };
@@ -330,6 +330,7 @@ int _start() {
 			compile_dir(MUSL_COMPILE, &aa, \
 				"/seed/src/protomusl/src/" dir, \
 				"/stage/1/obj/protomusl/" dir);
+	compile_protomusl_dir("conf");
 	compile_protomusl_dir("ctype");
 	compile_protomusl_dir("dirent");
 	compile_protomusl_dir("env");
@@ -350,6 +351,7 @@ int _start() {
 	compile_protomusl_dir("passwd");
 	compile_protomusl_dir("prng");
 	compile_protomusl_dir("process");
+	compile_protomusl_dir("regex");
 	compile_protomusl_dir("select");
 	compile_protomusl_dir("setjmp/x86_64");
 	compile_protomusl_dir("signal");
@@ -391,6 +393,7 @@ int _start() {
 	log(STDOUT, "Executing an example...");
 	run(42, "/stage/1/bin/protomusl-hello", "1");
 
+
 	log(STDOUT, "Compiling sash...");
 	aa_init_const(&aa, TCC, TCC_ARGS, "-static", PROTOMUSL_LINK_ARGS,
 			"-o", "/stage/1/bin/sash");
@@ -407,6 +410,115 @@ int _start() {
 	log(STDOUT, "Testing sash...");
 	run(1, "/stage/1/bin/sash", "--help");
 	run0("/stage/1/bin/sash", "-c", "-pwd");
+
+
+	log(STDOUT, "Compiling busybox ash...");
+	run0(TCC, TCC_ARGS, "-static", PROTOMUSL_LINK_ARGS, PROTOMUSL_INCLUDES,
+			//"/stage/1/obj/protomusl/crt/crti.o",
+			"-I/seed/src/busybox/include",
+			"/seed/src/busybox/ash.c",
+			//"/stage/1/obj/protomusl/crt/crtn.o",
+			"-o", "/stage/1/bin/ash");
+
+	log(STDOUT, "Testing busybox ash...");
+	run0("/stage/1/bin/ash", "-c", "/seed/bin/tcc;/seed/bin/tcc");
+	/*
+	aa_init_const(&aa, TCC, TCC_ARGS, "-static", PROTOMUSL_LINK_ARGS,
+			"-o", "/stage/1/bin/busybox");
+	//aa_add_const(&aa, "/stage/1/obj/protomusl/crt/crti.o");
+	char* BUSYBOX_COMPILE[] = {
+		TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-D_GNU_SOURCE",
+		"-I/seed/src/linux/uapi",
+		"-DCONFIG_FEATURE_EDITING_MAX_LEN=1024",
+		"-DENABLE_ASH_ALIAS=0",
+		"-DENABLE_ASH_BASH_COMPAT=0",
+		"-DENABLE_ASH_CMDCMD=0",
+		"-DENABLE_ASH_ECHO=0",
+		"-DENABLE_ASH_GETOPTS=0",
+		"-DENABLE_ASH_JOB_CONTROL=0",
+		"-DENABLE_ASH_MAIL=0",
+		"-DENABLE_ASH_TEST=0",
+		"-DENABLE_DEBUG=0",
+		"-DENABLE_FEATURE_CLEAN_UP=0",
+		"-DENABLE_FEATURE_CROND_D=0",
+		"-DENABLE_FEATURE_EDITING=0",
+		"-DENABLE_FEATURE_PS_ADDITIONAL_COLUMNS=0",
+		"-DENABLE_FEATURE_SHOW_THREADS=0",
+		"-DENABLE_FEATURE_SH_READ_FRAC=0",
+		"-DENABLE_FEATURE_SYSLOG=0",
+		"-DENABLE_FEATURE_TOPMEM=0",
+		"-DENABLE_FEATURE_TOP_SMP_PROCESS=0",
+		"-DENABLE_FEATURE_VERBOSE=0",
+		"-DENABLE_KILLALL=0",
+		"-DENABLE_PGREP=0",
+		"-DENABLE_PIDOF=0",
+		"-DENABLE_PKILL=0",
+		"-DENABLE_SELINUX=0",
+		"-DENABLE_SESTATUS=0",
+		"-DIF_AR(...)=",
+		"-DIF_ASH_BASH_COMPAT(...)=",
+		"-DIF_ASH_EXPAND_PRMT(...)=",
+		"-DIF_ASH_HELP(...)=",
+		"-DIF_ASH_OPTIMIZE_FOR_SIZE(...)=",
+		"-DIF_BASENAME(...)=",
+		"-DIF_BUNZIP2(...)=",
+		"-DIF_BZCAT(...)=",
+		"-DIF_BZIP2(...)=",
+		"-DIF_CAT(...)=",
+		"-DIF_CHOWN(...)=",
+		"-DIF_CHMOD(...)=",
+		"-DIF_CHROOT(...)=",
+		"-DIF_CHVT(...)=",
+		"-DIF_CLEAR(...)=",
+		"-DIF_CPIO(...)=",
+		"-DIF_DEALLOCVT(...)=",
+		"-DIF_DPKG(...)=",
+		"-DIF_DPKG_DEB(...)=",
+		"-DIF_DUMPKMAP(...)=",
+		"-DIF_ECHO(...)=__VA_ARGS__",
+		"-DIF_FEATURE_SHOW_THREADS(...)=",
+		"-DIF_FEATURE_SH_MATH(...)=",
+		"-DIF_FGCONSOLE(...)=",
+		"-DIF_GUNZIP(...)=",
+		"-DIF_GZIP(...)=",
+		"-DIF_KBD_MODE(...)=",
+		"-DIF_LOADFONT(...)=",
+		"-DIF_LOADKMAP(...)=",
+		"-DIF_LS(...)=__VA_ARGS__",
+		"-DIF_LZCAT(...)=",
+		"-DIF_LZMA(...)=",
+		"-DIF_LZOP(...)=",
+		"-DIF_LZOPCAT(...)=",
+		"-DIF_OPENVT(...)=",
+		"-DIF_PRINTF(...)=",
+		"-DIF_RESET(...)=",
+		"-DIF_RESIZE(...)=",
+		"-DIF_RPM(...)=",
+		"-DIF_SETCONSOLE(...)=",
+		"-DIF_SETFONT(...)=",
+		"-DIF_SETKEYCODES(...)=",
+		"-DIF_SETLOGCONS(...)=",
+		"-DIF_SHOWKEY(...)=",
+		"-DIF_RPM2CPIO(...)=",
+		"-DIF_SELINUX(...)=",
+		"-DIF_SHELL_ASH(...)=__VA_ARGS__",
+		"-DIF_SHELL_HUSH(...)=",
+		"-DIF_TAR(...)=",
+		"-DIF_UNCOMPRESS(...)=",
+		"-DIF_UNLZMA(...)=",
+		"-DIF_UNLZOP(...)=",
+		"-DIF_UNXZ(...)=",
+		"-DIF_UNZIP(...)=",
+		"-DIF_XZ(...)=",
+		"-DIF_XZCAT(...)=",
+		"-DIF_ZCAT(...)=",
+		"-I/seed/src/busybox/include",
+		NULL
+	};
+	compile_dir(BUSYBOX_COMPILE, &aa, "/seed/src/busybox/libbb",
+			"/stage/1/obj/busybox");
+	*/
+
 
 	return 0;
 }
