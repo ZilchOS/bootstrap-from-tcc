@@ -185,7 +185,7 @@ int *const bb_errno;
 //#include "libbb/printable_string.c"
 //#include "libbb/print_flags.c"
 //#include "libbb/print_numbered_lines.c"
-//#include "libbb/process_escape_sequence.c"
+#include "libbb/process_escape_sequence.c"
 //#include "libbb/procps.c"
 //#include "libbb/progress.c"
 //#include "libbb/ptr_to_globals.c"
@@ -262,9 +262,12 @@ void bb_show_usage(void) {
 #include "shell/shell_common.c"
 #include "shell/ash.c"
 #include "shell/ash_ptr_hack.c"
+#undef eflag
+#undef nflag
 
 #include "coreutils/libcoreutils/cp_mv_stat.c"
 #include "coreutils/cp.c"
+#include "coreutils/echo.c"
 #include "coreutils/ln.c"
 #include "coreutils/mkdir.c"
 #include "coreutils/mv.c"
@@ -275,6 +278,7 @@ struct applet { char* name; applet_func_t func; };
 struct applet applets[] = {
 	{"ash", ash_main},
 	{"cp", cp_main},
+	{"echo", echo_main},
 	{"ln", ln_main},
 	{"mkdir", mkdir_main},
 	{"mv", mv_main},

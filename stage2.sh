@@ -1,6 +1,8 @@
 #!/stage/1/bin/ash
 set -uex
 
-exit 0
+PATH=/stage/1/bin
 
-echo Hello from stage 2!
+echo 'Hello from stage 2!'
+
+exit 0
