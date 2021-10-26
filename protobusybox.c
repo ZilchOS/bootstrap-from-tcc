@@ -153,7 +153,7 @@ int *const bb_errno;
 //#include "libbb/inet_common.c"
 //#include "libbb/in_ether.c"
 #include "libbb/inode_hash.c"
-//#include "libbb/isdirectory.c"
+#include "libbb/isdirectory.c"
 //#include "libbb/isqrt.c"
 //#include "libbb/iterate_on_dir.c"
 //#include "libbb/kernel_version.c"
@@ -165,7 +165,7 @@ int *const bb_errno;
 //#include "libbb/login.c"
 //#include "libbb/loop.c"
 //#include "libbb/makedev.c"
-//#include "libbb/make_directory.c"
+#include "libbb/make_directory.c"
 //#include "libbb/match_fstype.c"
 #include "libbb/messages.c"
 //#include "libbb/missing_syscalls.c"
@@ -265,8 +265,21 @@ void bb_show_usage(void) {
 
 #include "coreutils/libcoreutils/cp_mv_stat.c"
 #include "coreutils/cp.c"
+#include "coreutils/ln.c"
+#include "coreutils/mkdir.c"
 #include "coreutils/mv.c"
 //#include "editors/sed.c"
+
+typedef int (*applet_func_t)(int, char**);
+struct applet { char* name; applet_func_t func; };
+struct applet applets[] = {
+	{"ash", ash_main},
+	{"cp", cp_main},
+	{"ln", ln_main},
+	{"mkdir", mkdir_main},
+	{"mv", mv_main},
+	{NULL, NULL},
+};
 
 const char *applet_name;
 int main(int argc, char** argv) {
@@ -282,11 +295,9 @@ int main(int argc, char** argv) {
 	if (*applet_name == '/')
 		applet_name ++;
 
-	if (!strcmp(applet_name, "ash"))
-		return ash_main(argc, argv);
-	if (!strcmp(applet_name, "cp"))
-		return cp_main(argc, argv);
-	if (!strcmp(applet_name, "mv"))
-		return mv_main(argc, argv);
+	struct applet* a;
+	for (a = applets; *a->name; a++)
+		if (!strcmp(applet_name, a->name))
+			return a->func(argc, argv);
 	return 255;
 }

@@ -418,12 +418,19 @@ int _start() {
 			"-I/seed/src/protobusybox/include",
 			"/seed/src/protobusybox/protobusybox.c",
 			//"/stage/1/obj/protomusl/crt/crtn.o",
-			"-o", "/stage/1/bin/cp");
+			"-o", "/stage/1/bin/ln");
 
 	log(STDOUT, "Creating protobusybox files...");
-	run0("/stage/1/bin/cp", "/stage/1/bin/cp", "/stage/1/bin/protobbox");
-	run0("/stage/1/bin/cp", "/stage/1/bin/protobbox", "/stage/1/bin/mv");
-	run0("/stage/1/bin/cp", "/stage/1/bin/protobbox", "/stage/1/bin/ash");
+	run0("/stage/1/bin/ln", "-f",
+			"/stage/1/bin/ln", "/stage/1/bin/protobusybox");
+	run0("/stage/1/bin/ln", "-f",
+			"/stage/1/bin/protobusybox", "/stage/1/bin/ash");
+	run0("/stage/1/bin/ln", "-f",
+			"/stage/1/bin/protobusybox", "/stage/1/bin/cp");
+	run0("/stage/1/bin/ln", "-f",
+			"/stage/1/bin/protobusybox", "/stage/1/bin/mkdir");
+	run0("/stage/1/bin/ln", "-f",
+			"/stage/1/bin/protobusybox", "/stage/1/bin/mv");
 
 	log(STDOUT, "Testing busybox ash...");
 	run0("/stage/1/bin/ash", "-c", "/seed/bin/tcc;/seed/bin/tcc");
