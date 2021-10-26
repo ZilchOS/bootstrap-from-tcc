@@ -96,4 +96,9 @@ pushd arena/seed/1/src/protobusybox
 	rm libbb/selinux_common.c
 	rm libbb/utmp.c
 	echo "#define NUM_APPLETS 1" > include/NUM_APPLETS.h
+	cat > include/common_bufsiz.h <<EOF
+enum { COMMON_BUFSIZE = 1024 };
+extern char bb_common_bufsiz1[];
+#define setup_common_bufsiz() ((void)0)
+EOF
 popd

@@ -425,6 +425,7 @@ int _start() {
 	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/ash");
 	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/cp");
 	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/echo");
+	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/ls");
 	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/mkdir");
 	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/mv");
 	run0("/stage/1/bin/ln", "-f",

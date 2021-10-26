@@ -17,6 +17,14 @@ int *const bb_errno;
 #define ENABLE_FEATURE_CP_REFLINK 0
 #define ENABLE_FEATURE_CROND_D 0
 #define ENABLE_FEATURE_EDITING 0
+#define ENABLE_FEATURE_HUMAN_READABLE 0
+#define ENABLE_FEATURE_LS_COLOR 0
+#define ENABLE_FEATURE_LS_FILETYPES 0
+#define ENABLE_FEATURE_LS_FOLLOWLINKS 0
+#define ENABLE_FEATURE_LS_RECURSIVE 0
+#define ENABLE_FEATURE_LS_SORTFILES 0
+#define ENABLE_FEATURE_LS_TIMESTAMPS 0
+#define ENABLE_FEATURE_LS_WIDTH 0
 #define ENABLE_FEATURE_NON_POSIX_CP 0
 #define ENABLE_FEATURE_PRESERVE_HARDLINKS 0
 #define ENABLE_FEATURE_PS_ADDITIONAL_COLUMNS 0
@@ -28,7 +36,9 @@ int *const bb_errno;
 #define ENABLE_FEATURE_TOP_SMP_PROCESS 0
 #define ENABLE_FEATURE_USE_SENDFILE 0
 #define ENABLE_FEATURE_VERBOSE 0
+#define ENABLE_FTPD 0
 #define ENABLE_KILLALL 0
+#define ENABLE_LONG_OPTS 1
 #define ENABLE_PGREP 0
 #define ENABLE_PIDOF 0
 #define ENABLE_PKILL 0
@@ -59,9 +69,18 @@ int *const bb_errno;
 #define IF_DUMPKMAP(...)
 #define IF_ECHO(...) __VA_ARGS__
 #define IF_FEATURE_CP_REFLINK(...)
+#define IF_FEATURE_HUMAN_READABLE(...)
+#define IF_FEATURE_LS_COLOR(...)
+#define IF_FEATURE_LS_FILETYPES(...)
+#define IF_FEATURE_LS_FOLLOWLINKS(...)
+#define IF_FEATURE_LS_RECURSIVE(...)
+#define IF_FEATURE_LS_SORTFILES(...)
+#define IF_FEATURE_LS_TIMESTAMPS(...)
+#define IF_FEATURE_LS_WIDTH(...)
 #define IF_FEATURE_SHOW_THREADS(...)
 #define IF_FEATURE_SH_MATH(...)
 #define IF_FEATURE_TIMEZONE(...)
+#define IF_FEATURE_VERBOSE(...)
 #define IF_FGCONSOLE(...)
 #define IF_GUNZIP(...)
 #define IF_GZIP(...)
@@ -107,8 +126,9 @@ int *const bb_errno;
 #define FAST_FUNC
 #include <stdio.h>
 #include <string.h>
-#include "libbb/bb_strtonum.c"
 #include "libbb/ask_confirmation.c"
+#include "libbb/auto_string.c"
+#include "libbb/bb_strtonum.c"
 //#include "libbb/bbunit.c"
 //#include "libbb/capability.c"
 //#include "libbb/change_identity.c"
@@ -169,7 +189,7 @@ int *const bb_errno;
 //#include "libbb/match_fstype.c"
 #include "libbb/messages.c"
 //#include "libbb/missing_syscalls.c"
-//#include "libbb/mode_string.c"
+#include "libbb/mode_string.c"
 //#include "libbb/mtab.c"
 //#include "libbb/nuke_str.c"
 //#include "libbb/obscure.c"
@@ -182,7 +202,7 @@ int *const bb_errno;
 //#include "libbb/pidfile.c"
 //#include "libbb/platform.c"
 //#include "libbb/printable.c"
-//#include "libbb/printable_string.c"
+#include "libbb/printable_string.c"
 //#include "libbb/print_flags.c"
 //#include "libbb/print_numbered_lines.c"
 #include "libbb/process_escape_sequence.c"
@@ -259,6 +279,9 @@ void bb_show_usage(void) {
 	write(2 /* STDERR */, "protobusybox's show_usage stub\n", 31);
 }
 
+// common_bufsiz
+char bb_common_bufsiz1[1024];
+
 #include "shell/shell_common.c"
 #include "shell/ash.c"
 #include "shell/ash_ptr_hack.c"
@@ -269,6 +292,7 @@ void bb_show_usage(void) {
 #include "coreutils/cp.c"
 #include "coreutils/echo.c"
 #include "coreutils/ln.c"
+#include "coreutils/ls.c"
 #include "coreutils/mkdir.c"
 #include "coreutils/mv.c"
 //#include "editors/sed.c"
@@ -280,6 +304,7 @@ struct applet applets[] = {
 	{"cp", cp_main},
 	{"echo", echo_main},
 	{"ln", ln_main},
+	{"ls", ls_main},
 	{"mkdir", mkdir_main},
 	{"mv", mv_main},
 	{NULL, NULL},
