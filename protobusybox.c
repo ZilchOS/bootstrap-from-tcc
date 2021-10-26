@@ -68,6 +68,8 @@ int *const bb_errno;
 #define IF_DPKG_DEB(...)
 #define IF_DUMPKMAP(...)
 #define IF_ECHO(...) __VA_ARGS__
+#define IF_FEATURE_CATN(...)
+#define IF_FEATURE_CATV(...)
 #define IF_FEATURE_CP_REFLINK(...)
 #define IF_FEATURE_HUMAN_READABLE(...)
 #define IF_FEATURE_LS_COLOR(...)
@@ -128,6 +130,7 @@ int *const bb_errno;
 #include <string.h>
 #include "libbb/ask_confirmation.c"
 #include "libbb/auto_string.c"
+#include "libbb/bb_cat.c"
 #include "libbb/bb_strtonum.c"
 //#include "libbb/bbunit.c"
 //#include "libbb/capability.c"
@@ -292,6 +295,7 @@ extern char bb_common_bufsiz1[];
 #undef nflag
 
 #include "coreutils/libcoreutils/cp_mv_stat.c"
+#include "coreutils/cat.c"
 #include "coreutils/cp.c"
 #include "coreutils/echo.c"
 #include "coreutils/ln.c"
@@ -305,6 +309,7 @@ typedef int (*applet_func_t)(int, char**);
 struct applet { char* name; applet_func_t func; };
 struct applet applets[] = {
 	{"ash", ash_main},
+	{"cat", cat_main},
 	{"cp", cp_main},
 	{"echo", echo_main},
 	{"sed", sed_main},
