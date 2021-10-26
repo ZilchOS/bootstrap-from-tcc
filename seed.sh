@@ -9,34 +9,36 @@ set -uex
 [[ ! -e arena ]] || exit 1
 
 # Create directory structure for the inputs
-mkdir -p arena/seed/{bin,src}
-mkdir -p arena/seed/src/{protomusl,sash,make,protobusybox,linux}
+mkdir -p arena/seed/1/bin
+mkdir -p arena/seed/1/src/{protomusl,sash,protobusybox}
+mkdir -p arena/seed/2/src/{make,linux}
 # Create basic directory structure for the outputs
 mkdir -p arena/stage/1/{src,obj,lib,bin}
 
 # Seed the only binary we need
-[[ ! -e arena/tcc-seed ]] && cp tcc-seed arena/seed/bin/tcc
+[[ ! -e arena/tcc-seed ]] && cp tcc-seed arena/seed/1/bin/tcc
 
 # Seed sources from downloads/
-tar -C arena/seed/src/protomusl --strip-components=1 -xzf \
+tar -C arena/seed/1/src/protomusl --strip-components=1 -xzf \
 	downloads/musl-1.2.2.tar.gz
-tar -C arena/seed/src/sash --strip-components=1 -xzf \
+tar -C arena/seed/1/src/sash --strip-components=1 -xzf \
 	downloads/sash-3.8.tar.gz
-tar -C arena/seed/src/make --strip-components=1 -xzf \
-	downloads/make-4.3.tar.gz
-tar -C arena/seed/src/protobusybox --strip-components=1 -xjf \
+tar -C arena/seed/1/src/protobusybox --strip-components=1 -xjf \
 	downloads/busybox-1.34.1.tar.bz2
-#tar -C arena/seed/src/linux --strip-components=1 -xJf \
+tar -C arena/seed/2/src/make --strip-components=1 -xzf \
+	downloads/make-4.3.tar.gz
+#tar -C arena/seed/2/src/linux --strip-components=1 -xJf \
 #       downloads/linux-5.10.74.tar.xz
 
-# Seed the bootstrap 'script'
-cp stage1.c arena/seed/src/
+# Seed the bootstrap 'scripts'
+cp stage1.c arena/seed/1/src/
+cp stage2.sh arena/seed/2/src/
 
 # Seed extra sources from this repository
-cp downloads/{libtcc1.c,va_list.c,alloca.S} arena/seed/src/
-cp syscall.h arena/seed/src/  # dual-role
-cp hello.c arena/seed/src/
-cp protobusybox.c arena/seed/src/protobusybox/
+cp downloads/{libtcc1.c,va_list.c,alloca.S} arena/seed/1/src/
+cp syscall.h arena/seed/1/src/  # dual-role
+cp hello.c arena/seed/1/src/
+cp protobusybox.c arena/seed/1/src/
 
 
 # Create per-component output directory structure
@@ -48,7 +50,7 @@ mkdir arena/stage/1/obj/sash
 
 # Code host-processing hacks and workarounds
 
-pushd arena/seed/src/protomusl
+pushd arena/seed/1/src/protomusl
 	# original syscall_arch.h is not tcc-compatible,
 	# the syscall.h we use is dual-role
 	cp ../syscall.h arch/x86_64/syscall_arch.h
@@ -79,11 +81,11 @@ pushd arena/seed/src/protomusl
 	rm src/math/{acoshl,acosl,asinhl,asinl,hypotl}.c  # want sqrtl
 popd
 
-pushd arena/seed/src/sash
+pushd arena/seed/1/src/sash
 	sed -i 's|#include <linux/loop.h>||' cmds.c
 popd
 
-pushd arena/seed/src/protobusybox
+pushd arena/seed/1/src/protobusybox
 	rm libbb/capability.c
 	rm libbb/hash_md5prime.c
 	rm libbb/hash_md5_sha.c

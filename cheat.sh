@@ -39,19 +39,19 @@ if [[ ! -e arena/cheat/busybox ]]; then
 	rm result
 fi
 
-[[ -h arena/cheat/tcc ]] || ln -s /seed/bin/tcc arena/cheat/tcc
-[[ -h arena/cheat/cc ]] || ln -s /seed/bin/tcc arena/cheat/cc
+[[ -h arena/cheat/tcc ]] || ln -s /seed/1/bin/tcc arena/cheat/tcc
+[[ -h arena/cheat/cc ]] || ln -s /seed/1/bin/tcc arena/cheat/cc
 
 if [[ -n "$@" ]]; then
 	mkdir -p arena/dev
 	touch arena/dev/null
 	mkdir -p arena/bin
 	[[ -h arena/bin/sh ]] || ln -s /cheat/sh arena/bin/sh
-	INCL+="-I/seed/src/protomusl/include "
-	INCL+="-I/seed/src/protomusl/src/include "
-	INCL+="-I/seed/src/protomusl/arch/x86_64 "
-	INCL+="-I/seed/src/protomusl/arch/generic "
-	INCL+="-I/seed/src/protomusl/stage0-generated/sed1 "
+	INCL+="-I/seed/1/src/protomusl/include "
+	INCL+="-I/seed/1/src/protomusl/src/include "
+	INCL+="-I/seed/1/src/protomusl/arch/x86_64 "
+	INCL+="-I/seed/1/src/protomusl/arch/generic "
+	INCL+="-I/seed/1/src/protomusl/stage0-generated/sed1 "
 	LNKF+="-static -Wl,-whole-archive "
 	LNKF+="/stage/1/lib/protomusl.a "
 	LNKF+="/stage/1/obj/protomusl/crt/crt1.o "

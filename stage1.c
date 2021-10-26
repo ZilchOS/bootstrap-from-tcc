@@ -263,17 +263,17 @@ void compile_dir(char** compile_args, struct args_accumulator* linking_aa,
 }
 
 
-#define TCC "/seed/bin/tcc"
+#define TCC "/seed/1/bin/tcc"
 #define TCC_ARGS "-g", "-nostdlib", "-nostdinc", "-std=c99", \
 		"-D_XOPEN_SOURCE=700"
 #define PROTOMUSL_INCLUDES \
-		"-I/seed/src/protomusl/src/include", \
-		"-I/seed/src/protomusl/arch/x86_64", \
-		"-I/seed/src/protomusl/stage0-generated/sed1", \
-		"-I/seed/src/protomusl/stage0-generated/sed2", \
-		"-I/seed/src/protomusl/arch/generic", \
-		"-I/seed/src/protomusl/src/internal", \
-		"-I/seed/src/protomusl/include"
+		"-I/seed/1/src/protomusl/src/include", \
+		"-I/seed/1/src/protomusl/arch/x86_64", \
+		"-I/seed/1/src/protomusl/stage0-generated/sed1", \
+		"-I/seed/1/src/protomusl/stage0-generated/sed2", \
+		"-I/seed/1/src/protomusl/arch/generic", \
+		"-I/seed/1/src/protomusl/src/internal", \
+		"-I/seed/1/src/protomusl/include"
 #define PROTOMUSL_LINK_ARGS \
 		"-Wl,-whole-archive", \
 		"/stage/1/lib/protomusl.a", \
@@ -309,17 +309,17 @@ int _start() {
 
 	log(STDOUT, "Compiling tcc's external runtime bits...");
 	run0(TCC, TCC_ARGS,
-		"-c", "/seed/src/alloca.S",
+		"-c", "/seed/1/src/alloca.S",
 		"-o", "/stage/1/obj/alloca.o");
 	aa_add(&aa, "/stage/1/obj/alloca.o");
 
 	run0(TCC, TCC_ARGS,
-		"-c", "/seed/src/libtcc1.c",
+		"-c", "/seed/1/src/libtcc1.c",
 		"-o", "/stage/1/obj/libtcc1.o");
 	aa_add(&aa, "/stage/1/obj/libtcc1.o");
 
 	run0(TCC, TCC_ARGS,
-		"-c", "/seed/src/va_list.c",
+		"-c", "/seed/1/src/va_list.c",
 		"-o", "/stage/1/obj/va_list.o");
 	aa_add(&aa, "/stage/1/obj/va_list.o");
 
@@ -328,7 +328,7 @@ int _start() {
 	char* MUSL_COMPILE[] = { TCC, TCC_ARGS, PROTOMUSL_INCLUDES, NULL };
 	#define compile_protomusl_dir(dir) \
 			compile_dir(MUSL_COMPILE, &aa, \
-				"/seed/src/protomusl/src/" dir, \
+				"/seed/1/src/protomusl/src/" dir, \
 				"/stage/1/obj/protomusl/" dir);
 	compile_protomusl_dir("conf");
 	compile_protomusl_dir("ctype");
@@ -369,13 +369,13 @@ int _start() {
 
 	log(STDOUT, "Compiling crt bits of musl...");
 	run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-DCRT",
-		"-c", "/seed/src/protomusl/crt/crt1.c",
+		"-c", "/seed/1/src/protomusl/crt/crt1.c",
 		"-o", "/stage/1/obj/protomusl/crt/crt1.o");
 	//run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-DCRT",
-	//	"-c", "/seed/src/protomusl/crt/x86_64/crti.s",
+	//	"-c", "/seed/1/src/protomusl/crt/x86_64/crti.s",
 	//	"-o", "/stage/1/obj/protomusl/crt/crti.o");
 	//run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-DCRT",
-	//	"-c", "/seed/src/protomusl/crt/x86_64/crtn.s",
+	//	"-c", "/seed/1/src/protomusl/crt/x86_64/crtn.s",
 	//	"-o", "/stage/1/obj/protomusl/crt/crtn.o");
 
 	log(STDOUT, "Linking musl...");
@@ -385,7 +385,7 @@ int _start() {
 	log(STDOUT, "Linking an example...");
 	run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, PROTOMUSL_LINK_ARGS, "-static",
 		//"/stage/1/obj/protomusl/crt/crti.o",
-		"/seed/src/hello.c",
+		"/seed/1/src/hello.c",
 		//"/stage/1/obj/protomusl/crt/crtn.o",
 		"-o", "/stage/1/bin/protomusl-hello"
 		);
@@ -403,7 +403,7 @@ int _start() {
 		"-DHAVE_LINUX_MOUNT=0", "-DMOUNT_TYPE=\"btrfs\"",
 		NULL
 	};
-	compile_dir(SASH_COMPILE, &aa, "/seed/src/sash", "/stage/1/obj/sash");
+	compile_dir(SASH_COMPILE, &aa, "/seed/1/src/sash", "/stage/1/obj/sash");
 	//aa_add_const(&aa, "/stage/1/obj/protomusl/crt/crtn.o");
 	aa_run0(&aa);
 
@@ -415,122 +415,26 @@ int _start() {
 	log(STDOUT, "Compiling protobusybox...");
 	run0(TCC, TCC_ARGS, "-static", PROTOMUSL_LINK_ARGS, PROTOMUSL_INCLUDES,
 			//"/stage/1/obj/protomusl/crt/crti.o",
-			"-I/seed/src/protobusybox/include",
-			"/seed/src/protobusybox/protobusybox.c",
+			"-I/seed/1/src/protobusybox/include",
+			"-I/seed/1/src/protobusybox",
+			"/seed/1/src/protobusybox.c",
 			//"/stage/1/obj/protomusl/crt/crtn.o",
 			"-o", "/stage/1/bin/ln");
 
 	log(STDOUT, "Creating protobusybox files...");
+	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/ash");
+	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/cp");
+	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/mkdir");
+	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/mv");
 	run0("/stage/1/bin/ln", "-f",
 			"/stage/1/bin/ln", "/stage/1/bin/protobusybox");
-	run0("/stage/1/bin/ln", "-f",
-			"/stage/1/bin/protobusybox", "/stage/1/bin/ash");
-	run0("/stage/1/bin/ln", "-f",
-			"/stage/1/bin/protobusybox", "/stage/1/bin/cp");
-	run0("/stage/1/bin/ln", "-f",
-			"/stage/1/bin/protobusybox", "/stage/1/bin/mkdir");
-	run0("/stage/1/bin/ln", "-f",
-			"/stage/1/bin/protobusybox", "/stage/1/bin/mv");
 
 	log(STDOUT, "Testing busybox ash...");
-	run0("/stage/1/bin/ash", "-c", "/seed/bin/tcc;/seed/bin/tcc");
-	/*
-	aa_init_const(&aa, TCC, TCC_ARGS, "-static", PROTOMUSL_LINK_ARGS,
-			"-o", "/stage/1/bin/busybox");
-	//aa_add_const(&aa, "/stage/1/obj/protomusl/crt/crti.o");
-	char* BUSYBOX_COMPILE[] = {
-		TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-D_GNU_SOURCE",
-		"-I/seed/src/linux/uapi",
-		"-DCONFIG_FEATURE_EDITING_MAX_LEN=1024",
-		"-DENABLE_ASH_ALIAS=0",
-		"-DENABLE_ASH_BASH_COMPAT=0",
-		"-DENABLE_ASH_CMDCMD=0",
-		"-DENABLE_ASH_ECHO=0",
-		"-DENABLE_ASH_GETOPTS=0",
-		"-DENABLE_ASH_JOB_CONTROL=0",
-		"-DENABLE_ASH_MAIL=0",
-		"-DENABLE_ASH_TEST=0",
-		"-DENABLE_DEBUG=0",
-		"-DENABLE_FEATURE_CLEAN_UP=0",
-		"-DENABLE_FEATURE_CROND_D=0",
-		"-DENABLE_FEATURE_EDITING=0",
-		"-DENABLE_FEATURE_PS_ADDITIONAL_COLUMNS=0",
-		"-DENABLE_FEATURE_SHOW_THREADS=0",
-		"-DENABLE_FEATURE_SH_READ_FRAC=0",
-		"-DENABLE_FEATURE_SYSLOG=0",
-		"-DENABLE_FEATURE_TOPMEM=0",
-		"-DENABLE_FEATURE_TOP_SMP_PROCESS=0",
-		"-DENABLE_FEATURE_VERBOSE=0",
-		"-DENABLE_KILLALL=0",
-		"-DENABLE_PGREP=0",
-		"-DENABLE_PIDOF=0",
-		"-DENABLE_PKILL=0",
-		"-DENABLE_SELINUX=0",
-		"-DENABLE_SESTATUS=0",
-		"-DIF_AR(...)=",
-		"-DIF_ASH_BASH_COMPAT(...)=",
-		"-DIF_ASH_EXPAND_PRMT(...)=",
-		"-DIF_ASH_HELP(...)=",
-		"-DIF_ASH_OPTIMIZE_FOR_SIZE(...)=",
-		"-DIF_BASENAME(...)=",
-		"-DIF_BUNZIP2(...)=",
-		"-DIF_BZCAT(...)=",
-		"-DIF_BZIP2(...)=",
-		"-DIF_CAT(...)=",
-		"-DIF_CHOWN(...)=",
-		"-DIF_CHMOD(...)=",
-		"-DIF_CHROOT(...)=",
-		"-DIF_CHVT(...)=",
-		"-DIF_CLEAR(...)=",
-		"-DIF_CPIO(...)=",
-		"-DIF_DEALLOCVT(...)=",
-		"-DIF_DPKG(...)=",
-		"-DIF_DPKG_DEB(...)=",
-		"-DIF_DUMPKMAP(...)=",
-		"-DIF_ECHO(...)=__VA_ARGS__",
-		"-DIF_FEATURE_SHOW_THREADS(...)=",
-		"-DIF_FEATURE_SH_MATH(...)=",
-		"-DIF_FGCONSOLE(...)=",
-		"-DIF_GUNZIP(...)=",
-		"-DIF_GZIP(...)=",
-		"-DIF_KBD_MODE(...)=",
-		"-DIF_LOADFONT(...)=",
-		"-DIF_LOADKMAP(...)=",
-		"-DIF_LS(...)=__VA_ARGS__",
-		"-DIF_LZCAT(...)=",
-		"-DIF_LZMA(...)=",
-		"-DIF_LZOP(...)=",
-		"-DIF_LZOPCAT(...)=",
-		"-DIF_OPENVT(...)=",
-		"-DIF_PRINTF(...)=",
-		"-DIF_RESET(...)=",
-		"-DIF_RESIZE(...)=",
-		"-DIF_RPM(...)=",
-		"-DIF_SETCONSOLE(...)=",
-		"-DIF_SETFONT(...)=",
-		"-DIF_SETKEYCODES(...)=",
-		"-DIF_SETLOGCONS(...)=",
-		"-DIF_SHOWKEY(...)=",
-		"-DIF_RPM2CPIO(...)=",
-		"-DIF_SELINUX(...)=",
-		"-DIF_SHELL_ASH(...)=__VA_ARGS__",
-		"-DIF_SHELL_HUSH(...)=",
-		"-DIF_TAR(...)=",
-		"-DIF_UNCOMPRESS(...)=",
-		"-DIF_UNLZMA(...)=",
-		"-DIF_UNLZOP(...)=",
-		"-DIF_UNXZ(...)=",
-		"-DIF_UNZIP(...)=",
-		"-DIF_XZ(...)=",
-		"-DIF_XZCAT(...)=",
-		"-DIF_ZCAT(...)=",
-		"-I/seed/src/busybox/include",
-		NULL
-	};
-	compile_dir(BUSYBOX_COMPILE, &aa, "/seed/src/busybox/libbb",
-			"/stage/1/obj/busybox");
-	*/
+	run0("/stage/1/bin/ash", "-c", "/seed/1/bin/tcc;/seed/1/bin/tcc");
 
+	log(STDOUT, "--- stage 1 cutoff point ---");
 
-	return 0;
+	char* STAGE2_ARGS[] = {"/seed/2/src/stage2.sh", NULL};
+	assert(execve("/seed/2/src/stage2.sh", STAGE2_ARGS, NULL));
+	return 1;
 }

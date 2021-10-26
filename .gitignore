@@ -3,6 +3,8 @@
 /arena
 /downloads
 
+/log
+/log.tmp
 /result*
 /scratch
 /stage*.tar
