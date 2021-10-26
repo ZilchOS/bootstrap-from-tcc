@@ -270,7 +270,7 @@ int *const bb_errno;
 #include "libbb/xgetcwd.c"
 //#include "libbb/xgethostbyname.c"
 #include "libbb/xreadlink.c"
-//#include "libbb/xrealloc_vector.c"
+#include "libbb/xrealloc_vector.c"
 #include "libbb/xregcomp.c"
 
 //#include "platform.h"
@@ -321,6 +321,8 @@ extern char bb_common_bufsiz1[];
 #include "coreutils/mv.c"
 #include "coreutils/printf.c"  // only as an ash builtin
 #include "coreutils/rm.c"
+#include "coreutils/rmdir.c"
+#include "coreutils/sort.c"
 #include "coreutils/test.c"  // only as an ash builtin
 #include "coreutils/test_ptr_hack.c"
 #define globals sed_globals
@@ -340,7 +342,9 @@ struct applet applets[] = {
 	{"mkdir", mkdir_main},
 	{"mv", mv_main},
 	{"rm", rm_main},
+	{"rmdir", rmdir_main},
 	{"sed", sed_main},
+	{"sort", sort_main},
 	{NULL, NULL},
 };
 
