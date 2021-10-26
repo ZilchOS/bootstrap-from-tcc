@@ -33,7 +33,7 @@ int *const bb_errno;
 #define ENABLE_FEATURE_PRESERVE_HARDLINKS 0
 #define ENABLE_FEATURE_PS_ADDITIONAL_COLUMNS 0
 #define ENABLE_FEATURE_SHOW_THREADS 0
-#define ENABLE_FEATURE_SH_MATH 0
+#define ENABLE_FEATURE_SH_MATH 1
 #define ENABLE_FEATURE_SH_READ_FRAC 0
 #define ENABLE_FEATURE_SYSLOG 0
 #define ENABLE_FEATURE_TOPMEM 1
@@ -85,7 +85,7 @@ int *const bb_errno;
 #define IF_FEATURE_LS_TIMESTAMPS(...)
 #define IF_FEATURE_LS_WIDTH(...)
 #define IF_FEATURE_SHOW_THREADS(...)
-#define IF_FEATURE_SH_MATH(...)
+#define IF_FEATURE_SH_MATH(...) __VA_ARGS__
 #define IF_FEATURE_TIMEZONE(...)
 #define IF_FEATURE_VERBOSE(...)
 #define IF_FGCONSOLE(...)
@@ -160,7 +160,7 @@ int *const bb_errno;
 #include "libbb/endofname.c"
 //#include "libbb/executable.c"
 #include "libbb/fclose_nonstdin.c"
-//#include "libbb/fflush_stdout_and_exit.c"
+#include "libbb/fflush_stdout_and_exit.c"
 //#include "libbb/fgets_str.c"
 //#include "libbb/find_mount_point.c"
 //#include "libbb/find_pid_by_name.c"
@@ -296,6 +296,9 @@ extern char bb_common_bufsiz1[];
 #define setup_common_bufsiz() ((void)0)
 
 #include "shell/shell_common.c"
+#include "shell/math.c"
+#undef lookupvar
+#undef setvar
 #include "shell/ash.c"
 #include "shell/ash_ptr_hack.c"
 #undef eflag
@@ -309,6 +312,9 @@ extern char bb_common_bufsiz1[];
 #undef OPT_VERBOSE
 #include "coreutils/cp.c"
 #include "coreutils/echo.c"
+#define globals expr_globals
+#include "coreutils/expr.c"
+#undef globals
 #include "coreutils/ln.c"
 #include "coreutils/ls.c"
 #include "coreutils/mkdir.c"
@@ -328,6 +334,7 @@ struct applet applets[] = {
 	{"chmod", chmod_main},
 	{"cp", cp_main},
 	{"echo", echo_main},
+	{"expr", expr_main},
 	{"ln", ln_main},
 	{"ls", ls_main},
 	{"mkdir", mkdir_main},
