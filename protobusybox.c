@@ -11,7 +11,11 @@ int *const bb_errno;
 #define ENABLE_ASH_GETOPTS 0
 #define ENABLE_ASH_JOB_CONTROL 0
 #define ENABLE_ASH_MAIL 0
-#define ENABLE_ASH_TEST 0
+#define ENABLE_ASH_PRINTF 1
+#define ENABLE_ASH_TEST 1
+#define ENABLE_TEST1 0
+#define ENABLE_TEST2 0
+#define ENABLE_HUSH_TEST 0
 #define ENABLE_DEBUG 0
 #define ENABLE_FEATURE_CLEAN_UP 0
 #define ENABLE_FEATURE_CP_REFLINK 0
@@ -64,6 +68,7 @@ int *const bb_errno;
 #define IF_CLEAR(...)
 #define IF_CPIO(...)
 #define IF_DEALLOCVT(...)
+#define IF_DESKTOP(...)
 #define IF_DPKG(...)
 #define IF_DPKG_DEB(...)
 #define IF_DUMPKMAP(...)
@@ -94,6 +99,7 @@ int *const bb_errno;
 #define IF_LZMA(...)
 #define IF_LZOP(...)
 #define IF_LZOPCAT(...)
+#define IF_NOT_DESKTOP(...) __VA_ARGS__
 #define IF_OPENVT(...)
 #define IF_PRINTF(...) __VA_ARGS__
 #define IF_RESET(...)
@@ -131,6 +137,7 @@ int *const bb_errno;
 #include "libbb/ask_confirmation.c"
 #include "libbb/auto_string.c"
 #include "libbb/bb_cat.c"
+#include "libbb/bb_getgroups.c"
 #include "libbb/bb_strtonum.c"
 //#include "libbb/bbunit.c"
 //#include "libbb/capability.c"
@@ -219,7 +226,7 @@ int *const bb_errno;
 #include "libbb/read.c"
 //#include "libbb/read_key.c"
 #include "libbb/read_printf.c"
-//#include "libbb/recursive_action.c"
+#include "libbb/recursive_action.c"
 #include "libbb/remove_file.c"
 //#include "libbb/replace.c"
 //#include "libbb/rtc.c"
@@ -293,15 +300,22 @@ extern char bb_common_bufsiz1[];
 #include "shell/ash_ptr_hack.c"
 #undef eflag
 #undef nflag
+#undef arg0
+#undef BASH_TEST2
 
 #include "coreutils/libcoreutils/cp_mv_stat.c"
 #include "coreutils/cat.c"
+#include "coreutils/chmod.c"
+#undef OPT_VERBOSE
 #include "coreutils/cp.c"
 #include "coreutils/echo.c"
 #include "coreutils/ln.c"
 #include "coreutils/ls.c"
 #include "coreutils/mkdir.c"
 #include "coreutils/mv.c"
+#include "coreutils/printf.c"  // only as an ash builtin
+#include "coreutils/test.c"  // only as an ash builtin
+#include "coreutils/test_ptr_hack.c"
 #define globals sed_globals
 #include "editors/sed.c"
 
@@ -310,13 +324,14 @@ struct applet { char* name; applet_func_t func; };
 struct applet applets[] = {
 	{"ash", ash_main},
 	{"cat", cat_main},
+	{"chmod", chmod_main},
 	{"cp", cp_main},
 	{"echo", echo_main},
-	{"sed", sed_main},
 	{"ln", ln_main},
 	{"ls", ls_main},
 	{"mkdir", mkdir_main},
 	{"mv", mv_main},
+	{"sed", sed_main},
 	{NULL, NULL},
 };
 

@@ -97,4 +97,5 @@ pushd arena/seed/1/src/protobusybox
 	rm libbb/utmp.c
 	echo "#define NUM_APPLETS 1" > include/NUM_APPLETS.h
 	:> include/common_bufsiz.h
+	sed -i 's/extern struct test_statics \*const test_ptr_to_statics/extern struct test_statics *BB_GLOBAL_CONST test_ptr_to_statics/' coreutils/test.c
 popd
