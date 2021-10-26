@@ -149,7 +149,7 @@ int *const bb_errno;
 //#include "libbb/duration.c"
 #include "libbb/endofname.c"
 //#include "libbb/executable.c"
-//#include "libbb/fclose_nonstdin.c"
+#include "libbb/fclose_nonstdin.c"
 //#include "libbb/fflush_stdout_and_exit.c"
 //#include "libbb/fgets_str.c"
 //#include "libbb/find_mount_point.c"
@@ -159,7 +159,7 @@ int *const bb_errno;
 //#include "libbb/get_console.c"
 //#include "libbb/get_cpu_count.c"
 #include "libbb/get_last_path_component.c"
-//#include "libbb/get_line_from_file.c"
+#include "libbb/get_line_from_file.c"
 #include "libbb/getopt32.c"
 //#include "libbb/getopt_allopts.c"
 //#include "libbb/getpty.c"
@@ -231,7 +231,7 @@ int *const bb_errno;
 #include "libbb/signals.c"
 //#include "libbb/simplify_path.c"
 //#include "libbb/single_argv.c"
-//#include "libbb/skip_whitespace.c"
+#include "libbb/skip_whitespace.c"
 //#include "libbb/speed_table.c"
 //#include "libbb/strrstr.c"
 //#include "libbb/str_tolower.c"
@@ -248,8 +248,8 @@ int *const bb_errno;
 #include "libbb/verror_msg.c"
 //#include "libbb/vfork_daemon_rexec.c"
 //#include "libbb/warn_ignoring_args.c"
-//#include "libbb/wfopen.c"
-//#include "libbb/wfopen_input.c"
+#include "libbb/wfopen.c"
+#include "libbb/wfopen_input.c"
 //#include "libbb/write.c"
 #include "libbb/xatonum.c"
 //#include "libbb/xatonum_template.c"
@@ -261,7 +261,7 @@ int *const bb_errno;
 //#include "libbb/xgethostbyname.c"
 #include "libbb/xreadlink.c"
 //#include "libbb/xrealloc_vector.c"
-//#include "libbb/xregcomp.c"
+#include "libbb/xregcomp.c"
 
 //#include "platform.h"
 //#define ENABLE_FEATURE_INDIVIDUAL 1
@@ -280,6 +280,7 @@ void bb_show_usage(void) {
 }
 
 // common_bufsiz
+enum { COMMON_BUFSIZE = 1024 };
 char bb_common_bufsiz1[1024];
 extern char bb_common_bufsiz1[];
 #define setup_common_bufsiz() ((void)0)
@@ -297,7 +298,8 @@ extern char bb_common_bufsiz1[];
 #include "coreutils/ls.c"
 #include "coreutils/mkdir.c"
 #include "coreutils/mv.c"
-//#include "editors/sed.c"
+#define globals sed_globals
+#include "editors/sed.c"
 
 typedef int (*applet_func_t)(int, char**);
 struct applet { char* name; applet_func_t func; };
@@ -305,6 +307,7 @@ struct applet applets[] = {
 	{"ash", ash_main},
 	{"cp", cp_main},
 	{"echo", echo_main},
+	{"sed", sed_main},
 	{"ln", ln_main},
 	{"ls", ls_main},
 	{"mkdir", mkdir_main},

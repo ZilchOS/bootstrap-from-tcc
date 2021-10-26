@@ -3,7 +3,7 @@ set -uex
 
 PATH=/stage/1/bin
 
-echo 'Hello from stage 2!'
+echo 'Hi from stage 2!' | sed s/Hi/Hello/
 ls
 
 exit 0
