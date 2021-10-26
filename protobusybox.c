@@ -281,6 +281,8 @@ void bb_show_usage(void) {
 
 // common_bufsiz
 char bb_common_bufsiz1[1024];
+extern char bb_common_bufsiz1[];
+#define setup_common_bufsiz() ((void)0)
 
 #include "shell/shell_common.c"
 #include "shell/ash.c"
