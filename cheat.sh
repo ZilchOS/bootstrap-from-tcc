@@ -23,6 +23,12 @@ if [[ ! -e arena/cheat/bash ]]; then
 	rm result
 fi
 
+if [[ ! -e arena/cheat/strace ]]; then
+	nix build "$NIXPKGS#pkgsStatic.strace"
+	cp result/bin/strace arena/cheat/
+	rm result
+fi
+
 #if [[ ! -e arena/cheat/sed ]]; then
 #	nix build "$NIXPKGS#pkgsStatic.gnused"
 #	cp result/bin/sed arena/cheat/sed
