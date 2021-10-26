@@ -314,6 +314,7 @@ extern char bb_common_bufsiz1[];
 #include "coreutils/mkdir.c"
 #include "coreutils/mv.c"
 #include "coreutils/printf.c"  // only as an ash builtin
+#include "coreutils/rm.c"
 #include "coreutils/test.c"  // only as an ash builtin
 #include "coreutils/test_ptr_hack.c"
 #define globals sed_globals
@@ -331,6 +332,7 @@ struct applet applets[] = {
 	{"ls", ls_main},
 	{"mkdir", mkdir_main},
 	{"mv", mv_main},
+	{"rm", rm_main},
 	{"sed", sed_main},
 	{NULL, NULL},
 };
