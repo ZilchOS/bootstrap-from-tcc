@@ -11,7 +11,7 @@ set -uex
 # Create directory structure for the inputs
 mkdir -p arena/seed/1/bin
 mkdir -p arena/seed/1/src/{protomusl,sash,protobusybox}
-mkdir -p arena/seed/2/src/make
+mkdir -p arena/seed/2/src/gnumake
 
 # Seed the only binary we need
 [[ ! -e arena/tcc-seed ]] && cp tcc-seed arena/seed/1/bin/tcc
@@ -23,7 +23,7 @@ tar -C arena/seed/1/src/sash --strip-components=1 -xzf \
 	downloads/sash-3.8.tar.gz
 tar -C arena/seed/1/src/protobusybox --strip-components=1 -xjf \
 	downloads/busybox-1.34.1.tar.bz2
-tar -C arena/seed/2/src/make --strip-components=1 -xzf \
+tar -C arena/seed/2/src/gnumake --strip-components=1 -xzf \
 	downloads/make-4.3.tar.gz
 #tar -C arena/seed/?/src/linux --strip-components=1 -xJf \
 #       downloads/linux-5.10.74.tar.xz

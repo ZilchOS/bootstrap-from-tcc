@@ -10,10 +10,10 @@ mkdir -p /stage/2/bin
 
 mkdir -p /dev; :>/null
 
-rm -rf /stage/2/tmp/make
-mkdir -p /stage/2/tmp/make
-cp -r /seed/2/src/make/* /stage/2/tmp/make/
-cd /stage/2/tmp/make
+rm -rf /stage/2/tmp/gnumake
+mkdir -p /stage/2/tmp/gnumake
+cp -r /seed/2/src/gnumake/* /stage/2/tmp/gnumake/
+cd /stage/2/tmp/gnumake
 
 # this is part of stdlib, no idea how it's supposed to not clash
 rm src/getopt.h
@@ -48,7 +48,7 @@ ash ./build.sh
 ls -l make
 ./make --version
 
-cp make /stage/2/bin/
+cp make /stage/2/bin/gnumake
 
 rm -r /stage/2/tmp
 

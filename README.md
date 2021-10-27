@@ -41,11 +41,11 @@ given:
 
 `download.sh" downloads:
 
-* musl sources (`downloads/musl-1.2.2.tar.gz`)
-* busybox sources (`downloads/busybox-1.34.1.tar.bz2`)
-* sash sources (`downloads/sash-3.8.tar.gz`)
-* gnumake sources (`downloads/make-4.3.tar.gz`)
-* linux sources (`downloads/linux-5.10.74.tar.xz`)
+* `musl` sources (`downloads/musl-1.2.2.tar.gz`)
+* `busybox` sources (`downloads/busybox-1.34.1.tar.bz2`)
+* `sash` sources (`downloads/sash-3.8.tar.gz`)
+* `gnumake` sources (`downloads/make-4.3.tar.gz`)
+* `linux` sources (`downloads/linux-5.10.74.tar.xz`)
 * `alloca.S`/`libtcc1.c`/`va_list.c` from tcc distribution
 
 `seed.sh` seeds (populates the arena):
@@ -64,14 +64,14 @@ given:
 
 stage 2:
 
-* configures and builds statically-linked GNU `make`
+* configures and builds statically-linked GNU `make` (`gnumake`)
 
 TODO (undecided):
 
 * `gcc 4`?
 * modern `gcc`?
 * normal `musl`?
-* normal GNU `make`?
+* normal `gnumake`?
 * `clang`?
 * ???
 * `nix`
