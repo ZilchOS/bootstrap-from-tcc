@@ -526,6 +526,7 @@ int _start() {
 	compile_applet("rm", BB_SRC "/coreutils/rm.c");
 	compile_applet("rmdir", BB_SRC "/coreutils/rmdir.c");
 	compile_applet("sort", BB_SRC "/coreutils/sort.c");
+	compile_applet("tr", BB_SRC "/coreutils/tr.c");
 
 	compile_applet("awk", BB_SRC "/editors/awk.c");
 	compile_applet("diff", BB_SRC "/editors/diff.c");
