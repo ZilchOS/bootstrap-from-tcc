@@ -52,4 +52,8 @@ cp make /stage/2/bin/gnumake
 
 rm -r /stage/2/tmp
 
-exit 0
+echo '--- stage 2 cutoff point ---'
+
+exec /seed/3/src/stage3.sh
+
+exit 1

@@ -51,14 +51,13 @@ STAGE_1_SOME_OUTPUTS=(
 )
 for s1out in ${STAGE_1_SOME_OUTPUTS[@]}; do
 	[[ -e $s1out ]] || STAGE_1_NEEDS_REBUILD=true
-	echo $s1out $STAGE_1_NEEDS_REBUILD
 done
 for f in arena/seed/1/*/* ${STAGE_1_SOME_INPUTS[@]}; do
 	for o in arena/stage/1/{lib,bin,usr}/* ${STAGE_1_SOME_OUTPUTS[@]}; do
 		[[ $o -nt $f ]] || STAGE_1_NEEDS_REBUILD=true
-		echo - $f $o $STAGE_1_NEEDS_REBUILD
 	done
 done
+
 
 if $STAGE_1_NEEDS_REBUILD; then
 	if [[ tcc-seed -nt arena/seed/1/bin/tcc ]]; then
@@ -66,13 +65,42 @@ if $STAGE_1_NEEDS_REBUILD; then
 	fi
 	cp stage1.c hello.c protobusybox.[ch] syscall.h arena/seed/1/src/
 	cp stage2.sh arena/seed/2/src/
+	cp stage2.sh arena/seed/3/src/
 	env -i unshare -nrR arena \
 		/seed/1/bin/tcc -nostdinc -nostdlib -run /seed/1/src/stage1.c \
 			2>&1 | tee log
 	EX=${PIPESTATUS[0]}; echo "--- stage 1+ exit code $EX ---"; exit $EX
-else
+fi
+
+
+STAGE_2_NEEDS_REBUILD=false
+STAGE_2_SOME_INPUTS=(
+	"stage2.c"
+)
+STAGE_2_SOME_OUTPUTS=(
+	"arena/stage/2/bin/gnumake"
+)
+for s2out in ${STAGE_2_SOME_OUTPUTS[@]}; do
+	[[ -e $s2out ]] || STAGE_2_NEEDS_REBUILD=true
+	echo $s2out $STAGE_2_NEEDS_REBUILD
+done
+for f in arena/seed/2/*/* ${STAGE_2_SOME_INPUTS[@]}; do
+	for o in arena/stage/2/bin/* ${STAGE_2_SOME_OUTPUTS[@]}; do
+		[[ $o -nt $f ]] || STAGE_2_NEEDS_REBUILD=true
+		echo - $f $o $STAGE_2_NEEDS_REBUILD
+	done
+done
+
+
+if $STAGE_2_NEEDS_REBUILD; then
 	cp stage2.sh arena/seed/2/src/
+	cp stage3.sh arena/seed/3/src/
 	cut_log_up_to_stage 1
 	env -i unshare -nrR arena /seed/2/src/stage2.sh 2>&1 | tee -a log
 	EX=${PIPESTATUS[0]}; echo "--- stage 2+ exit code $EX ---"; exit $EX
 fi
+
+cp stage3.sh arena/seed/3/src/
+cut_log_up_to_stage 2
+env -i unshare -nrR arena /seed/3/src/stage3.sh 2>&1 | tee -a log
+EX=${PIPESTATUS[0]}; echo "--- stage 3+ exit code $EX ---"; exit $EX

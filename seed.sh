@@ -12,6 +12,7 @@ set -uex
 mkdir -p arena/seed/1/bin
 mkdir -p arena/seed/1/src/{protomusl,sash,protobusybox}
 mkdir -p arena/seed/2/src/gnumake
+mkdir -p arena/seed/3/src
 
 # Seed the only binary we need
 [[ ! -e arena/tcc-seed ]] && cp tcc-seed arena/seed/1/bin/tcc
@@ -31,6 +32,7 @@ tar -C arena/seed/2/src/gnumake --strip-components=1 -xzf \
 # Seed the bootstrap 'scripts'
 cp stage1.c arena/seed/1/src/
 cp stage2.sh arena/seed/2/src/
+cp stage3.sh arena/seed/3/src/
 
 # Seed extra sources from this repository
 cp downloads/{libtcc1.c,va_list.c,alloca.S} arena/seed/1/src/
