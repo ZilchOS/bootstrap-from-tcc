@@ -40,20 +40,22 @@ STAGE_1_SOME_INPUTS=(
 STAGE_1_OUTPUTS=(
 	"arena/stage/1/lib/protomusl.a"
 	"arena/stage/1/bin/protomusl-hello"
-	"arena/stage/1/bin/protobusybox"
 	"arena/stage/1/bin/sash"
 	"arena/stage/1/bin/ash"
 	"arena/stage/1/bin/cp"
+	"arena/stage/1/bin/grep"
 	"arena/stage/1/bin/ln"
 	"arena/stage/1/bin/mkdir"
 	"arena/stage/1/bin/mv"
 )
 STAGE_1_FINAL_OUTPUT="arena/stage/1/bin/protobusybox"
-for s1out in "${STAGE_1_OUTPUTS[@]}"; do
+for s1out in arena/stage/1/{lib,bin}/*; do
 	[[ -e $s1out ]] || STAGE_1_NEEDS_REBUILD=true
 done
 for f in arena/seed/1/** ${STAGE_1_SOME_INPUTS[@]}; do
-	[[ $STAGE_1_FINAL_OUTPUT -nt $f ]] || STAGE_1_NEEDS_REBUILD=true
+	for o in arena/stage/1/{lib,bin}/**; do
+		[[ $f -nt $o ]] || STAGE_1_NEEDS_REBUILD=true
+	done
 done
 
 if $STAGE_1_NEEDS_REBUILD; then
