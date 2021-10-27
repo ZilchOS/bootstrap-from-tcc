@@ -3,15 +3,17 @@ set -uex
 
 export PATH=/stage/1/bin
 
+
 echo 'Hi from stage 2!' | sed s/Hi/Hello/
-ls
+
+mkdir -p /stage/2/bin
 
 mkdir -p /dev; :>/null
 
-rm -rf /stage/2/build/make
-mkdir -p /stage/2/build/make
-cp -r /seed/2/src/make/* /stage/2/build/make/
-cd /stage/2/build/make
+rm -rf /stage/2/tmp/make
+mkdir -p /stage/2/tmp/make
+cp -r /seed/2/src/make/* /stage/2/tmp/make/
+cd /stage/2/tmp/make
 
 # this is part of stdlib, no idea how it's supposed to not clash
 rm src/getopt.h
@@ -23,17 +25,11 @@ rm src/getopt.h
 :> lib/error.c
 
 TCC_ARGS='-g -nostdlib -nostdinc -std=c99 -D_XOPEN_SOURCE=700'
-INCLUDES='-I/seed/1/src/protomusl/src/include'
-INCLUDES="$INCLUDES -I/seed/1/src/protomusl/arch/x86_64"
-INCLUDES="$INCLUDES -I/seed/1/src/protomusl/stage0-generated/sed1"
-INCLUDES="$INCLUDES -I/seed/1/src/protomusl/stage0-generated/sed2"
-INCLUDES="$INCLUDES -I/seed/1/src/protomusl/arch/generic"
-INCLUDES="$INCLUDES -I/seed/1/src/protomusl/src/internal"
-INCLUDES="$INCLUDES -I/seed/1/src/protomusl/include"
-CFLAGS="$INCLUDES"
+CFLAGS='-I/stage/1/usr/include/protomusl/'
 LDFLAGS='-static -Wl,-whole-archive'
-LDFLAGS="$LDFLAGS /stage/1/lib/protomusl.a"
-LDFLAGS="$LDFLAGS /stage/1/obj/protomusl/crt/crt1.o"
+LDFLAGS="$LDFLAGS /stage/1/lib/protomusl/libc.a"
+LDFLAGS="$LDFLAGS /stage/1/lib/protomusl/crt1.o"
+
 
 CC=/seed/1/bin/tcc \
 LD=/seed/1/bin/tcc \
@@ -51,5 +47,9 @@ ash ./build.sh
 
 ls -l make
 ./make --version
+
+cp make /stage/2/bin/
+
+rm -r /stage/2/tmp
 
 exit 0

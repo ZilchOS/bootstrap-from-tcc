@@ -276,13 +276,21 @@ void compile_dir(char** compile_args, struct args_accumulator* linking_aa,
 		"-I/seed/1/src/protomusl/include"
 #define PROTOMUSL_LINK_ARGS \
 		"-Wl,-whole-archive", \
-		"/stage/1/lib/protomusl.a", \
-		"/stage/1/obj/protomusl/crt/crt1.o"
+		"/stage/1/lib/protomusl/libc.a", \
+		"/stage/1/lib/protomusl/crt1.o"
 
 int _start() {
 	struct args_accumulator aa;
 
 	log(STDOUT, "Hello from stage1!");
+
+	log(STDOUT, "Creating directories...");
+	mkdir("/stage", 0777);
+	mkdir("/stage/1", 0777);
+	mkdir("/stage/1/bin", 0777);
+	mkdir("/stage/1/lib", 0777);
+	mkdir("/stage/1/usr", 0777);
+	mkdir("/stage/1/tmp", 0777);
 
 	log(STDOUT, "Testing run()...");
 	log(STDOUT, "* testing run() -> retcode 0...");
@@ -304,32 +312,33 @@ int _start() {
 
 
 	// Preparing to assemble musl linking cmdline
-	aa_init_const(&aa, TCC, "-ar", "/stage/1/lib/protomusl.a");
+	aa_init_const(&aa, TCC, "-ar", "/stage/1/lib/protomusl/libc.a");
 
 
 	log(STDOUT, "Compiling tcc's external runtime bits...");
 	run0(TCC, TCC_ARGS,
 		"-c", "/seed/1/src/alloca.S",
-		"-o", "/stage/1/obj/alloca.o");
-	aa_add(&aa, "/stage/1/obj/alloca.o");
+		"-o", "/stage/1/tmp/alloca.o");
+	aa_add(&aa, "/stage/1/tmp/alloca.o");
 
 	run0(TCC, TCC_ARGS,
 		"-c", "/seed/1/src/libtcc1.c",
-		"-o", "/stage/1/obj/libtcc1.o");
-	aa_add(&aa, "/stage/1/obj/libtcc1.o");
+		"-o", "/stage/1/tmp/libtcc1.o");
+	aa_add(&aa, "/stage/1/tmp/libtcc1.o");
 
 	run0(TCC, TCC_ARGS,
 		"-c", "/seed/1/src/va_list.c",
-		"-o", "/stage/1/obj/va_list.o");
-	aa_add(&aa, "/stage/1/obj/va_list.o");
+		"-o", "/stage/1/tmp/va_list.o");
+	aa_add(&aa, "/stage/1/tmp/va_list.o");
 
 
-	log(STDOUT, "Compiling most part of musl (protomusl)...");
+	log(STDOUT, "Compiling part of musl (protomusl)...");
+	mkdir("/stage/1/tmp/protomusl", 0777);
 	char* MUSL_COMPILE[] = { TCC, TCC_ARGS, PROTOMUSL_INCLUDES, NULL };
 	#define compile_protomusl_dir(dir) \
 			compile_dir(MUSL_COMPILE, &aa, \
 				"/seed/1/src/protomusl/src/" dir, \
-				"/stage/1/obj/protomusl/" dir);
+				"/stage/1/tmp/protomusl/" dir);
 	compile_protomusl_dir("conf");
 	compile_protomusl_dir("ctype");
 	compile_protomusl_dir("dirent");
@@ -354,6 +363,7 @@ int _start() {
 	compile_protomusl_dir("process");
 	compile_protomusl_dir("regex");
 	compile_protomusl_dir("select");
+	compile_protomusl_dir("setjmp");
 	compile_protomusl_dir("setjmp/x86_64");
 	compile_protomusl_dir("signal");
 	compile_protomusl_dir("signal/x86_64");
@@ -369,15 +379,16 @@ int _start() {
 	compile_protomusl_dir("unistd");
 
 	log(STDOUT, "Compiling crt bits of protomusl...");
+	mkdir("/stage/1/lib/protomusl/", 0777);
 	run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-DCRT",
 		"-c", "/seed/1/src/protomusl/crt/crt1.c",
-		"-o", "/stage/1/obj/protomusl/crt/crt1.o");
+		"-o", "/stage/1/lib/protomusl/crt1.o");
 	//run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-DCRT",
 	//	"-c", "/seed/1/src/protomusl/crt/x86_64/crti.s",
-	//	"-o", "/stage/1/obj/protomusl/crt/crti.o");
+	//	"-o", "/stage/1/lib/protomusl/crti.o");
 	//run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-DCRT",
 	//	"-c", "/seed/1/src/protomusl/crt/x86_64/crtn.s",
-	//	"-o", "/stage/1/obj/protomusl/crt/crtn.o");
+	//	"-o", "/stage/1/lib/protomusl/crtn.o");
 
 	log(STDOUT, "Linking protomusl...");
 	aa_run0(&aa);
@@ -385,9 +396,9 @@ int _start() {
 
 	log(STDOUT, "Linking an example...");
 	run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, PROTOMUSL_LINK_ARGS, "-static",
-		//"/stage/1/obj/protomusl/crt/crti.o",
+		//"/stage/1/lib/protomusl/crti.o",
 		"/seed/1/src/hello.c",
-		//"/stage/1/obj/protomusl/crt/crtn.o",
+		//"/stage/1/lib/protomusl/crtn.o",
 		"-o", "/stage/1/bin/protomusl-hello"
 		);
 
@@ -398,14 +409,14 @@ int _start() {
 	log(STDOUT, "Compiling sash...");
 	aa_init_const(&aa, TCC, TCC_ARGS, "-static", PROTOMUSL_LINK_ARGS,
 			"-o", "/stage/1/bin/sash");
-	//aa_add_const(&aa, "/stage/1/obj/protomusl/crt/crti.o");
+	//aa_add_const(&aa, "/stage/1/lib/protomusl/crti.o");
 	char* SASH_COMPILE[] = {
 		TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-D_GNU_SOURCE",
 		"-DHAVE_LINUX_MOUNT=0", "-DMOUNT_TYPE=\"btrfs\"",
 		NULL
 	};
-	compile_dir(SASH_COMPILE, &aa, "/seed/1/src/sash", "/stage/1/obj/sash");
-	//aa_add_const(&aa, "/stage/1/obj/protomusl/crt/crtn.o");
+	compile_dir(SASH_COMPILE, &aa, "/seed/1/src/sash", "/stage/1/tmp/sash");
+	//aa_add_const(&aa, "/stage/1/lib/protomusl/crtn.o");
 	aa_run0(&aa);
 
 	log(STDOUT, "Testing sash...");
@@ -414,8 +425,8 @@ int _start() {
 
 
 	log(STDOUT, "Compiling protolibbb...");
-	aa_init_const(&aa, TCC, "-ar", "/stage/1/lib/protolibbb.a");
-	mkdir("/stage/1/obj/protobusybox/", 0777);
+	aa_init_const(&aa, TCC, "-ar", "/stage/1/tmp/protolibbb.a");
+	mkdir("/stage/1/tmp/protobusybox/", 0777);
 	#define compile_libbb_file(fname) \
 			run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, \
 				"-I/seed/1/src/protobusybox/include/", \
@@ -425,8 +436,8 @@ int _start() {
 				"-c", \
 				"/seed/1/src/protobusybox/libbb/" fname, \
 				"-o", \
-				"/stage/1/obj/protobusybox/" fname ".o"); \
-			aa_add(&aa, "/stage/1/obj/protobusybox/" fname ".o")
+				"/stage/1/tmp/protobusybox/" fname ".o"); \
+			aa_add(&aa, "/stage/1/tmp/protobusybox/" fname ".o")
 	compile_libbb_file("ask_confirmation.c");
 	compile_libbb_file("auto_string.c");
 	compile_libbb_file("bb_cat.c");
@@ -492,7 +503,7 @@ int _start() {
 					"-I/seed/1/src/protobusybox/include", \
 					"-I/seed/1/src/", \
 					"-include", "protobusybox.h", \
-					"/stage/1/lib/protolibbb.a", \
+					"/stage/1/tmp/protolibbb.a", \
 					"-DAPPLET_MAIN=" aname "_main", \
 					"/seed/1/src/protobusybox.c", \
 					__VA_ARGS__, \
@@ -553,6 +564,23 @@ int _start() {
 	compile_applet("sed", BB_SRC "/editors/sed.c");
 
 	compile_applet("grep", BB_SRC "/findutils/grep.c");
+
+	log(STDOUT, "Composing stage2...");
+	run0("/stage/1/bin/mkdir", "-p", "/seed/1/usr/include/protomusl");
+	run0("/stage/1/bin/ash", "-uec", "
+		/stage/1/bin/rm -rf /stage/1/usr/include
+		/stage/1/bin/mkdir -p /stage/1/usr/include/protomusl
+		/stage/1/bin/cp -r \
+			/seed/1/src/protomusl/stage0-generated/sed1/bits \
+			/seed/1/src/protomusl/stage0-generated/sed2/bits \
+			/seed/1/src/protomusl/arch/generic/* \
+			/seed/1/src/protomusl/arch/x86_64/* \
+			/seed/1/src/protomusl/include/* \
+			/stage/1/usr/include/protomusl/
+	");
+
+	log(STDOUT, "Cleaning up...");
+	run0("/stage/1/bin/rm", "-r", "/stage/1/tmp");
 
 	log(STDOUT, "--- stage 1 cutoff point ---");
 

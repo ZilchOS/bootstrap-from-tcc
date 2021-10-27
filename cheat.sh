@@ -60,7 +60,7 @@ if [[ -n "$@" ]]; then
 	INCL+="-I/seed/1/src/protomusl/stage0-generated/sed1 "
 	LNKF+="-static -Wl,-whole-archive "
 	LNKF+="/stage/1/lib/protomusl.a "
-	LNKF+="/stage/1/obj/protomusl/crt/crt1.o "
+	LNKF+="/stage/1/tmp/protomusl/crt/crt1.o "
 	CFLG=""
 	env -i \
 		PATH=/cheat:/ \

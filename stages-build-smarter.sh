@@ -37,8 +37,8 @@ STAGE_1_SOME_INPUTS=(
 	"syscall.h"
 	"tcc-seed"
 )
-STAGE_1_OUTPUTS=(
-	"arena/stage/1/lib/protomusl.a"
+STAGE_1_SOME_OUTPUTS=(
+	"arena/stage/1/lib/protomusl/libc.a"
 	"arena/stage/1/bin/protomusl-hello"
 	"arena/stage/1/bin/sash"
 	"arena/stage/1/bin/ash"
@@ -47,19 +47,23 @@ STAGE_1_OUTPUTS=(
 	"arena/stage/1/bin/ln"
 	"arena/stage/1/bin/mkdir"
 	"arena/stage/1/bin/mv"
+	"arena/stage/1/usr/include/protomusl"
 )
-STAGE_1_FINAL_OUTPUT="arena/stage/1/bin/protobusybox"
-for s1out in arena/stage/1/{lib,bin}/*; do
+for s1out in ${STAGE_1_SOME_OUTPUTS[@]}; do
 	[[ -e $s1out ]] || STAGE_1_NEEDS_REBUILD=true
+	echo $s1out $STAGE_1_NEEDS_REBUILD
 done
-for f in arena/seed/1/** ${STAGE_1_SOME_INPUTS[@]}; do
-	for o in arena/stage/1/{lib,bin}/**; do
-		[[ $f -nt $o ]] || STAGE_1_NEEDS_REBUILD=true
+for f in arena/seed/1/*/* ${STAGE_1_SOME_INPUTS[@]}; do
+	for o in arena/stage/1/{lib,bin,usr}/* ${STAGE_1_SOME_OUTPUTS[@]}; do
+		[[ $o -nt $f ]] || STAGE_1_NEEDS_REBUILD=true
+		echo - $f $o $STAGE_1_NEEDS_REBUILD
 	done
 done
 
 if $STAGE_1_NEEDS_REBUILD; then
-	cp tcc-seed arena/seed/1/bin/
+	if [[ tcc-seed -nt arena/seed/1/bin/tcc ]]; then
+		exec ./stages-build.sh
+	fi
 	cp stage1.c hello.c protobusybox.[ch] syscall.h arena/seed/1/src/
 	cp stage2.sh arena/seed/2/src/
 	env -i unshare -nrR arena \

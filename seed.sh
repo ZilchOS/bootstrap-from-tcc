@@ -11,9 +11,7 @@ set -uex
 # Create directory structure for the inputs
 mkdir -p arena/seed/1/bin
 mkdir -p arena/seed/1/src/{protomusl,sash,protobusybox}
-mkdir -p arena/seed/2/src/{make,linux}
-# Create basic directory structure for the outputs
-mkdir -p arena/stage/1/{src,obj,lib,bin}
+mkdir -p arena/seed/2/src/make
 
 # Seed the only binary we need
 [[ ! -e arena/tcc-seed ]] && cp tcc-seed arena/seed/1/bin/tcc
@@ -27,7 +25,7 @@ tar -C arena/seed/1/src/protobusybox --strip-components=1 -xjf \
 	downloads/busybox-1.34.1.tar.bz2
 tar -C arena/seed/2/src/make --strip-components=1 -xzf \
 	downloads/make-4.3.tar.gz
-#tar -C arena/seed/2/src/linux --strip-components=1 -xJf \
+#tar -C arena/seed/?/src/linux --strip-components=1 -xJf \
 #       downloads/linux-5.10.74.tar.xz
 
 # Seed the bootstrap 'scripts'
@@ -39,13 +37,6 @@ cp downloads/{libtcc1.c,va_list.c,alloca.S} arena/seed/1/src/
 cp syscall.h arena/seed/1/src/  # dual-role
 cp hello.c arena/seed/1/src/
 cp protobusybox.[ch] arena/seed/1/src/
-
-
-# Create per-component output directory structure
-
-mkdir -p arena/stage/1/obj/protomusl/crt
-mkdir -p arena/stage/1/obj/protomusl/setjmp/x86_64
-mkdir arena/stage/1/obj/sash
 
 
 # Code host-processing hacks and workarounds
