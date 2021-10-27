@@ -339,6 +339,7 @@ int _start() {
 	compile_protomusl_dir("fcntl");
 	compile_protomusl_dir("fenv");
 	compile_protomusl_dir("internal");
+	compile_protomusl_dir("ldso");
 	compile_protomusl_dir("linux");
 	compile_protomusl_dir("locale");
 	compile_protomusl_dir("malloc");
