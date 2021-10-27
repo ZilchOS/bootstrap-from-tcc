@@ -324,7 +324,7 @@ int _start() {
 	aa_add(&aa, "/stage/1/obj/va_list.o");
 
 
-	log(STDOUT, "Compiling the most part of musl...");
+	log(STDOUT, "Compiling most part of musl (protomusl)...");
 	char* MUSL_COMPILE[] = { TCC, TCC_ARGS, PROTOMUSL_INCLUDES, NULL };
 	#define compile_protomusl_dir(dir) \
 			compile_dir(MUSL_COMPILE, &aa, \
@@ -367,7 +367,7 @@ int _start() {
 	compile_protomusl_dir("time");
 	compile_protomusl_dir("unistd");
 
-	log(STDOUT, "Compiling crt bits of musl...");
+	log(STDOUT, "Compiling crt bits of protomusl...");
 	run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, "-DCRT",
 		"-c", "/seed/1/src/protomusl/crt/crt1.c",
 		"-o", "/stage/1/obj/protomusl/crt/crt1.o");
@@ -378,7 +378,7 @@ int _start() {
 	//	"-c", "/seed/1/src/protomusl/crt/x86_64/crtn.s",
 	//	"-o", "/stage/1/obj/protomusl/crt/crtn.o");
 
-	log(STDOUT, "Linking musl...");
+	log(STDOUT, "Linking protomusl...");
 	aa_run0(&aa);
 
 
@@ -412,34 +412,125 @@ int _start() {
 	run0("/stage/1/bin/sash", "-c", "-pwd");
 
 
-	log(STDOUT, "Compiling protobusybox...");
-	run0(TCC, TCC_ARGS, "-static", PROTOMUSL_LINK_ARGS, PROTOMUSL_INCLUDES,
-			//"/stage/1/obj/protomusl/crt/crti.o",
-			"-I/seed/1/src/protobusybox/include",
-			"-I/seed/1/src/protobusybox",
-			"/seed/1/src/protobusybox.c",
-			//"/stage/1/obj/protomusl/crt/crtn.o",
-			"-o", "/stage/1/bin/ln");
+	log(STDOUT, "Compiling protolibbb...");
+	aa_init_const(&aa, TCC, "-ar", "/stage/1/lib/protolibbb.a");
+	mkdir("/stage/1/obj/protobusybox/", 0777);
+	#define compile_libbb_file(fname) \
+			run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, \
+				"-I/seed/1/src/protobusybox/include/", \
+				"-I/seed/1/src/protobusybox/libbb/", \
+				"-I/seed/1/src/", \
+				"-include", "protobusybox.h", \
+				"-c", \
+				"/seed/1/src/protobusybox/libbb/" fname, \
+				"-o", \
+				"/stage/1/obj/protobusybox/" fname ".o"); \
+			aa_add(&aa, "/stage/1/obj/protobusybox/" fname ".o")
+	compile_libbb_file("ask_confirmation.c");
+	compile_libbb_file("auto_string.c");
+	compile_libbb_file("bb_cat.c");
+	compile_libbb_file("bb_getgroups.c");
+	compile_libbb_file("bb_strtonum.c");
+	compile_libbb_file("compare_string_array.c");
+	compile_libbb_file("concat_path_file.c");
+	compile_libbb_file("concat_subpath_file.c");
+	compile_libbb_file("copy_file.c");
+	compile_libbb_file("copyfd.c");
+	compile_libbb_file("default_error_retval.c");
+	compile_libbb_file("endofname.c");
+	compile_libbb_file("fclose_nonstdin.c");
+	compile_libbb_file("fflush_stdout_and_exit.c");
+	compile_libbb_file("full_write.c");
+	compile_libbb_file("get_last_path_component.c");
+	compile_libbb_file("get_line_from_file.c");
+	compile_libbb_file("getopt32.c");
+	compile_libbb_file("inode_hash.c");
+	compile_libbb_file("isdirectory.c");
+	compile_libbb_file("isqrt.c");
+	compile_libbb_file("last_char_is.c");
+	compile_libbb_file("llist.c");
+	compile_libbb_file("make_directory.c");
+	compile_libbb_file("messages.c");
+	compile_libbb_file("mode_string.c");
+	compile_libbb_file("parse_mode.c");
+	compile_libbb_file("perror_msg.c");
+	compile_libbb_file("printable_string.c");
+	compile_libbb_file("process_escape_sequence.c");
+	compile_libbb_file("ptr_to_globals.c");
+	compile_libbb_file("read.c");
+	compile_libbb_file("read_printf.c");
+	compile_libbb_file("recursive_action.c");
+	compile_libbb_file("remove_file.c");
+	compile_libbb_file("safe_poll.c");
+	compile_libbb_file("safe_strncpy.c");
+	compile_libbb_file("safe_write.c");
+	compile_libbb_file("signals.c");
+	compile_libbb_file("skip_whitespace.c");
+	compile_libbb_file("sysconf.c");
+	compile_libbb_file("time.c");
+	compile_libbb_file("u_signal_names.c");
+	compile_libbb_file("verror_msg.c");
+	compile_libbb_file("wfopen.c");
+	compile_libbb_file("wfopen_input.c");
+	compile_libbb_file("xatonum.c");
+	compile_libbb_file("xfunc_die.c");
+	compile_libbb_file("xfuncs.c");
+	compile_libbb_file("xfuncs_printf.c");
+	compile_libbb_file("xgetcwd.c");
+	compile_libbb_file("xreadlink.c");
+	compile_libbb_file("xrealloc_vector.c");
+	compile_libbb_file("xregcomp.c");
 
-	log(STDOUT, "Creating protobusybox files...");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/ash");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/cat");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/chmod");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/cp");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/echo");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/expr");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/ls");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/mkdir");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/mv");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/rm");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/rmdir");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/sed");
-	run0("/stage/1/bin/ln", "-f", "/stage/1/bin/ln", "/stage/1/bin/sort");
-	run0("/stage/1/bin/ln", "-f",
-			"/stage/1/bin/ln", "/stage/1/bin/protobusybox");
+	log(STDOUT, "Linking protolibbb...");
+	aa_run0(&aa);
 
-	log(STDOUT, "Testing busybox ash...");
-	run0("/stage/1/bin/ash", "-c", "/seed/1/bin/tcc;/seed/1/bin/tcc");
+	log(STDOUT, "Compiling protobusybox applets...");
+	#define compile_applet(aname, ...) \
+			run0(TCC, TCC_ARGS, "-static", PROTOMUSL_LINK_ARGS, \
+					PROTOMUSL_INCLUDES, \
+					"-I/seed/1/src/protobusybox/include", \
+					"-I/seed/1/src/", \
+					"-include", "protobusybox.h", \
+					"/stage/1/lib/protolibbb.a", \
+					"-DAPPLET_MAIN=" aname "_main", \
+					"/seed/1/src/protobusybox.c", \
+					__VA_ARGS__, \
+					"-o", "/stage/1/bin/" aname);
+					// + crti + crtn
+	compile_applet("echo", "/seed/1/src/protobusybox/coreutils/echo.c")
+	run0("/stage/1/bin/echo", "Hello from protobusybox!");
+
+	#define BB_SRC "/seed/1/src/protobusybox"
+	compile_applet("ash",
+			BB_SRC "/shell/shell_common.c",
+			BB_SRC "/shell/ash_ptr_hack.c",
+			BB_SRC "/shell/math.c",
+			BB_SRC "/coreutils/printf.c",
+			BB_SRC "/coreutils/test_ptr_hack.c",
+			BB_SRC "/coreutils/test.c",
+			BB_SRC "/shell/ash.c")
+	run(42, "/stage/1/bin/ash", "-c", "printf 'Hello from ash!'; exit 42");
+
+	compile_applet("cat", BB_SRC "/coreutils/cat.c")
+	compile_applet("chmod", BB_SRC "/coreutils/chmod.c")
+	compile_applet("cp",
+			BB_SRC "/coreutils/libcoreutils/cp_mv_stat.c",
+			BB_SRC "/coreutils/cp.c");
+	compile_applet("expr", BB_SRC "/coreutils/expr.c");
+	compile_applet("ln", BB_SRC "/coreutils/ln.c");
+	compile_applet("ls", BB_SRC "/coreutils/ls.c");
+	compile_applet("mkdir", BB_SRC "/coreutils/mkdir.c");
+	compile_applet("mv",
+			BB_SRC "/coreutils/libcoreutils/cp_mv_stat.c",
+			BB_SRC "/coreutils/mv.c");
+	compile_applet("rm", BB_SRC "/coreutils/rm.c");
+	compile_applet("rmdir", BB_SRC "/coreutils/rmdir.c");
+	compile_applet("sort", BB_SRC "/coreutils/sort.c");
+
+	compile_applet("diff", BB_SRC "/editors/diff.c");
+	compile_applet("sed", BB_SRC "/editors/sed.c");
+
+	compile_applet("grep", BB_SRC "/findutils/grep.c");
 
 	log(STDOUT, "--- stage 1 cutoff point ---");
 

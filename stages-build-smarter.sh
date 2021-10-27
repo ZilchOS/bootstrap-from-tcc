@@ -32,6 +32,7 @@ STAGE_1_NEEDS_REBUILD=false
 STAGE_1_SOME_INPUTS=(
 	"hello.c"
 	"protobusybox.c"
+	"protobusybox.h"
 	"stage1.c"
 	"syscall.h"
 	"tcc-seed"
@@ -57,7 +58,7 @@ done
 
 if $STAGE_1_NEEDS_REBUILD; then
 	cp tcc-seed arena/seed/1/bin/
-	cp stage1.c hello.c protobusybox.c syscall.h arena/seed/1/src/
+	cp stage1.c hello.c protobusybox.[ch] syscall.h arena/seed/1/src/
 	cp stage2.sh arena/seed/2/src/
 	env -i unshare -nrR arena \
 		/seed/1/bin/tcc -nostdinc -nostdlib -run /seed/1/src/stage1.c \

@@ -38,7 +38,7 @@ cp stage2.sh arena/seed/2/src/
 cp downloads/{libtcc1.c,va_list.c,alloca.S} arena/seed/1/src/
 cp syscall.h arena/seed/1/src/  # dual-role
 cp hello.c arena/seed/1/src/
-cp protobusybox.c arena/seed/1/src/
+cp protobusybox.[ch] arena/seed/1/src/
 
 
 # Create per-component output directory structure
@@ -86,16 +86,8 @@ pushd arena/seed/1/src/sash
 popd
 
 pushd arena/seed/1/src/protobusybox
-	rm libbb/capability.c
-	rm libbb/hash_md5prime.c
-	rm libbb/hash_md5_sha.c
-	rm libbb/loop.c
-	rm libbb/obscure.c
-	rm libbb/pw_encrypt_des.c
-	rm libbb/pw_encrypt_sha.c
-	rm libbb/selinux_common.c
-	rm libbb/utmp.c
-	echo "#define NUM_APPLETS 1" > include/NUM_APPLETS.h
+	:> include/NUM_APPLETS.h
 	:> include/common_bufsiz.h
+	# already fixed in an unreleased version
 	sed -i 's/extern struct test_statics \*const test_ptr_to_statics/extern struct test_statics *BB_GLOBAL_CONST test_ptr_to_statics/' coreutils/test.c
 popd
