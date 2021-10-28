@@ -14,7 +14,7 @@ I wanted to build a minimal distro to understand NixOS better,
 so I decided to have a decent trusted binary core bootstrap as well.
 
 I'm aware of https://savannah.nongnu.org/projects/stage0 which does even better,
-but I'm not as hardcore as them, so, let's start small
+but I'm not as hardcore as them, so, let's start small.
 
 ## How
 
@@ -23,8 +23,6 @@ but I'm not as hardcore as them, so, let's start small
 `tcc-seed` -> `protomusl` -> `protobusybox` -> `gnumake` -> ??? ->
 `gcc` -> ??? ->
 `linux`, `nix`
-
-where each arrow adds new sources and a new buildscript into the mix
 
 ### In detail
 
@@ -54,15 +52,14 @@ given:
 * FIXME: uses host `sed`/`rm` for preprocessing source code, unfortunately
 * copies `seed-tcc`, the only starting binary, into the arena
 
-`stage1.sh` builds protomusl and `sash`:
+`stage1.c`, executed with `tcc -run`:
 
-* executes `stage1.c` (including `syscalls.h`) inside the arena, which:
-  * compiles a protomusl from musl sources, `va_list.c`
-  * compiles, links against protomusl and executes a hello world (`test.c`)
-  * compiles, links against protomusl and executes stand-alone shell (`sash`)
-  * compiles and links against protomusl bits of busybox, notably `ash`
+* compiles a protomusl from musl sources, `va_list.c`
+* compiles, links against protomusl and executes a hello world (`test.c`)
+* compiles, links against protomusl and executes stand-alone shell (`sash`)
+* compiles and links against protomusl bits of busybox, notably `ash`
 
-stage 2:
+`stage2.sh`, executed with protobusybox `ash`:
 
 * configures and builds statically-linked GNU `make` (`gnumake`)
 
