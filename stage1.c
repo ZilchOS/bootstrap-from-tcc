@@ -207,21 +207,6 @@ void aa_sort(struct args_accumulator* aa) {
 		}
 	} while (changes);
 }
-void aa_drown(struct args_accumulator* aa, char* str) {
-	char **p, **n, *t;
-	p = aa->pointers;
-	while (*p) {
-		if (strcmp(*p, str) == 0) {
-			log(STDOUT, *p);
-			for (n = p + 1; *n; p++, n++) {
-				t = *p; *p = *n; *n = t;
-				log(STDOUT, "swap");
-			}
-			return;
-		}
-		p++;
-	}
-}
 int aa_run(struct args_accumulator* aa) {
 	char* __env[] = { NULL };
 	int i;
@@ -428,9 +413,6 @@ int _start() {
 	compile_protomusl_dir("time");
 	compile_protomusl_dir("unistd");
 	aa_sort(&aa_link_objs);
-	//aa_drown(&aa_link_objs, "/stage/1/tmp/protomusl/env/__init_tls.c.o");
-	//aa_drown(&aa_link_objs,
-	//		"/stage/1/tmp/protomusl/errno/__errno_location.c.o");
 
 	log(STDOUT, "Linking protomusl...");
 	mkdir("/stage/1/lib/protomusl", 0777);
