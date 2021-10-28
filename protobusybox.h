@@ -10,7 +10,8 @@ enum { COMMON_BUFSIZE = 1024 };
 
 #define CONFIG_BUSYBOX_EXEC_PATH "/proc/self/exe"
 #define CONFIG_FEATURE_EDITING_MAX_LEN 1024
-#define CONFIG_FEATURE_COPYBUF_KB 16
+#define CONFIG_FEATURE_COPYBUF_KB 256
+#define CONFIG_UNAME_OSNAME "Linux"
 
 #define ENABLE_ASH_ALIAS 0
 #define ENABLE_ASH_BASH_COMPAT 0
@@ -21,6 +22,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define ENABLE_ASH_MAIL 0
 #define ENABLE_ASH_PRINTF 1
 #define ENABLE_ASH_TEST 1
+#define ENABLE_BB_ARCH 1
 #define ENABLE_DEBUG 0
 #define ENABLE_DESKTOP 0
 #define ENABLE_EGREP 0
@@ -70,6 +72,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define ENABLE_SESTATUS 0
 #define ENABLE_TEST1 0
 #define ENABLE_TEST2 0
+#define ENABLE_UNAME 0
 #define ENABLE_ZCAT 0
 #define IF_AR(...)
 #define IF_ASH_ALIAS(...)
@@ -142,6 +145,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define IF_SHELL_HUSH(...)
 #define IF_SHOWKEY(...)
 #define IF_TAR(...)
+#define IF_UNAME(...) __VA_ARGS__
 #define IF_UNCOMPRESS(...)
 #define IF_UNLZMA(...)
 #define IF_UNLZOP(...)

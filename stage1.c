@@ -574,6 +574,7 @@ int _start() {
 			BB_SRC "/coreutils/libcoreutils/cp_mv_stat.c",
 			BB_SRC "/coreutils/cp.c");
 	compile_applet("expr", BB_SRC "/coreutils/expr.c");
+	compile_applet("head", BB_SRC "/coreutils/head.c");
 	compile_applet("ln", BB_SRC "/coreutils/ln.c");
 	compile_applet("ls", BB_SRC "/coreutils/ls.c");
 	compile_applet("mkdir", BB_SRC "/coreutils/mkdir.c");
@@ -585,6 +586,7 @@ int _start() {
 	compile_applet("sleep", BB_SRC "/coreutils/sleep.c");
 	compile_applet("sort", BB_SRC "/coreutils/sort.c");
 	compile_applet("tr", BB_SRC "/coreutils/tr.c");
+	compile_applet("uname", BB_SRC "/coreutils/uname.c");
 	compile_applet("uniq", BB_SRC "/coreutils/uniq.c");
 
 	compile_applet("ar",
