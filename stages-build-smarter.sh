@@ -75,7 +75,7 @@ fi
 
 STAGE_2_NEEDS_REBUILD=false
 STAGE_2_SOME_INPUTS=(
-	"stage2.c"
+	"stage2.sh"
 )
 STAGE_2_SOME_OUTPUTS=(
 	"arena/stage/2/bin/gnumake"
