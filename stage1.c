@@ -132,10 +132,10 @@ int run_(char* cmd, char** args, char** env) {
 	return 0;  // unreacheable
 }
 
-#define run(expected_retcode, first_arg, ...) \
+#define run(expected_retcode, first_arg, args...) \
 	do { \
 		char* __env[] = {NULL}; \
-		char* __args[] = {(first_arg), __VA_ARGS__, NULL}; \
+		char* __args[] = {(first_arg), ##args, NULL}; \
 		int __i; \
 		log_(STDOUT, "run() running: "); \
 		for(__i = 0; __args[__i]; __i++) { \
@@ -145,7 +145,7 @@ int run_(char* cmd, char** args, char** env) {
 		log_(STDOUT, "\n"); \
 		assert(run_(first_arg, __args, __env) == (expected_retcode)); \
 	} while (0)
-#define run0(first_arg, ...) run(0, (first_arg), __VA_ARGS__)
+#define run0(first_arg, args...) run(0, (first_arg), ## args)
 
 
 // my convenience functions: dynamic args accumulation / command execution
