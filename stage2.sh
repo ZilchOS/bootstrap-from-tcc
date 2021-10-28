@@ -8,7 +8,7 @@ echo 'Hi from stage 2!' | sed s/Hi/Hello/
 
 mkdir -p /stage/2/bin
 
-mkdir -p /dev; :>/null
+mkdir -p /dev; :>/dev/null
 
 rm -rf /stage/2/tmp/gnumake
 mkdir -p /stage/2/tmp/gnumake
@@ -41,6 +41,7 @@ CONFIG_SHELL="/stage/1/bin/ash" \
 SHELL="/stage/1/bin/ash" \
 	ash ./configure \
 		--build x86_64-linux \
+		--disable-posix-spawn \
 		--disable-dependency-tracking
 
 ash ./build.sh

@@ -40,8 +40,10 @@ cp syscall.h arena/seed/1/src/  # dual-role
 cp hello.c arena/seed/1/src/
 cp protobusybox.[ch] arena/seed/1/src/
 
+cp syscall.h arena/seed/2/src/  # dual-role
 
-# Code host-processing hacks and workarounds
+
+# Code host-processing hacks and workarounds, stage 1 only
 
 pushd arena/seed/1/src/protomusl
 	# original syscall_arch.h is not tcc-compatible,
