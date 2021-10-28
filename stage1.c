@@ -112,6 +112,13 @@ char* strcpy(char* dest, char* src) {
 	return dest;
 }
 
+int strcmp(char* a, char* b) {
+	for (; *a && *b; a++, b++)
+		if (*a != *b)
+			return (*a < *b) ? -1 : 1;
+	return (*a == *b) ? 0 : ((*a < *b) ? -1 : 1);
+}
+
 
 // my convenience functions: fork + exec
 
@@ -173,6 +180,11 @@ void aa_add_arr(struct args_accumulator* aa, char** p) {
 	while (*p)
 		aa_add(aa, *p++);
 }
+void aa_add_aa(struct args_accumulator* to, struct args_accumulator* from) {
+	char** p = from->pointers;
+	while (*p)
+		aa_add(to, *p++);
+}
 #define aa_add_const(aa_ptr, ...) \
 	do { \
 		char* __args[] = { __VA_ARGS__, NULL }; \
@@ -180,6 +192,38 @@ void aa_add_arr(struct args_accumulator* aa, char** p) {
 	} while (0)
 #define aa_init_const(aa_ptr, ...) \
 	do { aa_init(aa_ptr); aa_add_const(aa_ptr, __VA_ARGS__); } while (0)
+void aa_sort(struct args_accumulator* aa) {
+	int changes;
+	char **p, **n, *t;
+	if (!aa->pointers[0])
+		return;
+	if (!aa->pointers[1])
+		return;
+	do {
+		changes = 0;
+		for (p = aa->pointers, n = p + 1; *n; p++, n++) {
+			if (strcmp(*p, *n) > 0) {
+				t = *p; *p = *n; *n = t;
+				changes = 1;
+			}
+		}
+	} while (changes);
+}
+void aa_drown(struct args_accumulator* aa, char* str) {
+	char **p, **n, *t;
+	p = aa->pointers;
+	while (*p) {
+		if (strcmp(*p, str) == 0) {
+			log(STDOUT, *p);
+			for (n = p + 1; *n; p++, n++) {
+				t = *p; *p = *n; *n = t;
+				log(STDOUT, "swap");
+			}
+			return;
+		}
+		p++;
+	}
+}
 int aa_run(struct args_accumulator* aa) {
 	char* __env[] = { NULL };
 	int i;
