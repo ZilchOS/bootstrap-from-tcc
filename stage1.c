@@ -163,35 +163,33 @@ struct args_accumulator {
 	char* char_curr;
 	char** ptr_curr;
 };
-void aa_init(struct args_accumulator* aa) {
+void _aa_init(struct args_accumulator* aa) {
 	aa->char_curr = aa->storage;
 	aa->ptr_curr = aa->pointers;
 	*aa->ptr_curr = NULL;
 }
-void aa_add(struct args_accumulator* aa, char* new_arg) {
+void aa_append(struct args_accumulator* aa, char* new_arg) {
 	*aa->ptr_curr = aa->char_curr;
-	aa->ptr_curr++;
-	*aa->ptr_curr = NULL;
-	//*++aa->ptr_curr = 0;
+	*++aa->ptr_curr = NULL;
 	aa->char_curr = strcpy(aa->char_curr, new_arg);
 	aa->char_curr++;
 }
-void aa_add_arr(struct args_accumulator* aa, char** p) {
+void aa_extend_arr(struct args_accumulator* aa, char** p) {
 	while (*p)
-		aa_add(aa, *p++);
+		aa_append(aa, *p++);
 }
-void aa_add_aa(struct args_accumulator* to, struct args_accumulator* from) {
+void aa_extend_aa(struct args_accumulator* to, struct args_accumulator* from) {
 	char** p = from->pointers;
 	while (*p)
-		aa_add(to, *p++);
+		aa_append(to, *p++);
 }
-#define aa_add_const(aa_ptr, ...) \
+#define aa_extend(aa_ptr, args...) \
 	do { \
-		char* __args[] = { __VA_ARGS__, NULL }; \
-		aa_add_arr(aa_ptr, __args); \
+		char* __args[] = { NULL, ## args, NULL }; \
+		aa_extend_arr(aa_ptr, __args + 1); \
 	} while (0)
-#define aa_init_const(aa_ptr, ...) \
-	do { aa_init(aa_ptr); aa_add_const(aa_ptr, __VA_ARGS__); } while (0)
+#define aa_init(aa_ptr, args...) \
+	do { _aa_init(aa_ptr); aa_extend(aa_ptr, ## args); } while (0)
 void aa_sort(struct args_accumulator* aa) {
 	int changes;
 	char **p, **n, *t;
@@ -293,14 +291,12 @@ void compile_dir(char** compile_args, struct args_accumulator* linking_aa,
 						".o");
 
 				aa_init(&aa);
-				aa_add_arr(&aa, compile_args);
-				aa_add(&aa, "-c");
-				aa_add(&aa, in_file_path_buf);
-				aa_add(&aa, "-o");
-				aa_add(&aa, out_file_path_buf);
+				aa_extend_arr(&aa, compile_args);
+				aa_extend(&aa, "-c", in_file_path_buf,
+				               "-o", out_file_path_buf);
 				aa_run0(&aa);
 
-				aa_add(linking_aa, out_file_path_buf);
+				aa_append(linking_aa, out_file_path_buf);
 			}
 			d = (struct linux_dirent*) ((char*) d + d->d_reclen);
 		}
@@ -352,19 +348,18 @@ int _start() {
 	log(STDOUT, "run() seems to work OK");
 
 	log(STDOUT, "Testing args accumulator...");
-	log(STDOUT, "* testing aa_add and aa_run0...");
+	log(STDOUT, "* testing aa_append, aa_extend, aa_sort and aa_run0...");
 	aa_init(&aa_cmd);
 	aa_init(&aa_link_objs);
-	aa_add(&aa_cmd, TCC);
-	aa_add(&aa_link_objs, "-ar");
-	aa_add(&aa_link_objs, "help-must-precede-ar");
-	aa_add(&aa_link_objs, "--help");
+	aa_append(&aa_cmd, TCC);
+	aa_append(&aa_link_objs, "-ar");
+	aa_extend(&aa_link_objs, "help-must-precede-ar", "--help");
 	aa_sort(&aa_link_objs);
-	aa_add_aa(&aa_cmd, &aa_link_objs);
+	aa_extend_aa(&aa_cmd, &aa_link_objs);
 	aa_run0(&aa_cmd);
 
 	log(STDOUT, "* testing aa_multi and aa_run for 1...");
-	aa_init_const(&aa_cmd, TCC, "-ar", "--help");
+	aa_init(&aa_cmd, TCC, "-ar", "--help");
 	assert(aa_run(&aa_cmd) == 1);
 
 
@@ -373,17 +368,17 @@ int _start() {
 	run0(TCC, TCC_ARGS,
 		"-c", "/seed/1/src/alloca.S",
 		"-o", "/stage/1/tmp/alloca.o");
-	aa_add(&aa_link_objs, "/stage/1/tmp/alloca.o");
+	aa_append(&aa_link_objs, "/stage/1/tmp/alloca.o");
 
 	run0(TCC, TCC_ARGS,
 		"-c", "/seed/1/src/libtcc1.c",
 		"-o", "/stage/1/tmp/libtcc1.o");
-	aa_add(&aa_link_objs, "/stage/1/tmp/libtcc1.o");
+	aa_append(&aa_link_objs, "/stage/1/tmp/libtcc1.o");
 
 	run0(TCC, TCC_ARGS,
 		"-c", "/seed/1/src/va_list.c",
 		"-o", "/stage/1/tmp/va_list.o");
-	aa_add(&aa_link_objs, "/stage/1/tmp/va_list.o");
+	aa_append(&aa_link_objs, "/stage/1/tmp/va_list.o");
 
 
 	// Preparing to assemble musl linking cmdline
@@ -439,9 +434,8 @@ int _start() {
 
 	log(STDOUT, "Linking protomusl...");
 	mkdir("/stage/1/lib/protomusl", 0777);
-	aa_init_const(&aa_cmd,
-			TCC, "-ar", "rcs", "/stage/1/lib/protomusl/libc.a");
-	aa_add_aa(&aa_cmd, &aa_link_objs);
+	aa_init(&aa_cmd, TCC, "-ar", "rcs", "/stage/1/lib/protomusl/libc.a");
+	aa_extend_aa(&aa_cmd, &aa_link_objs);
 	aa_run0(&aa_cmd);
 
 	log(STDOUT, "Compiling crt bits of protomusl...");
@@ -480,9 +474,9 @@ int _start() {
 	aa_sort(&aa_link_objs);
 
 	log(STDOUT, "Linking sash...");
-	aa_init_const(&aa_cmd, TCC, TCC_ARGS, PROTOMUSL_LINK_PRE);
-	aa_add_aa(&aa_cmd, &aa_link_objs);
-	aa_add_const(&aa_cmd, PROTOMUSL_LINK_POST, "-o", "/stage/1/bin/sash");
+	aa_init(&aa_cmd, TCC, TCC_ARGS, PROTOMUSL_LINK_PRE);
+	aa_extend_aa(&aa_cmd, &aa_link_objs);
+	aa_extend(&aa_cmd, PROTOMUSL_LINK_POST, "-o", "/stage/1/bin/sash");
 	aa_run0(&aa_cmd);
 
 	log(STDOUT, "Testing sash...");
@@ -492,7 +486,7 @@ int _start() {
 
 	log(STDOUT, "Compiling protolibbb...");
 	// no need to use aa_link_objs, as there's no need to sort
-	aa_init_const(&aa_cmd, TCC, "-ar", "/stage/1/tmp/protolibbb.a");
+	aa_init(&aa_cmd, TCC, "-ar", "/stage/1/tmp/protolibbb.a");
 	mkdir("/stage/1/tmp/protobusybox/", 0777);
 	#define compile_libbb_file(fname) \
 			run0(TCC, TCC_ARGS, PROTOMUSL_INCLUDES, \
@@ -504,7 +498,8 @@ int _start() {
 				"/seed/1/src/protobusybox/libbb/" fname, \
 				"-o", \
 				"/stage/1/tmp/protobusybox/" fname ".o"); \
-			aa_add(&aa_cmd, "/stage/1/tmp/protobusybox/" fname ".o")
+			aa_append(&aa_cmd, \
+				"/stage/1/tmp/protobusybox/" fname ".o")
 	compile_libbb_file("ask_confirmation.c");
 	compile_libbb_file("auto_string.c");
 	compile_libbb_file("bb_cat.c");
