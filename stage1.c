@@ -196,7 +196,7 @@ int aa_run(struct args_accumulator* aa) {
 
 // my convenience functions: compiling whole directories worth of files
 
-int is_compileable(char* fname) {
+_Bool is_compileable(char* fname) {
 	int i = 0;
 	while (fname[i])
 		i++;
