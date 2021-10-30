@@ -747,23 +747,6 @@ run0("/stage/1/bin/uname");
 	compile_applet("uname", BB_SRC "/coreutils/uname.c");
 	compile_applet("uniq", BB_SRC "/coreutils/uniq.c");
 
-	compile_applet("ar",
-			BB_SRC "/archival/libarchive/data_extract_all.c",
-			BB_SRC "/archival/libarchive/data_extract_to_stdout.c",
-			BB_SRC "/archival/libarchive/data_skip.c",
-			BB_SRC "/archival/libarchive/filter_accept_all.c",
-			BB_SRC "/archival/libarchive/filter_accept_list.c",
-			BB_SRC "/archival/libarchive/find_list_entry.c",
-			BB_SRC "/archival/libarchive/get_header_ar.c",
-			BB_SRC "/archival/libarchive/header_list.c",
-			BB_SRC "/archival/libarchive/header_skip.c",
-			BB_SRC "/archival/libarchive/init_handle.c",
-			BB_SRC "/archival/libarchive/seek_by_jump.c",
-			BB_SRC "/archival/libarchive/seek_by_read.c",
-			BB_SRC "/archival/libarchive/unpack_ar_archive.c",
-			BB_SRC "/archival/libarchive/unsafe_symlink_target.c",
-			BB_SRC "/archival/ar.c");
-
 	compile_applet("awk", BB_SRC "/editors/awk.c");
 	compile_applet("diff", BB_SRC "/editors/diff.c");
 	compile_applet("sed", BB_SRC "/editors/sed.c");
