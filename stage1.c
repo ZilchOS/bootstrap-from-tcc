@@ -326,7 +326,7 @@ void mass_compile(const char* cc, const void* compile_args,
 		aa_extend_from(&aa_sources, fnames);
 
 	mkreqdirs(out_lib_file_path);
-	aa_init(&aa_link, cc, "-ar", "rcsv", out_lib_file_path);
+	aa_init(&aa_link, cc, "-ar", "rc", out_lib_file_path);
 
 	for (p = (char**) &aa_sources; *p; p++) {
 		in_file_path = strcpy(in_file_path_buf, in_dir_path);
@@ -419,20 +419,18 @@ void compile_libtcc1_1st_time_nostd(const char* cc) {
 		"-I/seed/1/src/protomusl/src/internal", \
 		"-I/seed/1/src/protomusl/include"
 #define PROTOMUSL_NOSTD_LDFLAGS_PRE \
-		"-static", "-Wl,-whole-archive", \
+		"-static", \
 		"/stage/1/lib/protomusl/crt1.o", \
 		"/stage/1/lib/protomusl/crti.o"
 #define PROTOMUSL_NOSTD_LDFLAGS_POST \
 		"/stage/1/lib/protomusl/libc.a", \
 		"/stage/1/lib/protomusl/crtn.o"
-#define PROTOMUSL_LDFLAGS "-static", "-Wl,-whole-archive", "-lc"
 #define PROTOMUSL_INCLUDES \
 		"-I/seed/1/src/protomusl/include", \
 		"-I/seed/1/src/protomusl/arch/x86_64", \
 		"-I/seed/1/src/protomusl/arch/generic", \
 		"-I/seed/1/src/protomusl/stage0-generated/sed1", \
 		"-I/seed/1/src/protomusl/stage0-generated/sed2"
-// TODO: get rid of -Wl,-whole-archive
 
 void compile_protomusl(const char* cc) {
 	struct args_accumulator aa;
@@ -501,12 +499,12 @@ void compile_protomusl(const char* cc) {
 
 
 void test_example_1st_time_nostd(const char* cc) {
-	log(STDOUT, "Linking an example...");
+	log(STDOUT, "Linking an example (1st time)...");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES,
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
 		"/seed/1/src/hello.c",
-		"/stage/1/lib/tinycc/libtcc1.a",
 		PROTOMUSL_NOSTD_LDFLAGS_POST,
+		"/stage/1/lib/tinycc/libtcc1.a",
 		"-o", "/stage/1/tmp/protomusl-hello");
 
 	log(STDOUT, "Executing an example...");
@@ -551,8 +549,8 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES,
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
 		"-DC2STR", "/seed/1/src/tinycc/conftest.c",
-		"/stage/1/lib/tinycc/libtcc1.a",
 		PROTOMUSL_NOSTD_LDFLAGS_POST,
+		"/stage/1/lib/tinycc/libtcc1.a",
 		"-o", "/stage/1/tmp/tinycc/tcc-conftest"
 		);
 	log(STDOUT, "Generating tccdefs_.h with conftest...");
@@ -578,8 +576,8 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
 		"/seed/1/src/tinycc/tcc.c",
 		"/stage/1/lib/tinycc/libtcc.a",
-		"/stage/1/lib/tinycc/libtcc1.a",
 		PROTOMUSL_NOSTD_LDFLAGS_POST,
+		"/stage/1/lib/tinycc/libtcc1.a",
 		"-o", "/stage/1/bin/tcc"
 		);
 	run0("/stage/1/bin/tcc", "-print-search-dirs");
@@ -598,20 +596,16 @@ void compile_tcc(const char* cc) {
 		"tccrun.c", "x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
 	0};
 	mass_compile(cc, CFLAGS, "/seed/1/src/tinycc", SOURCES,
-			"/stage/1/tmp/tinycc/libtcc",
-			"/stage/1/lib/tinycc/libtcc.a");
-	run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, TCC_CFLAGS, PROTOMUSL_LDFLAGS,
-		"/seed/1/src/tinycc/tcc.c",
-		"/stage/1/lib/tinycc/libtcc.a",
-		"-o", "/stage/1/bin/tcc"
-		);
+		"/stage/1/tmp/tinycc/libtcc", "/stage/1/lib/tinycc/libtcc.a");
+	run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, TCC_CFLAGS, "-static",
+		"/seed/1/src/tinycc/tcc.c", "/stage/1/lib/tinycc/libtcc.a",
+		"-o", "/stage/1/bin/tcc");
 }
 
 void test_example_intermediate(const char* cc) {
 	log(STDOUT, "Linking an example (our tcc, includes not installed)...");
-	run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, PROTOMUSL_LDFLAGS,
-		"/seed/1/src/hello.c",
-		"-o", "/stage/1/tmp/protomusl-hello");
+	run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, "-static",
+		"/seed/1/src/hello.c", "-o", "/stage/1/tmp/protomusl-hello");
 
 	log(STDOUT, "Executing an example...");
 	run(42, "/stage/1/tmp/protomusl-hello");
@@ -619,9 +613,8 @@ void test_example_intermediate(const char* cc) {
 
 void test_example_final(const char* cc) {
 	log(STDOUT, "Linking an example (final tcc, includes installed)...");
-	run0(cc, TCC_ARGS, PROTOMUSL_LDFLAGS,
-		"/seed/1/src/hello.c",
-		"-o", "/stage/1/tmp/protomusl-hello");
+	run0(cc, TCC_ARGS, "-static",
+		"/seed/1/src/hello.c", "-o", "/stage/1/tmp/protomusl-hello");
 
 	log(STDOUT, "Executing an example...");
 	run(42, "/stage/1/tmp/protomusl-hello");
@@ -704,15 +697,18 @@ void compile_standalone_busybox_applets(const char* cc) {
 	log(STDOUT, "Compiling standalone protobusybox applets...");
 	#define compile_applet(applet_name, files...) \
 			run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, \
-					PROTOMUSL_LDFLAGS, \
+					"-static", \
 					"-I/seed/1/src/protobusybox/include", \
 					"-I/seed/1/src/", \
 					"-include", "protobusybox.h", \
 					"-DAPPLET_MAIN=" applet_name "_main", \
 					"/seed/1/src/protobusybox.c", \
-					"/stage/1/tmp/protobusybox/libbb.a", \
 					## files, \
+					"/stage/1/tmp/protobusybox/libbb.a", \
 					"-o", "/stage/1/bin/" applet_name);
+compile_applet("uname", "/seed/1/src/protobusybox/coreutils/uname.c");
+run0("/stage/1/bin/uname");
+
 	compile_applet("echo", "/seed/1/src/protobusybox/coreutils/echo.c")
 	run0("/stage/1/bin/echo", "Hello from protobusybox!");
 

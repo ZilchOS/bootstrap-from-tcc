@@ -21,7 +21,7 @@ mkdir -p arena/seed/3/src
 tar -C arena/seed/1/src/protomusl --strip-components=1 -xzf \
 	downloads/musl-1.2.2.tar.gz
 tar -C arena/seed/1/src/tinycc --strip-components=1 -xzf \
-	downloads/tinycc-mob-git1645616.tar.gz
+	downloads/tinycc-mob-gitda11cf6.tar.gz
 tar -C arena/seed/1/src/protobusybox --strip-components=1 -xjf \
 	downloads/busybox-1.34.1.tar.bz2
 tar -C arena/seed/2/src/gnumake --strip-components=1 -xzf \
@@ -75,6 +75,7 @@ popd
 
 pushd arena/seed/1/src/tinycc
 	:> config.h
+	sed -i 's/abort();//' lib/va_list.c  # circular dependency
 popd
 
 pushd arena/seed/1/src/protobusybox
