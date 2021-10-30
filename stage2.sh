@@ -13,19 +13,14 @@ mkdir -p /stage/2/wrappers/tcc
 cd /stage/2/wrappers/tcc
 _TCC_ARGS='-g'
 _CPP_ARGS="$_TCC_ARGS -I/stage/1/include/protomusl"
-_LD_ARGS='-static -Wl,-whole-archive -lc'
-echo -e "#!/stage/1/bin/ash
-	if echo \"\$@\" | grep -w -- '-c'; then
-		exec /stage/1/bin/tcc $_TCC_ARGS \"\$@\"
-	else
-		exec /stage/1/bin/tcc $_TCC_ARGS $_LD_ARGS \"\$@\"
-	fi
-" > cc
+_LD_ARGS='-static'
+echo -e "#!/stage/1/bin/ash\nexec /stage/1/bin/tcc $_TCC_ARGS $_LD_ARGS \"\$@\"" > cc
 echo -e "#!/stage/1/bin/ash\nexec /stage/1/bin/tcc -E $_CPP_ARGS \"\$@\"" > cpp
 echo -e "#!/stage/1/bin/ash\nexec /stage/1/bin/tcc $_LD_ARGS \"\$@\"" > ld
-chmod +x cc cpp ld
+echo -e "#!/stage/1/bin/ash\nexec /stage/1/bin/tcc -ar \"\$@\"" > ar
+chmod +x cc cpp ld ar
 
-export PATH=/stage/1/bin:/stage/2/wrappers/tcc
+export PATH=/stage/2/wrappers/tcc:/stage/1/bin
 
 echo 'Building gnumake'
 rm -rf /stage/2/tmp/gnumake

@@ -453,6 +453,7 @@ void compile_protomusl(const char* cc) {
 	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/fenv");
 	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/internal");
 	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/ldso");
+	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/legacy");
 	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/linux");
 	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/locale");
 	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/malloc");
