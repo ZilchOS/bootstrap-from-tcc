@@ -572,8 +572,8 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 		"tccrun.c", "x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
 	0};
 	mass_compile(cc, CFLAGS, "/seed/1/src/tinycc", SOURCES,
-			"/stage/1/tmp/tinycc/libtcc",
-			"/stage/1/lib/tinycc/libtcc.a");
+		"/stage/1/tmp/tinycc/libtcc",
+		"/stage/1/lib/tinycc/libtcc.a");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES, TCC_CFLAGS,
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
 		"/seed/1/src/tinycc/tcc.c",
@@ -583,16 +583,6 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 		"-o", "/stage/1/bin/tcc"
 		);
 	run0("/stage/1/bin/tcc", "-print-search-dirs");
-
-	log(STDOUT, "Linking an example with new tcc...");
-	run0("/stage/1/bin/tcc", TCC_ARGS,
-		PROTOMUSL_INCLUDES, PROTOMUSL_LDFLAGS,
-		"/seed/1/src/hello.c",
-		"-o", "/stage/1/tmp/protomusl-hello"
-		);
-
-	log(STDOUT, "Executing an example...");
-	run(42, "/stage/1/tmp/protomusl-hello");
 }
 
 
@@ -827,6 +817,7 @@ int _start() {
 
 	// build the first TCC that comes from our sources
 	compile_tcc_1st_time_nostd("/seed/1/bin/tcc");
+	test_example_intermediate("/stage/1/bin/tcc");
 	// rebuild everything with it
 	compile_libtcc1("/stage/1/bin/tcc");
 	compile_protomusl("/stage/1/bin/tcc");
