@@ -10,7 +10,7 @@ set -uex
 
 # Create directory structure for the inputs
 mkdir -p arena/seed/1/bin
-mkdir -p arena/seed/1/src/{protomusl,sash,protobusybox}
+mkdir -p arena/seed/1/src/{protomusl,tinycc,protobusybox}
 mkdir -p arena/seed/2/src/gnumake
 mkdir -p arena/seed/3/src
 
@@ -20,8 +20,8 @@ mkdir -p arena/seed/3/src
 # Seed sources from downloads/
 tar -C arena/seed/1/src/protomusl --strip-components=1 -xzf \
 	downloads/musl-1.2.2.tar.gz
-tar -C arena/seed/1/src/sash --strip-components=1 -xzf \
-	downloads/sash-3.8.tar.gz
+tar -C arena/seed/1/src/tinycc --strip-components=1 -xzf \
+	downloads/tinycc-mob-git1645616.tar.gz
 tar -C arena/seed/1/src/protobusybox --strip-components=1 -xjf \
 	downloads/busybox-1.34.1.tar.bz2
 tar -C arena/seed/2/src/gnumake --strip-components=1 -xzf \
@@ -35,12 +35,9 @@ cp stage2.sh arena/seed/2/src/
 cp stage3.sh arena/seed/3/src/
 
 # Seed extra sources from this repository
-cp downloads/{libtcc1.c,va_list.c,alloca.S} arena/seed/1/src/
 cp syscall.h arena/seed/1/src/  # dual-role
 cp hello.c arena/seed/1/src/
 cp protobusybox.[ch] arena/seed/1/src/
-
-cp syscall.h arena/seed/2/src/  # dual-role
 
 
 # Code host-processing hacks and workarounds, stage 1 only
@@ -76,8 +73,8 @@ pushd arena/seed/1/src/protomusl
 	rm src/math/{acoshl,acosl,asinhl,asinl,hypotl}.c  # want sqrtl
 popd
 
-pushd arena/seed/1/src/sash
-	sed -i 's|#include <linux/loop.h>||' cmds.c
+pushd arena/seed/1/src/tinycc
+	:> config.h
 popd
 
 pushd arena/seed/1/src/protobusybox
