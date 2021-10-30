@@ -29,23 +29,13 @@ cut_log_up_to_stage() {
 }
 
 STAGE_1_NEEDS_REBUILD=false
-STAGE_1_SOME_INPUTS=(
-	"hello.c"
-	"protobusybox.c"
-	"protobusybox.h"
-	"stage1.c"
-	"syscall.h"
-	"tcc-seed"
-)
+STAGE_1_SOME_INPUTS=( tcc-seed syscall.h stage1.c hello.c protobusybox.{c,h} )
 STAGE_1_SOME_OUTPUTS=(
-	"arena/stage/1/lib/protomusl/libc.a"
-	"arena/stage/1/bin/ash"
-	"arena/stage/1/bin/cp"
-	"arena/stage/1/bin/grep"
-	"arena/stage/1/bin/ln"
-	"arena/stage/1/bin/mkdir"
-	"arena/stage/1/bin/mv"
-	"arena/stage/1/include/protomusl"
+	arena/stage/1/lib/protomusl/libc.a
+	arena/stage/1/lib/tinycc/libtcc{,1}.a
+	arena/stage/1/bin/{tcc,ash,chmod,cp,grep,ln,mkdir,mv}
+	arena/stage/1/include/protomusl
+	arena/stage/1/wrappers/tcc/{cc,cpp,ld,ar}
 )
 for s1out in ${STAGE_1_SOME_OUTPUTS[@]}; do
 	[[ -e $s1out ]] || STAGE_1_NEEDS_REBUILD=true
@@ -83,7 +73,8 @@ for s2out in ${STAGE_2_SOME_OUTPUTS[@]}; do
 	[[ -e $s2out ]] || STAGE_2_NEEDS_REBUILD=true
 	echo $s2out $STAGE_2_NEEDS_REBUILD
 done
-for f in arena/seed/2/*/* ${STAGE_2_SOME_INPUTS[@]}; do
+for f in arena/seed/2/*/* ${STAGE_2_SOME_INPUTS[@]} ${STAGE_1_SOME_OUTPUTS[@]}
+do
 	for o in arena/stage/2/bin/* ${STAGE_2_SOME_OUTPUTS[@]}; do
 		[[ $o -nt $f ]] || STAGE_2_NEEDS_REBUILD=true
 		echo - $f $o $STAGE_2_NEEDS_REBUILD

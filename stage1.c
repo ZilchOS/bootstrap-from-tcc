@@ -612,10 +612,10 @@ void test_example_intermediate(const char* cc) {
 	run(42, "/stage/1/tmp/protomusl-hello");
 }
 
-void test_example_final(const char* cc) {
-	log(STDOUT, "Linking an example (final tcc, includes installed)...");
-	run0(cc, TCC_ARGS, "-static",
-		"/seed/1/src/hello.c", "-o", "/stage/1/tmp/protomusl-hello");
+void test_example_final(const char* cc_wrapper) {
+	log(STDOUT, "Linking an example (wrapped tcc, includes installed)...");
+	run0(cc_wrapper, "/seed/1/src/hello.c",
+			"-o", "/stage/1/tmp/protomusl-hello");
 
 	log(STDOUT, "Executing an example...");
 	run(42, "/stage/1/tmp/protomusl-hello");
@@ -778,6 +778,25 @@ void compose_stage2(void) {
 	");
 }
 
+
+void wrap_tcc_tools(void) {
+	#define EXECTCC "#!/stage/1/bin/ash\nexec /stage/1/bin/tcc"
+	#define PASSTHROUGH "\\\"\\$@\\\"" //  i.e., \"\$@\", i.e, "$@"
+	run0("/stage/1/bin/ash", "-uexvc", "
+		PATH=/stage/1/bin
+		mkdir -p /stage/1/wrappers/tcc; cd /stage/1/wrappers/tcc
+		_TCC_ARGS='-g'
+		_CPP_ARGS=\"$_TCC_ARGS -I/stage/1/include/protomusl\"
+		_LD_ARGS='-static'
+		echo -e \"" EXECTCC " $_TCC_ARGS $_LD_ARGS " PASSTHROUGH"\" > cc
+		echo -e \"" EXECTCC " -E $_CPP_ARGS " PASSTHROUGH"\" > cpp
+		echo -e \"" EXECTCC " $_LD_ARGS " PASSTHROUGH"\" > ld
+		echo -e \"" EXECTCC " -ar " PASSTHROUGH "\" > ar
+		chmod +x cc cpp ld ar
+	");
+}
+
+
 // The main plot ///////////////////////////////////////////////////////////////
 
 int _start() {
@@ -814,7 +833,8 @@ int _start() {
 
 	verify_tcc_stability();
 	compose_stage2();
-	test_example_final("/stage/1/bin/tcc");
+	wrap_tcc_tools();
+	test_example_final("/stage/1/wrappers/tcc/cc");
 	run0("/stage/1/bin/rm", "-r", "/stage/1/tmp");
 
 	log(STDOUT, "--- stage 1 cutoff point ---");
