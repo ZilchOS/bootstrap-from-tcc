@@ -58,11 +58,14 @@ if [[ $STAGENO == ALL || $STAGENO == 1 ]]; then
 		# more frivolous patching
 		echo '#define VERSION "1.2.2"' > src/internal/version.h
 		sed -i 's/@PLT//' src/signal/x86_64/sigsetjmp.s
-		rm src/signal/restore.c  # *BIG URGH*
-		rm src/thread/__set_thread_area.c  # possible double-define
-		rm src/thread/__unmapself.c  # double-define
-		rm src/math/sqrtl.c  # tcc-incompatible
-		rm src/math/{acoshl,acosl,asinhl,asinl,hypotl}.c  # want sqrtl
+		rm -f src/signal/restore.c  # *BIG URGH*
+		rm -f src/thread/clone.c  # *BIG URGH #2*
+		rm -f src/thread/__set_thread_area.c  # possible double-define
+		rm -f src/thread/__unmapself.c  # double-define
+		rm -f src/math/sqrtl.c  # tcc-incompatible
+		rm -f src/math/{acoshl,acosl,asinhl,asinl,hypotl}.c  # sqrtl dep
+		sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
+			src/stdio/popen.c src/process/system.c
 	popd
 
 	pushd $STAGEDIR/1/src/tinycc
