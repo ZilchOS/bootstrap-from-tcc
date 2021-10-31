@@ -3,74 +3,55 @@ set -ue
 
 NIXPKGS=nixpkgs/8eeae5320e741d55ec1b891853fa48419e3a5a26
 
-mkdir -p arena/cheat
+mkdir -p stage/cheat
 
-if [[ ! -e arena/cheat/make ]]; then
+if [[ ! -e stage/cheat/make ]]; then
 	nix build "$NIXPKGS#pkgsStatic.gnumake"
-	cp result/bin/make arena/cheat/make
+	cp result/bin/make stage/cheat/make
 	rm result
 fi
 
-#if [[ ! -e arena/cheat/dash ]]; then
+#if [[ ! -e stage/cheat/dash ]]; then
 #	nix build "$NIXPKGS#pkgsStatic.dash"
-#	cp result/bin/dash arena/cheat/dash
+#	cp result/bin/dash stage/cheat/dash
 #	rm result
 #fi
 
-if [[ ! -e arena/cheat/bash ]]; then
+if [[ ! -e stage/cheat/bash ]]; then
 	nix build "$NIXPKGS#pkgsStatic.bash"
-	cp result/bin/bash arena/cheat/bash
+	cp result/bin/bash stage/cheat/bash
 	rm result
 fi
 
-if [[ ! -e arena/cheat/strace ]]; then
+if [[ ! -e stage/cheat/strace ]]; then
 	nix build "$NIXPKGS#pkgsStatic.strace"
-	cp result/bin/strace arena/cheat/
+	cp result/bin/strace stage/cheat/
 	rm result
 fi
 
-#if [[ ! -e arena/cheat/sed ]]; then
+#if [[ ! -e stage/cheat/sed ]]; then
 #	nix build "$NIXPKGS#pkgsStatic.gnused"
-#	cp result/bin/sed arena/cheat/sed
+#	cp result/bin/sed stage/cheat/sed
 #	rm result
 #fi
 
-if [[ ! -e arena/cheat/busybox ]]; then
+if [[ ! -e stage/cheat/busybox ]]; then
 	nix build "$NIXPKGS#pkgsStatic.busybox"
-	cp result/bin/busybox arena/cheat/busybox
+	cp result/bin/busybox stage/cheat/busybox
 	for f in $(ls result/bin/); do
 		[[ $(basename $f) == busybox ]] ||
-			ln -s /cheat/busybox arena/cheat/$(basename $f)
+			ln -s /cheat/busybox stage/cheat/$(basename $f)
 	done
 	rm result
 fi
 
-[[ -h arena/cheat/tcc ]] || ln -s /seed/1/bin/tcc arena/cheat/tcc
-[[ -h arena/cheat/cc ]] || ln -s /seed/1/bin/tcc arena/cheat/cc
-
 if [[ -n "$@" ]]; then
-	mkdir -p arena/dev
-	touch arena/dev/null
-	mkdir -p arena/bin
-	[[ -h arena/bin/sh ]] || ln -s /cheat/sh arena/bin/sh
-	INCL+="-I/seed/1/src/protomusl/include "
-	INCL+="-I/seed/1/src/protomusl/src/include "
-	INCL+="-I/seed/1/src/protomusl/arch/x86_64 "
-	INCL+="-I/seed/1/src/protomusl/arch/generic "
-	INCL+="-I/seed/1/src/protomusl/stage0-generated/sed1 "
-	LNKF+="-static -Wl,-whole-archive "
-	LNKF+="/stage/1/lib/protomusl.a "
-	LNKF+="/stage/1/tmp/protomusl/crt/crt1.o "
-	CFLG=""
-	env -i \
-		PATH=/cheat:/ \
-		CC='tcc -nostdlib -nostdinc' \
-		CFLAGS="$INCL $CFLG" \
-		LDFLAGS="$LNKF" \
-		AR='tcc -ar' \
-		CPP='tcc -E' \
-		CPPFLAGS="$INCL $CFLG" \
-		LD="tcc" \
-		$(command -v unshare) -nrR arena \
+	mkdir -p stage/dev
+	touch stage/dev/null
+	_PATH='/2/out/gnumake/bin'
+	_PATH+=':/1/out/tinycc/wrappers'
+	_PATH+=':/1/out/protobusybox/bin'
+	env -i PATH=$_PATH \
+		$(command -v unshare) -nrR stage \
 			"$@"
 fi
