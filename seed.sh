@@ -9,6 +9,16 @@ set -uex
 STAGENO=${1:-ALL}
 STAGEDIR=${2:-stage}
 
+untar() {
+	compression_type=$1; archive=$2; to=$3
+	if [[ ! -d $to ]]; then
+		mkdir -p $to.tmp
+		tar -C $to.tmp --strip-components=1 -x${compression_type}f \
+			$archive
+		mv $to.tmp $to
+	fi
+}
+
 
 ## stage 0: just tcc ###########################################################
 
@@ -22,14 +32,9 @@ fi
 ## stage 1: protomusl, tinycc, protobusybox, all patched #######################
 
 if [[ $STAGENO == ALL || $STAGENO == 1 ]]; then
-	mkdir -p $STAGEDIR/1/src/{protomusl,hello,tinycc,protobusybox}
-	cp hello.c $STAGEDIR/1/src/hello/
-	tar -C $STAGEDIR/1/src/protomusl --strip-components=1 \
-		-xzf downloads/musl-1.2.2.tar.gz
-	tar -C $STAGEDIR/1/src/tinycc --strip-components=1 \
-		-xzf downloads/tinycc-mob-gitda11cf6.tar.gz
-	tar -C $STAGEDIR/1/src/protobusybox --strip-components=1 \
-		-xjf downloads/busybox-1.34.1.tar.bz2
+	untar z downloads/musl-1.2.2.tar.gz $STAGEDIR/1/src/protomusl
+	untar z downloads/tinycc-mob-gitda11cf6.tar.gz $STAGEDIR/1/src/tinycc
+	untar j downloads/busybox-1.34.1.tar.bz2 $STAGEDIR/1/src/protobusybox
 
 	# Seed extra sources from this repository
 	cp stage1.c hello.c $STAGEDIR/1/src/
@@ -77,9 +82,7 @@ fi
 ## stage 2: gnumake, ??? #######################################################
 
 if [[ $STAGENO == ALL || $STAGENO == 2 ]]; then
-	mkdir -p $STAGEDIR/2/src/gnumake
-	tar -C $STAGEDIR/2/src/gnumake --strip-components=1 -xzf \
-		downloads/make-4.3.tar.gz
+	untar z downloads/make-4.3.tar.gz $STAGEDIR/2/src/gnumake
 	cp stage2.sh $STAGEDIR/2/src/
 fi
 
