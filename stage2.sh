@@ -1,46 +1,50 @@
-#!/stage/1/bin/ash
-set -uexo pipefail
+#!/1/out/protobusybox/bin/ash
+set -uex
 
-export PATH=/stage/1/wrappers/tcc:/stage/1/bin
+export PATH=/1/out/tinycc/wrappers:/1/out/protobusybox/bin
 
 
 echo 'Hi from stage 2!' | sed s/Hi/Hello/
-mkdir -p /stage/2/bin /stage/2/tmp
+mkdir -p /2/out /2/tmp
 mkdir -p /dev; :>/dev/null
 
 
 echo 'Preparing to build make twice over'
-rm -rf /stage/2/tmp/protognumake /stage/2/tmp/gnumake
+rm -rf /2/tmp/protognumake /2/tmp/gnumake
 
 echo 'Building protognumake'
-cp -ra /seed/2/src/gnumake /stage/2/tmp/protognumake
-cd /stage/2/tmp/protognumake
+cp -ra /2/src/gnumake /2/tmp/protognumake
+cd /2/tmp/protognumake
 # FIXME this is part of stdlib, no idea how it's supposed to not clash
 rm src/getopt.h
 for f in src/getopt.c src/getopt1.c; do :> $f; done
 for f in lib/fnmatch.c lib/glob.c lib/xmalloc.c lib/error.c; do :> $f; done
-sed -i 's|/bin/sh|/stage/1/bin/ash|' src/job.c
+sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' src/job.c
 ash ./configure \
 	--build x86_64-linux \
 	--disable-posix-spawn \
 	--disable-dependency-tracking \
-	CONFIG_SHELL='/stage/1/bin/ash' SHELL='/stage/1/bin/ash'
+	CONFIG_SHELL='/1/out/protobusybox/bin/ash' \
+	SHELL='/1/out/protobusybox/bin/ash'
 ash ./build.sh
+./make --version
 
 echo 'Building gnumake with protognumake'
-cp -ra /seed/2/src/gnumake /stage/2/tmp/gnumake
-cd /stage/2/tmp/gnumake
-sed -i 's|/bin/sh|/stage/1/bin/ash|' src/job.c build-aux/install-sh
+cp -ra /2/src/gnumake /2/tmp/gnumake
+cd /2/tmp/gnumake
+sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' src/job.c build-aux/install-sh
 ash ./configure \
 	--build x86_64-linux \
 	--disable-posix-spawn \
 	--disable-dependency-tracking \
-	CONFIG_SHELL='/stage/1/bin/ash' SHELL='/stage/1/bin/ash'
-/stage/2/tmp/protognumake/make
-cp make /stage/2/bin/gnumake
+	CONFIG_SHELL='/1/out/protobusybox/bin/ash' \
+	SHELL='/1/out/protobusybox/bin/ash'
+/2/tmp/protognumake/make
+mkdir -p /2/out/gnumake/bin
+cp make /2/out/gnumake/bin/gnumake
 
 echo 'Cleaning up stage 2'
-rm -r /stage/2/tmp
+rm -r /2/tmp
 echo '--- stage 2 cutoff point ---'
-exec /seed/3/src/stage3.sh
+exec /3/src/stage3.sh
 exit 99

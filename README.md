@@ -47,12 +47,12 @@ given:
 * `gnumake` sources (`downloads/make-4.3.tar.gz`)
 * `linux` sources (`downloads/linux-5.10.74.tar.xz`)
 
-`seed.sh` seeds (populates the arena):
+`seed.sh` seeds (populates `/stage/N/src` dirs):
 
-* unpacks sources into the arena
+* unpacks sources into the stage area
 * FIXME: uses host `sed`/`rm` for preprocessing stage 1 source code,
   unfortunately
-* copies `seed-tcc`, the only starting binary, into the arena
+* copies `seed-tcc`, the only starting binary, into the stage area
 
 At the end of it we obtain
 a ton of sources and a single externally seeded `tcc` binary.
@@ -81,6 +81,7 @@ At the end of stage 1 we have, all linked statically:
 `stage2.sh`, executed with protobusybox `ash`:
 
 * configures and builds statically-linked GNU `make` (`gnumake`)
+* rebuilds GNU `make` with GNU `make`
 
 TODO (undecided):
 

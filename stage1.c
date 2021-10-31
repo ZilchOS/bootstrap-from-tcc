@@ -138,7 +138,7 @@ void mkreqdirs_at(const char* at, const char* subpath) {
 }
 #define mkdirs_at(at, args...) \
 	do { \
-		const char* __args[] = { at, ## args, NULL }; \
+		const char* __args[] = { "/", ## args, NULL }; \
 		const char* const* p; \
 		for (p = __args; *p; p++) \
 			mkreqdirs_at(at, *p); \
@@ -361,21 +361,21 @@ void sanity_test() {
 
 	log(STDOUT, "Sanity-testing run()...");
 	log(STDOUT, "* testing run() -> retcode 0...");
-	run0("/seed/1/bin/tcc", "--help");
+	run0("/0/out/tcc-seed", "--help");
 	log(STDOUT, "* testing run() -> retcode 1...");
-	run(1, "/seed/1/bin/tcc", "-ar", "--help");
+	run(1, "/0/out/tcc-seed", "-ar", "--help");
 	log(STDOUT, "run() seems to work OK");
 
 	log(STDOUT, "Sanity-testing args accumulator...");
 	log(STDOUT, "* testing aa_append, aa_extend, aa_sort and aa_run0...");
 	aa_init(&aa1);
 	aa_init(&aa2);
-	aa_append(&aa1, "/seed/1/bin/tcc");
+	aa_append(&aa1, "/0/out/tcc-seed");
 	aa_append(&aa2, "-ar");
 	aa_extend(&aa2, "help-must-precede-ar", "--help");
 	aa_sort(&aa2);
 	aa_extend_from(&aa1, &aa2);
-	assert(!strcmp(((char**) &aa1)[0], "/seed/1/bin/tcc"));
+	assert(!strcmp(((char**) &aa1)[0], "/0/out/tcc-seed"));
 	assert(!strcmp(((char**) &aa1)[1], "--help"));
 	assert(!strcmp(((char**) &aa1)[2], "-ar"));
 	assert(!strcmp(((char**) &aa1)[3], "help-must-precede-ar"));
@@ -383,7 +383,7 @@ void sanity_test() {
 	aa_run0(&aa1);
 
 	log(STDOUT, "* testing aa_multi and aa_run for 1...");
-	aa_init(&aa1, "/seed/1/bin/tcc", "-ar", "--help");
+	aa_init(&aa1, "/0/out/tcc-seed", "-ar", "--help");
 	assert(aa_run(&aa1) == 1);
 }
 
@@ -393,15 +393,14 @@ void sanity_test() {
 
 void compile_libtcc1_1st_time_nostd(const char* cc) {
 	log(STDOUT, "Compiling our first libtcc1.a...");
-	mkdirs_at("/stage/1", "tmp/tinycc/libtcc1", "lib/tinycc");
+	mkdirs_at("/1", "tmp/tinycc/libtcc1", "out/tinycc/lib");
 	const char* CFLAGS_NOSTD[] = { TCC_ARGS_NOSTD, "-DTCC_MUSL", NULL };
 	const char* SOURCES_NOSTD[] = {
 		"libtcc1.c", "alloca.S",
 		"dsohandle.c", "stdatomic.c", "va_list.c",
 	0};
-	mass_compile(cc, CFLAGS_NOSTD, "/seed/1/src/tinycc/lib", SOURCES_NOSTD,
-			"/stage/1/tmp/tinycc/libtcc1",
-			"/stage/1/lib/tinycc/libtcc1.a");
+	mass_compile(cc, CFLAGS_NOSTD, "/1/src/tinycc/lib", SOURCES_NOSTD,
+			"/1/tmp/tinycc/libtcc1", "/1/out/tinycc/lib/libtcc1.a");
 }  // see also compile_libtcc1 far below
 
 
@@ -411,91 +410,90 @@ void compile_libtcc1_1st_time_nostd(const char* cc) {
 		"-std=c99", \
 		"-D_XOPEN_SOURCE=700"
 #define PROTOMUSL_INTERNAL_INCLUDES \
-		"-I/seed/1/src/protomusl/src/include", \
-		"-I/seed/1/src/protomusl/arch/x86_64", \
-		"-I/seed/1/src/protomusl/stage0-generated/sed1", \
-		"-I/seed/1/src/protomusl/stage0-generated/sed2", \
-		"-I/seed/1/src/protomusl/arch/generic", \
-		"-I/seed/1/src/protomusl/src/internal", \
-		"-I/seed/1/src/protomusl/include"
+		"-I/1/src/protomusl/src/include", \
+		"-I/1/src/protomusl/arch/x86_64", \
+		"-I/1/src/protomusl/host-generated/sed1", \
+		"-I/1/src/protomusl/host-generated/sed2", \
+		"-I/1/src/protomusl/arch/generic", \
+		"-I/1/src/protomusl/src/internal", \
+		"-I/1/src/protomusl/include"
 #define PROTOMUSL_NOSTD_LDFLAGS_PRE \
 		"-static", \
-		"/stage/1/lib/protomusl/crt1.o", \
-		"/stage/1/lib/protomusl/crti.o"
+		"/1/out/protomusl/lib/crt1.o", \
+		"/1/out/protomusl/lib/crti.o"
 #define PROTOMUSL_NOSTD_LDFLAGS_POST \
-		"/stage/1/lib/protomusl/libc.a", \
-		"/stage/1/lib/protomusl/crtn.o"
+		"/1/out/protomusl/lib/libc.a", \
+		"/1/out/protomusl/lib/crtn.o"
 #define PROTOMUSL_INCLUDES \
-		"-I/seed/1/src/protomusl/include", \
-		"-I/seed/1/src/protomusl/arch/x86_64", \
-		"-I/seed/1/src/protomusl/arch/generic", \
-		"-I/seed/1/src/protomusl/stage0-generated/sed1", \
-		"-I/seed/1/src/protomusl/stage0-generated/sed2"
+		"-I/1/src/protomusl/include", \
+		"-I/1/src/protomusl/arch/x86_64", \
+		"-I/1/src/protomusl/arch/generic", \
+		"-I/1/src/protomusl/host-generated/sed1", \
+		"-I/1/src/protomusl/host-generated/sed2"
 
 void compile_protomusl(const char* cc) {
 	struct args_accumulator aa;
 	aa_init(&aa);
 
 	log(STDOUT, "Compiling part of musl (protomusl)...");
-	mkdir("/stage/1/lib/protomusl", 0777);
 	const char* CFLAGS[] = {
 		TCC_ARGS_NOSTD,
 		PROTOMUSL_EXTRA_CFLAGS,
 		PROTOMUSL_INTERNAL_INCLUDES,
 	0};
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/conf");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/ctype");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/dirent");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/env");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/errno");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/exit");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/fcntl");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/fenv");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/internal");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/ldso");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/legacy");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/linux");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/locale");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/malloc");
-	aa_extend_from_dir(&aa, 2, "/seed/1/src/protomusl/src/malloc/mallocng");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/math");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/misc");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/mman");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/multibyte");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/network");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/passwd");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/prng");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/process");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/regex");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/select");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/setjmp");
-	aa_extend_from_dir(&aa, 2, "/seed/1/src/protomusl/src/setjmp/x86_64");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/signal");
-	aa_extend_from_dir(&aa, 2, "/seed/1/src/protomusl/src/signal/x86_64");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/stat");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/stdio");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/stdlib");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/string");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/temp");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/termios");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/thread");
-	aa_extend_from_dir(&aa, 2, "/seed/1/src/protomusl/src/thread/x86_64");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/time");
-	aa_extend_from_dir(&aa, 1, "/seed/1/src/protomusl/src/unistd");
-	mass_compile(cc, CFLAGS, "/seed/1/src/protomusl/src", &aa,
-			"/stage/1/tmp/protomusl",
-			"/stage/1/lib/protomusl/libc.a");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/conf");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/ctype");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/dirent");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/env");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/errno");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/exit");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/fcntl");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/fenv");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/internal");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/ldso");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/legacy");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/linux");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/locale");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/malloc");
+	aa_extend_from_dir(&aa, 2, "/1/src/protomusl/src/malloc/mallocng");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/math");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/misc");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/mman");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/multibyte");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/network");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/passwd");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/prng");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/process");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/regex");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/select");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/setjmp");
+	aa_extend_from_dir(&aa, 2, "/1/src/protomusl/src/setjmp/x86_64");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/signal");
+	aa_extend_from_dir(&aa, 2, "/1/src/protomusl/src/signal/x86_64");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/stat");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/stdio");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/stdlib");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/string");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/temp");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/termios");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/thread");
+	aa_extend_from_dir(&aa, 2, "/1/src/protomusl/src/thread/x86_64");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/time");
+	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/unistd");
+	mass_compile(cc, CFLAGS, "/1/src/protomusl/src", &aa,
+			"/1/tmp/protomusl/",
+			"/1/out/protomusl/lib/libc.a");
 
 	log(STDOUT, "Compiling crt bits of protomusl...");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INTERNAL_INCLUDES, "-DCRT",
-		"-c", "/seed/1/src/protomusl/crt/crt1.c",
-		"-o", "/stage/1/lib/protomusl/crt1.o");
+		"-c", "/1/src/protomusl/crt/crt1.c",
+		"-o", "/1/out/protomusl/lib/crt1.o");
 	run0(cc, TCC_ARGS_NOSTD, "-DCRT",
-		"-c", "/seed/1/src/protomusl/crt/x86_64/crti.s",
-		"-o", "/stage/1/lib/protomusl/crti.o");
+		"-c", "/1/src/protomusl/crt/crti.c",
+		"-o", "/1/out/protomusl/lib/crti.o");
 	run0(cc, TCC_ARGS_NOSTD, "-DCRT",
-		"-c", "/seed/1/src/protomusl/crt/x86_64/crtn.s",
-		"-o", "/stage/1/lib/protomusl/crtn.o");
+		"-c", "/1/src/protomusl/crt/crtn.c",
+		"-o", "/1/out/protomusl/lib/crtn.o");
 }
 
 
@@ -503,13 +501,13 @@ void test_example_1st_time_nostd(const char* cc) {
 	log(STDOUT, "Linking an example (1st time)...");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES,
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
-		"/seed/1/src/hello.c",
+		"/1/src/hello.c",
 		PROTOMUSL_NOSTD_LDFLAGS_POST,
-		"/stage/1/lib/tinycc/libtcc1.a",
-		"-o", "/stage/1/tmp/protomusl-hello");
+		"/1/out/tinycc/lib/libtcc1.a",
+		"-o", "/1/tmp/protomusl-hello");
 
 	log(STDOUT, "Executing an example...");
-	run(42, "/stage/1/tmp/protomusl-hello");
+	run(42, "/1/tmp/protomusl-hello");
 }
 
 
@@ -524,41 +522,41 @@ void compile_libtcc1(const char* cc) {
 		// now we can compile more
 		"tcov.c", "bcheck.c", "alloca-bt.S",
 	0};
-	mass_compile(cc, CFLAGS, "/seed/1/src/tinycc/lib", SOURCES,
-			"/stage/1/tmp/tinycc/libtcc1",
-			"/stage/1/lib/tinycc/libtcc1.a");
+	mass_compile(cc, CFLAGS, "/1/src//tinycc/lib", SOURCES,
+			"/1/tmp/tinycc/libtcc1",
+			"/1/out/tinycc/lib/libtcc1.a");
 }
 
 #define TCC_CFLAGS \
-		"-I/seed/1/src/tinycc", \
-		"-I/seed/1/src/tinycc/include", \
-		"-I/stage/1/tmp/tinycc/gen", \
+		"-I/1/src/tinycc", \
+		"-I/1/src/tinycc/include", \
+		"-I/1/tmp/tinycc/gen", \
 		"-DTCC_VERSION=\"mob-git1645616\"", \
 		"-DTCC_GITHASH=\"mob:164516\"", \
 		"-DTCC_TARGET_X86_64", \
 		"-DTCC_MUSL", \
 		"-DONE_SOURCE=0", \
-		"-DCONFIG_TCCDIR=\"/stage/1/lib/tinycc\"", \
-		"-DCONFIG_TCC_SYSINCLUDEPATHS=\"/stage/1/include/protomusl\"", \
-		"-DCONFIG_TCC_LIBPATHS=\"/stage/1/lib/protomusl\"", \
-		"-DCONFIG_TCC_CRTPREFIX=\"/stage/1/lib/protomusl\"", \
+		"-DCONFIG_TCCDIR=\"/1/out/tinycc/lib\"", \
+		"-DCONFIG_TCC_SYSINCLUDEPATHS=\"/1/out/protomusl/include\"", \
+		"-DCONFIG_TCC_LIBPATHS=\"/1/out/protomusl/lib\"", \
+		"-DCONFIG_TCC_CRTPREFIX=\"/1/out/protomusl/lib\"", \
 		"-DCONFIG_TCC_ELFINTERP=\"/sorry/not/yet\"", \
 		"-DCONFIG_TCC_PREDEFS=1"
 
 void compile_tcc_1st_time_nostd(const char* cc) {
 	log(STDOUT, "Compiling tcc's conftest...");
+	mkdirs_at("/1/tmp/tinycc", "gen", "lib", "bin");
+	mkdirs_at("/1/out/tinycc", "lib", "bin");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES,
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
-		"-DC2STR", "/seed/1/src/tinycc/conftest.c",
+		"-DC2STR", "/1/src/tinycc/conftest.c",
 		PROTOMUSL_NOSTD_LDFLAGS_POST,
-		"/stage/1/lib/tinycc/libtcc1.a",
-		"-o", "/stage/1/tmp/tinycc/tcc-conftest"
+		"/1/out/tinycc/lib/libtcc1.a",
+		"-o", "/1/tmp/tinycc/conftest"
 		);
 	log(STDOUT, "Generating tccdefs_.h with conftest...");
-	mkdir("/stage/1/tmp/tinycc/gen/", 0777);
-	run0("/stage/1/tmp/tinycc/tcc-conftest",
-		"/seed/1/src/tinycc/include/tccdefs.h",
-		"/stage/1/tmp/tinycc/gen/tccdefs_.h");
+	run0("/1/tmp/tinycc/conftest", "/1/src/tinycc/include/tccdefs.h",
+		"/1/tmp/tinycc/gen/tccdefs_.h");
 
 	log(STDOUT, "Compiling libtcc...");
 	const char* CFLAGS[] = {
@@ -570,18 +568,17 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 		"libtcc.c", "tccpp.c", "tccgen.c", "tccelf.c", "tccasm.c",
 		"tccrun.c", "x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
 	0};
-	mass_compile(cc, CFLAGS, "/seed/1/src/tinycc", SOURCES,
-		"/stage/1/tmp/tinycc/libtcc",
-		"/stage/1/lib/tinycc/libtcc.a");
+	mass_compile(cc, CFLAGS, "/1/src/tinycc", SOURCES,
+		"/1/tmp/tinycc/libtcc",
+		"/1/out/tinycc/lib/libtcc.a");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES, TCC_CFLAGS,
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
-		"/seed/1/src/tinycc/tcc.c",
-		"/stage/1/lib/tinycc/libtcc.a",
+		"/1/src/tinycc/tcc.c",
+		"/1/out/tinycc/lib/libtcc.a",
 		PROTOMUSL_NOSTD_LDFLAGS_POST,
-		"/stage/1/lib/tinycc/libtcc1.a",
-		"-o", "/stage/1/bin/tcc"
-		);
-	run0("/stage/1/bin/tcc", "-print-search-dirs");
+		"/1/out/tinycc/lib/libtcc1.a",
+		"-o", "/1/out/tinycc/bin/tcc");
+	run0("/1/out/tinycc/bin/tcc", "-print-search-dirs");
 }
 
 
@@ -596,29 +593,28 @@ void compile_tcc(const char* cc) {
 		"libtcc.c", "tccpp.c", "tccgen.c", "tccelf.c", "tccasm.c",
 		"tccrun.c", "x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
 	0};
-	mass_compile(cc, CFLAGS, "/seed/1/src/tinycc", SOURCES,
-		"/stage/1/tmp/tinycc/libtcc", "/stage/1/lib/tinycc/libtcc.a");
+	mass_compile(cc, CFLAGS, "/1/src/tinycc", SOURCES,
+		"/1/tmp/tinycc/libtcc", "/1/out/tinycc/lib/libtcc.a");
 	run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, TCC_CFLAGS, "-static",
-		"/seed/1/src/tinycc/tcc.c", "/stage/1/lib/tinycc/libtcc.a",
-		"-o", "/stage/1/bin/tcc");
+		"/1/src/tinycc/tcc.c", "/1/out/tinycc/lib/libtcc.a",
+		"-o", "/1/out/tinycc/bin/tcc");
 }
 
 void test_example_intermediate(const char* cc) {
 	log(STDOUT, "Linking an example (our tcc, includes not installed)...");
 	run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, "-static",
-		"/seed/1/src/hello.c", "-o", "/stage/1/tmp/protomusl-hello");
+		"/1/src/hello.c", "-o", "/1/tmp/protomusl-hello");
 
 	log(STDOUT, "Executing an example...");
-	run(42, "/stage/1/tmp/protomusl-hello");
+	run(42, "/1/tmp/protomusl-hello");
 }
 
 void test_example_final(const char* cc_wrapper) {
 	log(STDOUT, "Linking an example (wrapped tcc, includes installed)...");
-	run0(cc_wrapper, "/seed/1/src/hello.c",
-			"-o", "/stage/1/tmp/protomusl-hello");
+	run0(cc_wrapper, "/1/src/hello.c", "-o", "/1/tmp/protomusl-hello");
 
 	log(STDOUT, "Executing an example...");
-	run(42, "/stage/1/tmp/protomusl-hello");
+	run(42, "/1/tmp/protomusl-hello");
 }
 
 
@@ -628,9 +624,9 @@ void compile_standalone_busybox_applets(const char* cc) {
 	log(STDOUT, "Compiling protolibbb...");
 	const char* CFLAGS[] = {
 		TCC_ARGS, PROTOMUSL_INCLUDES,
-		"-I/seed/1/src/protobusybox/include/",
-		"-I/seed/1/src/protobusybox/libbb/",
-		"-I/seed/1/src/",
+		"-I/1/src/protobusybox/include/",
+		"-I/1/src/protobusybox/libbb/",
+		"-I/1/src/",
 		"-include", "protobusybox.h",
 	0};
 	const char* SOURCES[] = {
@@ -690,103 +686,103 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"xregcomp.c",
 	0};
 	mass_compile(cc, CFLAGS,
-			"/seed/1/src/protobusybox/libbb", SOURCES,
-			"/stage/1/tmp/protobusybox/libbb",
-			"/stage/1/tmp/protobusybox/libbb.a");
+			"/1/src/protobusybox/libbb", SOURCES,
+			"/1/tmp/protobusybox/libbb",
+			"/1/tmp/protobusybox/libbb.a");
 
 
 	log(STDOUT, "Compiling standalone protobusybox applets...");
+	mkreqdirs("/1/out/protobusybox/bin/");
 	#define compile_applet(applet_name, files...) \
 			run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, \
 					"-static", \
-					"-I/seed/1/src/protobusybox/include", \
-					"-I/seed/1/src/", \
+					"-I/1/src/protobusybox/include", \
+					"-I/1/src/", \
 					"-include", "protobusybox.h", \
 					"-DAPPLET_MAIN=" applet_name "_main", \
-					"/seed/1/src/protobusybox.c", \
+					"/1/src/protobusybox.c", \
 					## files, \
-					"/stage/1/tmp/protobusybox/libbb.a", \
-					"-o", "/stage/1/bin/" applet_name);
-compile_applet("uname", "/seed/1/src/protobusybox/coreutils/uname.c");
-run0("/stage/1/bin/uname");
+					"/1/tmp/protobusybox/libbb.a", \
+					"-o", \
+					"/1/out/protobusybox/bin/" applet_name);
+	compile_applet("echo", "/1/src/protobusybox/coreutils/echo.c")
+	run0("/1/out/protobusybox/bin/echo", "Hello from protobusybox!");
 
-	compile_applet("echo", "/seed/1/src/protobusybox/coreutils/echo.c")
-	run0("/stage/1/bin/echo", "Hello from protobusybox!");
-
-	#define BB_SRC "/seed/1/src/protobusybox"
 	compile_applet("ash",
-			BB_SRC "/shell/shell_common.c",
-			BB_SRC "/shell/ash_ptr_hack.c",
-			BB_SRC "/shell/math.c",
-			BB_SRC "/coreutils/printf.c",
-			BB_SRC "/coreutils/test_ptr_hack.c",
-			BB_SRC "/coreutils/test.c",
-			BB_SRC "/shell/ash.c")
-	run(42, "/stage/1/bin/ash", "-c",
-			"printf 'Hello from ash!\n'; exit 42");
+		"/1/src/protobusybox/shell/shell_common.c",
+		"/1/src/protobusybox/shell/ash_ptr_hack.c",
+		"/1/src/protobusybox/shell/math.c",
+		"/1/src/protobusybox/coreutils/printf.c",
+		"/1/src/protobusybox/coreutils/test_ptr_hack.c",
+		"/1/src/protobusybox/coreutils/test.c",
+		"/1/src/protobusybox/shell/ash.c")
+	run(42, "/1/out/protobusybox/bin/ash", "-c",
+		"printf 'Hello from ash!\n'; exit 42");
 
-	compile_applet("cat", BB_SRC "/coreutils/cat.c")
-	compile_applet("chmod", BB_SRC "/coreutils/chmod.c")
+	compile_applet("cat", "/1/src/protobusybox/coreutils/cat.c")
+	compile_applet("chmod", "/1/src/protobusybox/coreutils/chmod.c")
 	compile_applet("cp",
-			BB_SRC "/coreutils/libcoreutils/cp_mv_stat.c",
-			BB_SRC "/coreutils/cp.c");
-	compile_applet("cut", BB_SRC "/coreutils/cut.c");
-	compile_applet("expr", BB_SRC "/coreutils/expr.c");
-	compile_applet("head", BB_SRC "/coreutils/head.c");
-	compile_applet("ln", BB_SRC "/coreutils/ln.c");
-	compile_applet("ls", BB_SRC "/coreutils/ls.c");
-	compile_applet("mkdir", BB_SRC "/coreutils/mkdir.c");
+		"/1/src/protobusybox/coreutils/libcoreutils/cp_mv_stat.c",
+		"/1/src/protobusybox/coreutils/cp.c");
+	compile_applet("cut", "/1/src/protobusybox/coreutils/cut.c");
+	compile_applet("expr", "/1/src/protobusybox/coreutils/expr.c");
+	compile_applet("head", "/1/src/protobusybox/coreutils/head.c");
+	compile_applet("ln", "/1/src/protobusybox/coreutils/ln.c");
+	compile_applet("ls", "/1/src/protobusybox/coreutils/ls.c");
+	compile_applet("mkdir", "/1/src/protobusybox/coreutils/mkdir.c");
 	compile_applet("mv",
-			BB_SRC "/coreutils/libcoreutils/cp_mv_stat.c",
-			BB_SRC "/coreutils/mv.c");
-	compile_applet("rm", BB_SRC "/coreutils/rm.c");
-	compile_applet("rmdir", BB_SRC "/coreutils/rmdir.c");
-	compile_applet("sleep", BB_SRC "/coreutils/sleep.c");
-	compile_applet("sort", BB_SRC "/coreutils/sort.c");
-	compile_applet("tr", BB_SRC "/coreutils/tr.c");
-	compile_applet("uname", BB_SRC "/coreutils/uname.c");
-	compile_applet("uniq", BB_SRC "/coreutils/uniq.c");
+		"/1/src/protobusybox/coreutils/libcoreutils/cp_mv_stat.c",
+		"/1/src/protobusybox/coreutils/mv.c");
+	compile_applet("rm", "/1/src/protobusybox/coreutils/rm.c");
+	compile_applet("rmdir", "/1/src/protobusybox/coreutils/rmdir.c");
+	compile_applet("sleep", "/1/src/protobusybox/coreutils/sleep.c");
+	compile_applet("sort", "/1/src/protobusybox/coreutils/sort.c");
+	compile_applet("tr", "/1/src/protobusybox/coreutils/tr.c");
+	compile_applet("uname", "/1/src/protobusybox/coreutils/uname.c");
+	compile_applet("uniq", "/1/src/protobusybox/coreutils/uniq.c");
 
-	compile_applet("awk", BB_SRC "/editors/awk.c");
-	compile_applet("diff", BB_SRC "/editors/diff.c");
-	compile_applet("sed", BB_SRC "/editors/sed.c");
+	compile_applet("awk", "/1/src/protobusybox/editors/awk.c");
+	compile_applet("diff", "/1/src/protobusybox/editors/diff.c");
+	compile_applet("sed", "/1/src/protobusybox/editors/sed.c");
 
-	compile_applet("grep", BB_SRC "/findutils/grep.c");
+	compile_applet("grep", "/1/src/protobusybox/findutils/grep.c");
 }
 
 
 // Little things we'll do now when we have a shell /////////////////////////////
 
 void verify_tcc_stability(void) {
-	run0("/stage/1/bin/cp", "/stage/1/bin/tcc", "/stage/1/tmp/tcc-bak");
-	compile_tcc("/stage/1/bin/tcc");
-	run0("/stage/1/bin/diff", "/stage/1/bin/tcc", "/stage/1/tmp/tcc-bak");
+	run0("/1/out/protobusybox/bin/cp",
+		"/1/out/tinycc/bin/tcc", "/1/tmp/tcc-bak");
+	compile_tcc("/1/out/tinycc/bin/tcc");
+	run0("/1/out/protobusybox/bin/diff",
+		"/1/out/tinycc/bin/tcc", "/1/tmp/tcc-bak");
 }
 
 void compose_stage2(void) {
-	run0("/stage/1/bin/mkdir", "-p", "/seed/1/include/protomusl");
-	run0("/stage/1/bin/ash", "-uexvc", "
-		/stage/1/bin/rm -rf /stage/1/include
-		/stage/1/bin/mkdir -p /stage/1/include/protomusl
-		/stage/1/bin/cp -r \
-			/seed/1/src/protomusl/stage0-generated/sed1/bits \
-			/seed/1/src/protomusl/stage0-generated/sed2/bits \
-			/seed/1/src/protomusl/arch/generic/* \
-			/seed/1/src/protomusl/arch/x86_64/* \
-			/seed/1/src/protomusl/include/* \
-			/stage/1/include/protomusl/
+	run0("/1/out/protobusybox/bin/ash", "-uexvc", "
+		/1/out/protobusybox/bin/rm -rf /1/out/protomusl/include
+		/1/out/protobusybox/bin/mkdir -p /1/out/protomusl/include
+		/1/out/protobusybox/bin/cp -r \
+			/1/src/protomusl/host-generated/sed1/bits \
+			/1/src/protomusl/host-generated/sed2/bits \
+			/1/src/protomusl/arch/generic/* \
+			/1/src/protomusl/arch/x86_64/* \
+			/1/src/protomusl/include/* \
+			/1/out/protomusl/include/
 	");
 }
 
 
 void wrap_tcc_tools(void) {
-	#define EXECTCC "#!/stage/1/bin/ash\nexec /stage/1/bin/tcc"
+	#define EXECTCC "#!/1/out/protobusybox/bin/ash\n" \
+			"exec /1/out/tinycc/bin/tcc"
 	#define PASSTHROUGH "\\\"\\$@\\\"" //  i.e., \"\$@\", i.e, "$@"
-	run0("/stage/1/bin/ash", "-uexvc", "
-		PATH=/stage/1/bin
-		mkdir -p /stage/1/wrappers/tcc; cd /stage/1/wrappers/tcc
+	run0("/1/out/protobusybox/bin/ash", "-uexvc", "
+		PATH=/1/out/protobusybox/bin
+		mkdir -p /1/out/tinycc/wrappers; cd /1/out/tinycc/wrappers
 		_TCC_ARGS='-g'
-		_CPP_ARGS=\"$_TCC_ARGS -I/stage/1/include/protomusl\"
+		_CPP_ARGS=\"$_TCC_ARGS -I/1/out/protomusl/include\"
 		_LD_ARGS='-static'
 		echo -e \"" EXECTCC " $_TCC_ARGS $_LD_ARGS " PASSTHROUGH"\" > cc
 		echo -e \"" EXECTCC " -E $_CPP_ARGS " PASSTHROUGH"\" > cpp
@@ -794,6 +790,10 @@ void wrap_tcc_tools(void) {
 		echo -e \"" EXECTCC " -ar " PASSTHROUGH "\" > ar
 		chmod +x cc cpp ld ar
 	");
+}
+
+void clean_up(void) {
+	run0("/1/out/protobusybox/bin/rm", "-r", "/1/tmp");
 }
 
 
@@ -806,41 +806,42 @@ int _start() {
 	log(STDOUT, "Hello from stage1!");
 
 	log(STDOUT, "Creating directories...");
-	mkdirs_at("/stage/1", "bin", "lib", "include", "tmp");
+	mkdirs_at("/1", "/tmp", "/out");
 	sanity_test();
 
 	// starting with the seeded TCC
-	compile_libtcc1_1st_time_nostd("/seed/1/bin/tcc");
-	compile_protomusl("/seed/1/bin/tcc");
-	test_example_1st_time_nostd("/seed/1/bin/tcc");
+	compile_libtcc1_1st_time_nostd("/0/out/tcc-seed");
+	compile_protomusl("/0/out/tcc-seed");
+	test_example_1st_time_nostd("/0/out/tcc-seed");
 
 	// build the first TCC that comes from our sources
-	compile_tcc_1st_time_nostd("/seed/1/bin/tcc");
-	test_example_intermediate("/stage/1/bin/tcc");
+	compile_tcc_1st_time_nostd("/0/out/tcc-seed");
+	test_example_intermediate("/1/out/tinycc/bin/tcc");
 	// rebuild everything with it
-	compile_libtcc1("/stage/1/bin/tcc");
-	compile_protomusl("/stage/1/bin/tcc");
-	test_example_intermediate("/stage/1/bin/tcc");
+	compile_libtcc1("/1/out/tinycc/bin/tcc");
+	compile_protomusl("/1/out/tinycc/bin/tcc");
+	test_example_intermediate("/1/out/tinycc/bin/tcc");
 
 	// this is the final tcc we'll build, should not be worth repeating
-	compile_tcc("/stage/1/bin/tcc");
+	compile_tcc("/1/out/tinycc/bin/tcc");
 	// recompile everything else with the final tcc (could be an overkill)
-	compile_libtcc1("/stage/1/bin/tcc");
-	compile_protomusl("/stage/1/bin/tcc");
-	test_example_intermediate("/stage/1/bin/tcc");
+	compile_libtcc1("/1/out/tinycc/bin/tcc");
+	compile_protomusl("/1/out/tinycc/bin/tcc");
+	test_example_intermediate("/1/out/tinycc/bin/tcc");
 
-	compile_standalone_busybox_applets("/stage/1/bin/tcc");
+	compile_standalone_busybox_applets("/1/out/tinycc/bin/tcc");
 
 	verify_tcc_stability();
 	compose_stage2();
 	wrap_tcc_tools();
-	test_example_final("/stage/1/wrappers/tcc/cc");
-	run0("/stage/1/bin/rm", "-r", "/stage/1/tmp");
+	test_example_final("/1/out/tinycc/wrappers/cc");
+	clean_up();
 
 	log(STDOUT, "--- stage 1 cutoff point ---");
 
-	char* STAGE2_ARGS[] = {"/seed/2/src/stage2.sh", NULL};
-	assert(execve("/seed/2/src/stage2.sh", STAGE2_ARGS, NULL));
+	char* STAGE2_ARGS[] = {"/2/src/stage2.sh", NULL};
+	assert(execve("/2/src/stage2.sh", STAGE2_ARGS, NULL));
 
-	return 99;  // should be unreacheable
+	log(STDERR, "could not exec into stage 2!");
+	return 99;
 }

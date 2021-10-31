@@ -1,4 +1,4 @@
-#!/stage/1/bin/ash
+#!/1/out/protobusybox/bin/ash
 set -uex
 
 # just a stub for now

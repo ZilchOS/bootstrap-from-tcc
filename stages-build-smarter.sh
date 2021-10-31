@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 # Theoretically all that it does could be
-# exec env -i unshare -nrR arena \
-#	/seed/1/bin/tcc -nostdinc -nostdlib -run /seed/1/src/stage1.c
-# e.g., just running stage1.c inside arena with env unset, no net and E[UG]ID=0.
-#
+#     ./seed.sh
+#     exec env -i unshare -nrR stage \
+#         /0/out/tcc-seed -nostdinc -nostdlib -run /1/src/stage1.c
+# e.g., just running stage1.c inside stage with env unset, no net and E[UG]ID=0.
+
 # But during debugging it's useful to re-run just parts of that,
 # so, here's a smarter version.
 
@@ -28,69 +29,58 @@ cut_log_up_to_stage() {
 	fi
 }
 
+
+## stages 0 and 1 ##############################################################
+
 STAGE_1_NEEDS_REBUILD=false
 STAGE_1_SOME_INPUTS=( tcc-seed syscall.h stage1.c hello.c protobusybox.{c,h} )
 STAGE_1_SOME_OUTPUTS=(
-	arena/stage/1/lib/protomusl/libc.a
-	arena/stage/1/lib/tinycc/libtcc{,1}.a
-	arena/stage/1/bin/{tcc,ash,chmod,cp,grep,ln,mkdir,mv}
-	arena/stage/1/include/protomusl
-	arena/stage/1/wrappers/tcc/{cc,cpp,ld,ar}
+	stage/1/out/protomusl/lib/{libc.a,crt{1,i,n}.o}
+	stage/1/out/protomusl/include
+	stage/1/out/tinycc/bin/tcc
+	stage/1/out/tinycc/lib/libtcc{,1}.a
+	stage/1/out/tinycc/wrappers/{cc,cpp,ld,ar}
+	stage/1/out/protobusybox/bin/{ash,chmod,cp,grep,ln,mkdir,mv}
 )
-for s1out in ${STAGE_1_SOME_OUTPUTS[@]}; do
-	[[ -e $s1out ]] || STAGE_1_NEEDS_REBUILD=true
-done
-for f in arena/seed/1/*/* ${STAGE_1_SOME_INPUTS[@]}; do
-	for o in arena/stage/1/{lib,bin,include}/* ${STAGE_1_SOME_OUTPUTS[@]}
-	do
-		[[ $o -nt $f ]] || STAGE_1_NEEDS_REBUILD=true
+for o in ${STAGE_1_SOME_OUTPUTS[@]}; do
+	[[ -e $o ]] || { STAGE_1_NEEDS_REBUILD=true; break; }
+	for f in ${STAGE_1_SOME_INPUTS[@]}; do
+		[[ $o -nt $f ]] || { STAGE_1_NEEDS_REBUILD=true; break; }
 	done
 done
 
-
 if $STAGE_1_NEEDS_REBUILD; then
-	if [[ tcc-seed -nt arena/seed/1/bin/tcc ]]; then
-		exec ./stages-build.sh
-	fi
-	cp stage1.c hello.c protobusybox.[ch] syscall.h arena/seed/1/src/
-	cp stage2.sh arena/seed/2/src/
-	cp stage2.sh arena/seed/3/src/
-	env -i unshare -nrR arena \
-		/seed/1/bin/tcc -nostdinc -nostdlib -run /seed/1/src/stage1.c \
-			2>&1 | tee log
+	./seed.sh
+	env -i unshare -nrR stage \
+		/0/out/tcc-seed -nostdinc -nostdlib -run /1/src/stage1.c \
+			| tee log
 	EX=${PIPESTATUS[0]}; echo "--- stage 1+ exit code $EX ---"; exit $EX
 fi
 
 
+## stage 2 #####################################################################
+
 STAGE_2_NEEDS_REBUILD=false
-STAGE_2_SOME_INPUTS=(
-	"stage2.sh"
-)
-STAGE_2_SOME_OUTPUTS=(
-	"arena/stage/2/bin/gnumake"
-)
-for s2out in ${STAGE_2_SOME_OUTPUTS[@]}; do
-	[[ -e $s2out ]] || STAGE_2_NEEDS_REBUILD=true
-	echo $s2out $STAGE_2_NEEDS_REBUILD
-done
-for f in arena/seed/2/*/* ${STAGE_2_SOME_INPUTS[@]} ${STAGE_1_SOME_OUTPUTS[@]}
-do
-	for o in arena/stage/2/bin/* ${STAGE_2_SOME_OUTPUTS[@]}; do
-		[[ $o -nt $f ]] || STAGE_2_NEEDS_REBUILD=true
-		echo - $f $o $STAGE_2_NEEDS_REBUILD
+STAGE_2_SOME_INPUTS=( "stage2.sh" )
+STAGE_2_SOME_OUTPUTS=( "stage/2/out/gnumake/bin/gnumake" )
+for o in ${STAGE_2_SOME_OUTPUTS[@]}; do
+	[[ -e $o ]] || { STAGE_2_NEEDS_REBUILD=true; break; }
+	for f in ${STAGE_2_SOME_INPUTS[@]}; do
+		[[ $o -nt $f ]] || { STAGE_2_NEEDS_REBUILD=true; break; }
 	done
 done
 
-
 if $STAGE_2_NEEDS_REBUILD; then
-	cp stage2.sh arena/seed/2/src/
-	cp stage3.sh arena/seed/3/src/
+	./seed.sh 2; ./seed.sh 3
 	cut_log_up_to_stage 1
-	env -i unshare -nrR arena /seed/2/src/stage2.sh 2>&1 | tee -a log
+	env -i unshare -nrR stage /2/src/stage2.sh 2>&1 | tee -a log
 	EX=${PIPESTATUS[0]}; echo "--- stage 2+ exit code $EX ---"; exit $EX
 fi
 
-cp stage3.sh arena/seed/3/src/
+
+## stage 3 #####################################################################
+
+./seed.sh 3
 cut_log_up_to_stage 2
-env -i unshare -nrR arena /seed/3/src/stage3.sh 2>&1 | tee -a log
+env -i unshare -nrR stage /3/src/stage3.sh 2>&1 | tee -a log
 EX=${PIPESTATUS[0]}; echo "--- stage 3+ exit code $EX ---"; exit $EX
