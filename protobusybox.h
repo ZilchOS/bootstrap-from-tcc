@@ -51,6 +51,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define ENABLE_FEATURE_SYSLOG 0
 #define ENABLE_FEATURE_TOPMEM 1
 #define ENABLE_FEATURE_TOP_SMP_PROCESS 0
+#define ENABLE_FEATURE_TOUCH_SUSV3 1
 #define ENABLE_FEATURE_TR_CLASSES 0
 #define ENABLE_FEATURE_TR_EQUIV 0
 #define ENABLE_FEATURE_USE_SENDFILE 0
@@ -112,6 +113,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define IF_FEATURE_SHOW_THREADS(...)
 #define IF_FEATURE_SH_MATH(...) __VA_ARGS__
 #define IF_FEATURE_TIMEZONE(...)
+#define IF_FEATURE_TOUCH_SUSV3(...) __VA_ARGS__
 #define IF_FEATURE_VERBOSE(...)
 #define IF_FGCONSOLE(...)
 #define IF_GUNZIP(...)
@@ -125,6 +127,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define IF_LZOP(...)
 #define IF_LZOPCAT(...)
 #define IF_NOT_DESKTOP(...) __VA_ARGS__
+#define IF_NOT_FEATURE_TOUCH_SUSV3(...)
 #define IF_OPENVT(...)
 #define IF_PRINTF(...) __VA_ARGS__
 #define IF_RESET(...)
