@@ -719,6 +719,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 	run(42, "/1/out/protobusybox/bin/ash", "-c",
 		"printf 'Hello from ash!\n'; exit 42");
 
+	compile_applet("basename", "/1/src/protobusybox/coreutils/basename.c")
 	compile_applet("cat", "/1/src/protobusybox/coreutils/cat.c")
 	compile_applet("chmod", "/1/src/protobusybox/coreutils/chmod.c")
 	compile_applet("cp",
