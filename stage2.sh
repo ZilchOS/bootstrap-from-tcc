@@ -43,8 +43,31 @@ ash ./configure \
 mkdir -p /2/out/gnumake/bin
 cp make /2/out/gnumake/bin/gnumake
 
+
+echo 'Building binutils'
+rm -rf /2/tmp/binutils
+cp -ra /2/src/binutils /2/tmp/
+cd /2/tmp/binutils
+
+mkdir fakes; export PATH=/2/tmp/binutils/fakes:$PATH
+cp /1/out/protobusybox/bin/true fakes/makeinfo
+sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
+	missing install-sh mkinstalldirs
+export lt_cv_sys_max_cmd_len=32768
+
+ash configure \
+	CONFIG_SHELL=/1/out/protobusybox/bin/ash \
+	SHELL=/1/out/protobusybox/bin/ash \
+	CFLAGS='-D__LITTLE_ENDIAN__=1' \
+	--host x86_64-linux --build x86_64-linux \
+	--disable-bootstrap --disable-libquadmath \
+	--prefix=/2/out/binutils/
+/2/out/gnumake/bin/gnumake
+/2/out/gnumake/bin/gnumake install
+
+
 echo 'Cleaning up stage 2'
-rm -r /2/tmp
+rm -rf /2/tmp /dev /tmp
 echo '--- stage 2 cutoff point ---'
 exec /3/src/stage3.sh
 exit 99

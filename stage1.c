@@ -744,7 +744,9 @@ void compile_standalone_busybox_applets(const char* cc) {
 	compile_applet("rmdir", "/1/src/protobusybox/coreutils/rmdir.c");
 	compile_applet("sleep", "/1/src/protobusybox/coreutils/sleep.c");
 	compile_applet("sort", "/1/src/protobusybox/coreutils/sort.c");
+	compile_applet("touch", "/1/src/protobusybox/coreutils/touch.c");
 	compile_applet("tr", "/1/src/protobusybox/coreutils/tr.c");
+	compile_applet("true", "/1/src/protobusybox/coreutils/true.c");
 	compile_applet("uname", "/1/src/protobusybox/coreutils/uname.c");
 	compile_applet("uniq", "/1/src/protobusybox/coreutils/uniq.c");
 
@@ -789,6 +791,12 @@ void verify_tcc_stability(void) {
 
 void compose_stage2(void) {
 	run0("/1/out/protobusybox/bin/ash", "-uexvc", "
+		:> /1/tmp/empty.c
+		/1/out/tinycc/bin/tcc -c /1/tmp/empty.c -o /1/tmp/empty.o
+		/1/out/tinycc/bin/tcc -ar /1/tmp/empty.a /1/tmp/empty.o
+		/1/out/protobusybox/bin/cp /1/tmp/empty.a \
+			/1/out/protomusl/lib/libm.a
+
 		/1/out/protobusybox/bin/rm -rf /1/out/protomusl/include
 		/1/out/protobusybox/bin/mkdir -p /1/out/protomusl/include
 		/1/out/protobusybox/bin/cp -r \

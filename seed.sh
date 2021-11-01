@@ -82,10 +82,16 @@ if [[ $STAGENO == ALL || $STAGENO == 1 ]]; then
 fi
 
 
-## stage 2: gnumake, ??? #######################################################
+## stage 2: gnumake, busybox, gcc ##############################################
 
 if [[ $STAGENO == ALL || $STAGENO == 2 ]]; then
 	untar z downloads/make-4.3.tar.gz $STAGEDIR/2/src/gnumake
+	untar j downloads/busybox-1.34.1.tar.bz2 $STAGEDIR/2/src/busybox
+	untar J downloads/binutils-2.37.tar.xz $STAGEDIR/2/src/binutils
+	untar j downloads/gcc-4.7.4.tar.bz2 $STAGEDIR/2/src/gnugcc4
+	untar j downloads/gmp-4.3.2.tar.bz2 $STAGEDIR/2/src/gnugcc4/gmp
+	untar J downloads/mpfr-2.4.2.tar.xz $STAGEDIR/2/src/gnugcc4/mpfr
+	untar z downloads/mpc-0.8.1.tar.gz $STAGEDIR/2/src/gnugcc4/mpc
 	cp stage2.sh $STAGEDIR/2/src/
 fi
 
