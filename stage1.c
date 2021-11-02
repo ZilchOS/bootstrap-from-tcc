@@ -634,6 +634,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"auto_string.c",
 		"bb_cat.c",
 		"bb_getgroups.c",
+		"bb_pwd.c",
 		"bb_strtonum.c",
 		"compare_string_array.c",
 		"concat_path_file.c",
@@ -642,6 +643,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"copyfd.c",
 		"default_error_retval.c",
 		"endofname.c",
+		"executable.c",
 		"fclose_nonstdin.c",
 		"fflush_stdout_and_exit.c",
 		"full_write.c",
@@ -660,6 +662,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"perror_msg.c",
 		"printable_string.c",
 		"process_escape_sequence.c",
+		"procps.c",
 		"ptr_to_globals.c",
 		"read.c",
 		"read_printf.c",
@@ -669,6 +672,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"safe_strncpy.c",
 		"safe_write.c",
 		"signals.c",
+		"single_argv.c",
 		"skip_whitespace.c",
 		"sysconf.c",
 		"time.c",
@@ -726,6 +730,8 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"/1/src/protobusybox/coreutils/libcoreutils/cp_mv_stat.c",
 		"/1/src/protobusybox/coreutils/cp.c");
 	compile_applet("cut", "/1/src/protobusybox/coreutils/cut.c");
+	compile_applet("dirname", "/1/src/protobusybox/coreutils/dirname.c")
+	compile_applet("env", "/1/src/protobusybox/coreutils/env.c");
 	compile_applet("expr", "/1/src/protobusybox/coreutils/expr.c");
 	compile_applet("head", "/1/src/protobusybox/coreutils/head.c");
 	compile_applet("ln", "/1/src/protobusybox/coreutils/ln.c");
@@ -742,7 +748,28 @@ void compile_standalone_busybox_applets(const char* cc) {
 	compile_applet("uname", "/1/src/protobusybox/coreutils/uname.c");
 	compile_applet("uniq", "/1/src/protobusybox/coreutils/uniq.c");
 
+	#define LIBARCHIVE "/1/src/protobusybox/archival/libarchive"
+	compile_applet("tar",
+		LIBARCHIVE "/data_align.c",
+		LIBARCHIVE "/data_extract_all.c",
+		LIBARCHIVE "/data_extract_to_stdout.c",
+		LIBARCHIVE "/data_skip.c",
+		LIBARCHIVE "/filter_accept_all.c",
+		LIBARCHIVE "/filter_accept_reject_list.c",
+		LIBARCHIVE "/find_list_entry.c",
+		LIBARCHIVE "/get_header_tar.c",
+		LIBARCHIVE "/header_list.c",
+		LIBARCHIVE "/header_skip.c",
+		LIBARCHIVE "/header_verbose_list.c",
+		LIBARCHIVE "/init_handle.c",
+		LIBARCHIVE "/seek_by_jump.c",
+		LIBARCHIVE "/seek_by_read.c",
+		LIBARCHIVE "/unsafe_prefix.c",
+		LIBARCHIVE "/unsafe_symlink_target.c",
+		"/1/src/protobusybox/archival/tar.c");
+
 	compile_applet("awk", "/1/src/protobusybox/editors/awk.c");
+	compile_applet("cmp", "/1/src/protobusybox/editors/cmp.c");
 	compile_applet("diff", "/1/src/protobusybox/editors/diff.c");
 	compile_applet("sed", "/1/src/protobusybox/editors/sed.c");
 
