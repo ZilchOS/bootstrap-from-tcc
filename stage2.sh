@@ -65,7 +65,7 @@ ash configure \
 /2/out/gnumake/bin/gnumake
 /2/out/gnumake/bin/gnumake install
 
-export PATH=/3/out/binutils/bin:$PATH
+export PATH=/2/out/binutils/bin:$PATH
 
 
 echo 'Building GNU GCC 4'
@@ -77,6 +77,8 @@ sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
 	gcc/genmultilib */*.sh gcc/exec-tool.in \
 	install-sh */install-sh
 sed -i 's|^\(\s*\)sh |\1/1/out/protobusybox/bin/ash |' Makefile* */Makefile*
+sed -i 's|/lib64/ld-linux-x86-64.so.2|/2/out/musl/lib/libc.so|' \
+	gcc/config/i386/linux64.h
 rm -rf /2/out/gnugcc4/sys-root; mkdir -p /2/out/gnugcc4/sys-root
 ln -s /1/out/protomusl/lib /2/out/gnugcc4/sys-root/
 ln -s /1/out/protomusl/include /2/out/gnugcc4/sys-root/
@@ -99,6 +101,25 @@ ash configure \
 	--host x86_64-linux --build x86_64-linux
 /2/out/gnumake/bin/gnumake
 /2/out/gnumake/bin/gnumake install
+
+export PATH=/2/out/gnugcc4/bin:$PATH
+
+
+echo 'Building musl with gcc'
+rm -rf /2/tmp/musl
+cp -ra /2/src/musl /2/tmp/
+cd /2/tmp/musl
+sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' tools/*.sh
+mkdir -p /2/out/musl/bin
+ash ./configure --target x86_64-linux --prefix=/2/out/musl
+/2/out/gnumake/bin/gnumake
+/2/out/gnumake/bin/gnumake install
+ln -sfn /2/out/musl/lib /2/out/gnugcc4/sys-root/lib
+ln -sfn /2/out/musl/include /2/out/gnugcc4/sys-root/include
+
+/2/out/gnugcc4/bin/gcc /1/src/hello.c -o /2/tmp/hello
+/2/tmp/hello || hello_retcode=$?
+[ $hello_retcode == 42 ]
 
 
 echo 'Cleaning up stage 2'

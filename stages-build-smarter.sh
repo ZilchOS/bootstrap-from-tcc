@@ -66,6 +66,7 @@ STAGE_2_SOME_OUTPUTS=(
 	stage/2/out/gnumake/bin/gnumake
 	stage/2/out/binutils/bin/as
 	stage/2/out/gnugcc4/bin/gcc
+	stage/2/out/musl/lib/{libc.a,crt{1,i,n}.o}
 )
 for o in ${STAGE_2_SOME_OUTPUTS[@]}; do
 	[[ -e $o ]] || { STAGE_2_NEEDS_REBUILD=true; break; }

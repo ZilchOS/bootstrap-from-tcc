@@ -92,6 +92,7 @@ if [[ $STAGENO == ALL || $STAGENO == 2 ]]; then
 	untar j downloads/gmp-4.3.2.tar.bz2 $STAGEDIR/2/src/gnugcc4/gmp
 	untar J downloads/mpfr-2.4.2.tar.xz $STAGEDIR/2/src/gnugcc4/mpfr
 	untar z downloads/mpc-0.8.1.tar.gz $STAGEDIR/2/src/gnugcc4/mpc
+	untar z downloads/musl-1.2.2.tar.gz $STAGEDIR/2/src/musl
 	cp stage2.sh $STAGEDIR/2/src/
 fi
 
