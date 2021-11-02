@@ -48,8 +48,10 @@ fi
 if [[ -n "$@" ]]; then
 	mkdir -p stage/dev
 	touch stage/dev/null
-	_PATH='/2/out/gnumake/bin'
-	_PATH+=':/1/out/tinycc/wrappers'
+	_PATH='/2/out/gnugcc4/bin'
+	_PATH+=':/2/out/binutils/bin'
+	_PATH+=':/2/out/gnumake/bin'
+	#_PATH+=':/1/out/tinycc/wrappers'
 	_PATH+=':/1/out/protobusybox/bin'
 	env -i PATH=$_PATH \
 		$(command -v unshare) -nrR stage \

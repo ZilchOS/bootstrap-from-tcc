@@ -65,6 +65,41 @@ ash configure \
 /2/out/gnumake/bin/gnumake
 /2/out/gnumake/bin/gnumake install
 
+export PATH=/3/out/binutils/bin:$PATH
+
+
+echo 'Building GNU GCC 4'
+rm -rf /2/tmp/gnugcc4
+cp -ra /2/src/gnugcc4 /2/tmp/
+cd /2/tmp/gnugcc4
+sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
+	missing move-if-change mkdep mkinstalldirs symlink-tree \
+	gcc/genmultilib */*.sh gcc/exec-tool.in \
+	install-sh */install-sh
+sed -i 's|^\(\s*\)sh |\1/1/out/protobusybox/bin/ash |' Makefile* */Makefile*
+rm -rf /2/out/gnugcc4/sys-root; mkdir -p /2/out/gnugcc4/sys-root
+ln -s /1/out/protomusl/lib /2/out/gnugcc4/sys-root/
+ln -s /1/out/protomusl/include /2/out/gnugcc4/sys-root/
+ash configure \
+	CONFIG_SHELL='/1/out/protobusybox/bin/ash' \
+	SHELL='/1/out/protobusybox/bin/ash' \
+	--with-build-time-tools=/2/out/binutils/bin \
+	--prefix=/2/out/gnugcc4 \
+	--disable-bootstrap \
+	--disable-decimal-float \
+	--enable-languages=c \
+	--disable-multilib \
+	--disable-multiarch \
+	--disable-libmudflap --disable-libsanitizer \
+	--disable-libssp --disable-libmpx \
+	--disable-libquadmath \
+	--disable-libgomp \
+	--with-sysroot=/2/out/gnugcc4/sys-root \
+	--with-native-system-header-dir=/include \
+	--host x86_64-linux --build x86_64-linux
+/2/out/gnumake/bin/gnumake
+/2/out/gnumake/bin/gnumake install
+
 
 echo 'Cleaning up stage 2'
 rm -rf /2/tmp /dev /tmp
