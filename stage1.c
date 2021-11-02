@@ -352,8 +352,7 @@ void mass_compile(const char* cc, const void* compile_args,
 
 // Kinda boring parts /////////////////////////////////////////////////////////
 
-#define TCC_ARGS "-g"
-#define TCC_ARGS_NOSTD TCC_ARGS, "-nostdlib", "-nostdinc"
+#define TCC_ARGS_NOSTD "-nostdlib", "-nostdinc"
 
 
 void sanity_test() {
@@ -515,7 +514,7 @@ void test_example_1st_time_nostd(const char* cc) {
 
 void compile_libtcc1(const char* cc) {
 	log(STDOUT, "Recompiling libtcc1.a...");
-	const char* CFLAGS[] = { TCC_ARGS, "-DTCC_MUSL", PROTOMUSL_INCLUDES, 0};
+	const char* CFLAGS[] = { "-DTCC_MUSL", PROTOMUSL_INCLUDES, 0};
 	const char* SOURCES[] = {
 		"libtcc1.c", "alloca.S",
 		"dsohandle.c", "stdatomic.c", "va_list.c",
@@ -584,25 +583,21 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 
 void compile_tcc(const char* cc) {
 	log(STDOUT, "Recompiling libtcc...");
-	const char* CFLAGS[] = {
-		TCC_ARGS,
-		PROTOMUSL_INCLUDES,
-		TCC_CFLAGS,
-	0};
+	const char* CFLAGS[] = { PROTOMUSL_INCLUDES, TCC_CFLAGS, 0};
 	const char* SOURCES[] = {
 		"libtcc.c", "tccpp.c", "tccgen.c", "tccelf.c", "tccasm.c",
 		"tccrun.c", "x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
 	0};
 	mass_compile(cc, CFLAGS, "/1/src/tinycc", SOURCES,
 		"/1/tmp/tinycc/libtcc", "/1/out/tinycc/lib/libtcc.a");
-	run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, TCC_CFLAGS, "-static",
+	run0(cc, PROTOMUSL_INCLUDES, TCC_CFLAGS, "-static",
 		"/1/src/tinycc/tcc.c", "/1/out/tinycc/lib/libtcc.a",
 		"-o", "/1/out/tinycc/bin/tcc");
 }
 
 void test_example_intermediate(const char* cc) {
 	log(STDOUT, "Linking an example (our tcc, includes not installed)...");
-	run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, "-static",
+	run0(cc, PROTOMUSL_INCLUDES, "-static",
 		"/1/src/hello.c", "-o", "/1/tmp/protomusl-hello");
 
 	log(STDOUT, "Executing an example...");
@@ -623,7 +618,7 @@ void test_example_final(const char* cc_wrapper) {
 void compile_standalone_busybox_applets(const char* cc) {
 	log(STDOUT, "Compiling protolibbb...");
 	const char* CFLAGS[] = {
-		TCC_ARGS, PROTOMUSL_INCLUDES,
+		PROTOMUSL_INCLUDES,
 		"-I/1/src/protobusybox/include/",
 		"-I/1/src/protobusybox/libbb/",
 		"-I/1/src/",
@@ -698,7 +693,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 	log(STDOUT, "Compiling standalone protobusybox applets...");
 	mkreqdirs("/1/out/protobusybox/bin/");
 	#define compile_applet(applet_name, files...) \
-			run0(cc, TCC_ARGS, PROTOMUSL_INCLUDES, \
+			run0(cc, PROTOMUSL_INCLUDES, \
 					"-static", \
 					"-I/1/src/protobusybox/include", \
 					"-I/1/src/", \
@@ -817,10 +812,9 @@ void wrap_tcc_tools(void) {
 	run0("/1/out/protobusybox/bin/ash", "-uexvc", "
 		PATH=/1/out/protobusybox/bin
 		mkdir -p /1/out/tinycc/wrappers; cd /1/out/tinycc/wrappers
-		_TCC_ARGS='-g'
-		_CPP_ARGS=\"$_TCC_ARGS -I/1/out/protomusl/include\"
+		_CPP_ARGS=\"-I/1/out/protomusl/include\"
 		_LD_ARGS='-static'
-		echo -e \"" EXECTCC " $_TCC_ARGS $_LD_ARGS " PASSTHROUGH"\" > cc
+		echo -e \"" EXECTCC " $_LD_ARGS " PASSTHROUGH"\" > cc
 		echo -e \"" EXECTCC " -E $_CPP_ARGS " PASSTHROUGH"\" > cpp
 		echo -e \"" EXECTCC " $_LD_ARGS " PASSTHROUGH"\" > ld
 		echo -e \"" EXECTCC " -ar " PASSTHROUGH "\" > ar
