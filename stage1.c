@@ -791,6 +791,8 @@ void compose_stage2(void) {
 		/1/out/tinycc/bin/tcc -ar /1/tmp/empty.a /1/tmp/empty.o
 		/1/out/protobusybox/bin/cp /1/tmp/empty.a \
 			/1/out/protomusl/lib/libm.a
+		/1/out/protobusybox/bin/cp /1/tmp/empty.a \
+			/1/out/protomusl/lib/libpthread.a
 
 		/1/out/protobusybox/bin/rm -rf /1/out/protomusl/include
 		/1/out/protobusybox/bin/mkdir -p /1/out/protomusl/include
