@@ -636,7 +636,9 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"concat_subpath_file.c",
 		"copy_file.c",
 		"copyfd.c",
+		"crc32.c",
 		"default_error_retval.c",
+		"dump.c",
 		"endofname.c",
 		"executable.c",
 		"fclose_nonstdin.c",
@@ -655,6 +657,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"mode_string.c",
 		"parse_mode.c",
 		"perror_msg.c",
+		"perror_nomsg_and_die.c",
 		"printable_string.c",
 		"process_escape_sequence.c",
 		"procps.c",
@@ -673,6 +676,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"time.c",
 		"u_signal_names.c",
 		"verror_msg.c",
+		"vfork_daemon_rexec.c",
 		"wfopen.c",
 		"wfopen_input.c",
 		"xatonum.c",
@@ -729,12 +733,15 @@ void compile_standalone_busybox_applets(const char* cc) {
 	compile_applet("env", "/1/src/protobusybox/coreutils/env.c");
 	compile_applet("expr", "/1/src/protobusybox/coreutils/expr.c");
 	compile_applet("head", "/1/src/protobusybox/coreutils/head.c");
+	compile_applet("install", "/1/src/protobusybox/coreutils/install.c");
 	compile_applet("ln", "/1/src/protobusybox/coreutils/ln.c");
 	compile_applet("ls", "/1/src/protobusybox/coreutils/ls.c");
 	compile_applet("mkdir", "/1/src/protobusybox/coreutils/mkdir.c");
+	compile_applet("mktemp", "/1/src/protobusybox/coreutils/mktemp.c");
 	compile_applet("mv",
 		"/1/src/protobusybox/coreutils/libcoreutils/cp_mv_stat.c",
 		"/1/src/protobusybox/coreutils/mv.c");
+	compile_applet("od", "/1/src/protobusybox/coreutils/od.c");
 	compile_applet("rm", "/1/src/protobusybox/coreutils/rm.c");
 	compile_applet("rmdir", "/1/src/protobusybox/coreutils/rmdir.c");
 	compile_applet("sleep", "/1/src/protobusybox/coreutils/sleep.c");
@@ -744,8 +751,14 @@ void compile_standalone_busybox_applets(const char* cc) {
 	compile_applet("true", "/1/src/protobusybox/coreutils/true.c");
 	compile_applet("uname", "/1/src/protobusybox/coreutils/uname.c");
 	compile_applet("uniq", "/1/src/protobusybox/coreutils/uniq.c");
+	compile_applet("wc", "/1/src/protobusybox/coreutils/wc.c");
 
 	#define LIBARCHIVE "/1/src/protobusybox/archival/libarchive"
+	compile_applet("bzip2",
+		LIBARCHIVE "/decompress_bunzip2.c",
+		LIBARCHIVE "/open_transformer.c",
+		"/1/src/protobusybox/archival/bbunzip.c",
+		"/1/src/protobusybox/archival/bzip2.c");
 	compile_applet("tar",
 		LIBARCHIVE "/data_align.c",
 		LIBARCHIVE "/data_extract_all.c",
@@ -771,6 +784,8 @@ void compile_standalone_busybox_applets(const char* cc) {
 	compile_applet("sed", "/1/src/protobusybox/editors/sed.c");
 
 	compile_applet("grep", "/1/src/protobusybox/findutils/grep.c");
+	compile_applet("find", "/1/src/protobusybox/findutils/find.c");
+	compile_applet("xargs", "/1/src/protobusybox/findutils/xargs.c");
 }
 
 
@@ -786,6 +801,9 @@ void verify_tcc_stability(void) {
 
 void compose_stage2(void) {
 	run0("/1/out/protobusybox/bin/ash", "-uexvc", "
+		# FIXME REMOVE
+		/1/out/protobusybox/bin/install -m 755 /0/out/tcc-seed /x
+
 		:> /1/tmp/empty.c
 		/1/out/tinycc/bin/tcc -c /1/tmp/empty.c -o /1/tmp/empty.o
 		/1/out/tinycc/bin/tcc -ar /1/tmp/empty.a /1/tmp/empty.o

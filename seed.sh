@@ -64,6 +64,7 @@ if [[ $STAGENO == ALL || $STAGENO == 1 ]]; then
 		rm -f src/thread/__unmapself.c  # double-define
 		rm -f src/math/sqrtl.c  # tcc-incompatible
 		rm -f src/math/{acoshl,acosl,asinhl,asinl,hypotl}.c  # sqrtl dep
+		# FIXME: Forward path knowledge!
 		sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
 			src/stdio/popen.c src/process/system.c
 	popd
@@ -93,6 +94,8 @@ if [[ $STAGENO == ALL || $STAGENO == 2 ]]; then
 	untar J downloads/mpfr-2.4.2.tar.xz $STAGEDIR/2/src/gnugcc4/mpfr
 	untar z downloads/mpc-0.8.1.tar.gz $STAGEDIR/2/src/gnugcc4/mpc
 	untar z downloads/musl-1.2.2.tar.gz $STAGEDIR/2/src/musl
+	untar J downloads/linux-5.10.74.tar.xz $STAGEDIR/2/src/linux
+	untar j downloads/busybox-1.34.1.tar.bz2 $STAGEDIR/2/src/busybox
 	cp stage2.sh $STAGEDIR/2/src/
 fi
 

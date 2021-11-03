@@ -109,7 +109,9 @@ echo 'Building musl with gcc'
 rm -rf /2/tmp/musl
 cp -ra /2/src/musl /2/tmp/
 cd /2/tmp/musl
-sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' tools/*.sh
+sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
+	tools/*.sh \
+	src/stdio/popen.c src/process/system.c  # =(
 mkdir -p /2/out/musl/bin
 ash ./configure --target x86_64-linux --prefix=/2/out/musl
 /2/out/gnumake/bin/gnumake
@@ -120,6 +122,42 @@ ln -sfn /2/out/musl/include /2/out/gnugcc4/sys-root/include
 /2/out/gnugcc4/bin/gcc /1/src/hello.c -o /2/tmp/hello
 /2/tmp/hello || hello_retcode=$?
 [ $hello_retcode == 42 ]
+
+
+echo 'Installing kernel headers'
+rm -rf /2/tmp/linux
+cp -ra /2/src/linux /2/tmp/
+cd /2/tmp/linux
+/2/out/gnumake/bin/gnumake \
+	CONFIG_SHELL=/1/out/protobusybox/bin/ash CC=gcc HOSTCC=gcc ARCH=x86_64 \
+	headers
+mkdir -p /2/out/linux/
+cp -rv usr/include /2/out/linux/
+find /2/out/linux/include -name '.*' -delete
+rm /2/out/linux/include/Makefile
+
+
+echo 'Building a more complete busybox'
+rm -rf /2/tmp/busybox
+cp -ra /2/src/busybox /2/tmp/
+cd /2/tmp/busybox
+BUSYBOX_FLAGS='CONFIG_SHELL=/1/out/protobusybox/bin/ash'
+BUSYBOX_FLAGS="$BUSYBOX_FLAGS CC=gcc HOSTCC=gcc"
+BUSYBOX_FLAGS="$BUSYBOX_FLAGS CFLAGS=-I/2/out/linux/include"
+echo -e '#!/1/out/protobusybox/bin/ash\nprintf 9999' > scripts/gcc-version.sh
+sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
+	applets/busybox.mkscripts \
+	applets/usage_compressed \
+	applets/install.sh \
+	scripts/*.sh \
+	scripts/mkconfigs scripts/embedded_scripts scripts/trylink
+/2/out/gnumake/bin/gnumake $BUSYBOX_FLAGS defconfig
+echo CONFIG_INSTALL_NO_USR=y >> .config
+/2/out/gnumake/bin/gnumake $BUSYBOX_FLAGS busybox busybox.links
+sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
+rm -rf /2/out/busybox; mkdir -p /2/out/busybox
+/2/out/gnumake/bin/gnumake $BUSYBOX_FLAGS install \
+	CONFIG_PREFIX=/2/out/busybox/
 
 
 echo 'Cleaning up stage 2'
