@@ -138,9 +138,8 @@ void mkreqdirs_at(const char* at, const char* subpath) {
 }
 #define mkdirs_at(at, args...) \
 	do { \
-		const char* __args[] = { "/", ## args, NULL }; \
 		const char* const* p; \
-		for (p = __args; *p; p++) \
+		for (p = (char*[]) { "/", ## args, NULL }; *p; p++) \
 			mkreqdirs_at(at, *p); \
 	} while (0)
 
@@ -210,10 +209,7 @@ void aa_extend_from(struct args_accumulator* aa, const void* from) {
 	_aa_extend_from_arr(aa, (const char* const*) from);
 }
 #define aa_extend(aa_ptr, args...) \
-	do { \
-		const char* __args[] = { NULL, ## args, NULL }; \
-		_aa_extend_from_arr(aa_ptr, __args + 1); \
-	} while (0)
+	_aa_extend_from_arr(aa_ptr, (const char*[]) { NULL, ## args, NULL } + 1)
 #define aa_init(aa_ptr, args...) \
 	do { _aa_init(aa_ptr); aa_extend(aa_ptr, ## args); } while (0)
 void aa_sort(struct args_accumulator* aa) {
@@ -234,7 +230,6 @@ void aa_sort(struct args_accumulator* aa) {
 	} while (changes);
 }
 int aa_run(const struct args_accumulator* aa) {
-	char* __env[] = { NULL };
 	int i;
 	log_(STDOUT, "aa_run() running: ");
 	for (i = 0; aa->pointers[i]; i++) {
@@ -242,7 +237,7 @@ int aa_run(const struct args_accumulator* aa) {
 		log_(STDOUT, " ");
 	}
 	log_(STDOUT, "\n");
-	return run_(aa->pointers[0], aa->pointers, __env);
+	return run_(aa->pointers[0], aa->pointers, (char*[]) { NULL });
 }
 #define aa_run0(aa_ptr) do { assert(aa_run(aa_ptr) == 0); } while (0)
 
@@ -393,13 +388,12 @@ void sanity_test() {
 void compile_libtcc1_1st_time_nostd(const char* cc) {
 	log(STDOUT, "Compiling our first libtcc1.a...");
 	mkdirs_at("/1", "tmp/tinycc/libtcc1", "out/tinycc/lib");
-	const char* CFLAGS_NOSTD[] = { TCC_ARGS_NOSTD, "-DTCC_MUSL", NULL };
-	const char* SOURCES_NOSTD[] = {
-		"libtcc1.c", "alloca.S",
-		"dsohandle.c", "stdatomic.c", "va_list.c",
-	0};
-	mass_compile(cc, CFLAGS_NOSTD, "/1/src/tinycc/lib", SOURCES_NOSTD,
-			"/1/tmp/tinycc/libtcc1", "/1/out/tinycc/lib/libtcc1.a");
+	mass_compile(cc, (char* []) { TCC_ARGS_NOSTD, "-DTCC_MUSL", NULL },
+		"/1/src/tinycc/lib", (char* []) {
+			"libtcc1.c", "alloca.S",
+			"dsohandle.c", "stdatomic.c", "va_list.c",
+		0},
+		"/1/tmp/tinycc/libtcc1", "/1/out/tinycc/lib/libtcc1.a");
 }  // see also compile_libtcc1 far below
 
 
@@ -435,11 +429,6 @@ void compile_protomusl(const char* cc) {
 	aa_init(&aa);
 
 	log(STDOUT, "Compiling part of musl (protomusl)...");
-	const char* CFLAGS[] = {
-		TCC_ARGS_NOSTD,
-		PROTOMUSL_EXTRA_CFLAGS,
-		PROTOMUSL_INTERNAL_INCLUDES,
-	0};
 	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/conf");
 	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/ctype");
 	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/dirent");
@@ -479,9 +468,13 @@ void compile_protomusl(const char* cc) {
 	aa_extend_from_dir(&aa, 2, "/1/src/protomusl/src/thread/x86_64");
 	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/time");
 	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/unistd");
-	mass_compile(cc, CFLAGS, "/1/src/protomusl/src", &aa,
-			"/1/tmp/protomusl/",
-			"/1/out/protomusl/lib/libc.a");
+	mass_compile(cc, (char*[]) {
+			TCC_ARGS_NOSTD,
+			PROTOMUSL_EXTRA_CFLAGS,
+			PROTOMUSL_INTERNAL_INCLUDES,
+		0},
+		"/1/src/protomusl/src", &aa,
+		"/1/tmp/protomusl", "/1/out/protomusl/lib/libc.a");
 
 	log(STDOUT, "Compiling crt bits of protomusl...");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INTERNAL_INCLUDES, "-DCRT",
@@ -514,16 +507,14 @@ void test_example_1st_time_nostd(const char* cc) {
 
 void compile_libtcc1(const char* cc) {
 	log(STDOUT, "Recompiling libtcc1.a...");
-	const char* CFLAGS[] = { "-DTCC_MUSL", PROTOMUSL_INCLUDES, 0};
-	const char* SOURCES[] = {
-		"libtcc1.c", "alloca.S",
-		"dsohandle.c", "stdatomic.c", "va_list.c",
-		// now we can compile more
-		"tcov.c", "bcheck.c", "alloca-bt.S",
-	0};
-	mass_compile(cc, CFLAGS, "/1/src//tinycc/lib", SOURCES,
-			"/1/tmp/tinycc/libtcc1",
-			"/1/out/tinycc/lib/libtcc1.a");
+	mass_compile(cc, (char*[]) { "-DTCC_MUSL", PROTOMUSL_INCLUDES, 0},
+		"/1/src//tinycc/lib", (char*[]) {
+			"libtcc1.c", "alloca.S",
+			"dsohandle.c", "stdatomic.c", "va_list.c",
+			// now we can compile more
+			"tcov.c", "bcheck.c", "alloca-bt.S",
+		0},
+		"/1/tmp/tinycc/libtcc1", "/1/out/tinycc/lib/libtcc1.a");
 }
 
 #define TCC_CFLAGS \
@@ -558,18 +549,17 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 		"/1/tmp/tinycc/gen/tccdefs_.h");
 
 	log(STDOUT, "Compiling libtcc...");
-	const char* CFLAGS[] = {
-		TCC_ARGS_NOSTD,
-		PROTOMUSL_INCLUDES,
-		TCC_CFLAGS,
-	0};
-	const char* SOURCES[] = {
-		"libtcc.c", "tccpp.c", "tccgen.c", "tccelf.c", "tccasm.c",
-		"tccrun.c", "x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
-	0};
-	mass_compile(cc, CFLAGS, "/1/src/tinycc", SOURCES,
-		"/1/tmp/tinycc/libtcc",
-		"/1/out/tinycc/lib/libtcc.a");
+	mass_compile(cc, (char*[]) {
+			TCC_ARGS_NOSTD,
+			PROTOMUSL_INCLUDES,
+			TCC_CFLAGS,
+		0},
+		"/1/src/tinycc", (char*[]) {
+			"libtcc.c", "tccpp.c", "tccgen.c", "tccelf.c",
+			"tccasm.c", "tccrun.c",
+			"x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
+		0},
+		"/1/tmp/tinycc/libtcc", "/1/out/tinycc/lib/libtcc.a");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES, TCC_CFLAGS,
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
 		"/1/src/tinycc/tcc.c",
@@ -583,12 +573,12 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 
 void compile_tcc(const char* cc) {
 	log(STDOUT, "Recompiling libtcc...");
-	const char* CFLAGS[] = { PROTOMUSL_INCLUDES, TCC_CFLAGS, 0};
-	const char* SOURCES[] = {
-		"libtcc.c", "tccpp.c", "tccgen.c", "tccelf.c", "tccasm.c",
-		"tccrun.c", "x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
-	0};
-	mass_compile(cc, CFLAGS, "/1/src/tinycc", SOURCES,
+	mass_compile(cc, (char*[]) { PROTOMUSL_INCLUDES, TCC_CFLAGS, 0},
+		"/1/src/tinycc", (char*[]) {
+			"libtcc.c", "tccpp.c", "tccgen.c", "tccelf.c",
+			"tccasm.c", "tccrun.c",
+			"x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
+		0},
 		"/1/tmp/tinycc/libtcc", "/1/out/tinycc/lib/libtcc.a");
 	run0(cc, PROTOMUSL_INCLUDES, TCC_CFLAGS, "-static",
 		"/1/src/tinycc/tcc.c", "/1/out/tinycc/lib/libtcc.a",
@@ -617,81 +607,78 @@ void test_example_final(const char* cc_wrapper) {
 
 void compile_standalone_busybox_applets(const char* cc) {
 	log(STDOUT, "Compiling protolibbb...");
-	const char* CFLAGS[] = {
+	mass_compile(cc, (char*[]) {
 		PROTOMUSL_INCLUDES,
 		"-I/1/src/protobusybox/include/",
 		"-I/1/src/protobusybox/libbb/",
 		"-I/1/src/",
 		"-include", "protobusybox.h",
-	0};
-	const char* SOURCES[] = {
-		"ask_confirmation.c",
-		"auto_string.c",
-		"bb_cat.c",
-		"bb_getgroups.c",
-		"bb_pwd.c",
-		"bb_strtonum.c",
-		"compare_string_array.c",
-		"concat_path_file.c",
-		"concat_subpath_file.c",
-		"copy_file.c",
-		"copyfd.c",
-		"crc32.c",
-		"default_error_retval.c",
-		"dump.c",
-		"endofname.c",
-		"executable.c",
-		"fclose_nonstdin.c",
-		"fflush_stdout_and_exit.c",
-		"full_write.c",
-		"get_last_path_component.c",
-		"get_line_from_file.c",
-		"getopt32.c",
-		"inode_hash.c",
-		"isdirectory.c",
-		"isqrt.c",
-		"last_char_is.c",
-		"llist.c",
-		"make_directory.c",
-		"messages.c",
-		"mode_string.c",
-		"parse_mode.c",
-		"perror_msg.c",
-		"perror_nomsg_and_die.c",
-		"printable_string.c",
-		"process_escape_sequence.c",
-		"procps.c",
-		"ptr_to_globals.c",
-		"read.c",
-		"read_printf.c",
-		"recursive_action.c",
-		"remove_file.c",
-		"safe_poll.c",
-		"safe_strncpy.c",
-		"safe_write.c",
-		"signals.c",
-		"single_argv.c",
-		"skip_whitespace.c",
-		"sysconf.c",
-		"time.c",
-		"u_signal_names.c",
-		"verror_msg.c",
-		"vfork_daemon_rexec.c",
-		"wfopen.c",
-		"wfopen_input.c",
-		"xatonum.c",
-		"xfunc_die.c",
-		"xfuncs.c",
-		"xfuncs_printf.c",
-		"xgetcwd.c",
-		"xreadlink.c",
-		"xrealloc_vector.c",
-		"xregcomp.c",
-	0};
-	mass_compile(cc, CFLAGS,
-			"/1/src/protobusybox/libbb", SOURCES,
-			"/1/tmp/protobusybox/libbb",
-			"/1/tmp/protobusybox/libbb.a");
+		0},
+		"/1/src/protobusybox/libbb", (char*[]) {
+			"ask_confirmation.c",
+			"auto_string.c",
+			"bb_cat.c",
+			"bb_getgroups.c",
+			"bb_pwd.c",
+			"bb_strtonum.c",
+			"compare_string_array.c",
+			"concat_path_file.c",
+			"concat_subpath_file.c",
+			"copy_file.c",
+			"copyfd.c",
+			"crc32.c",
+			"default_error_retval.c",
+			"dump.c",
+			"endofname.c",
+			"executable.c",
+			"fclose_nonstdin.c",
+			"fflush_stdout_and_exit.c",
+			"full_write.c",
+			"get_last_path_component.c",
+			"get_line_from_file.c",
+			"getopt32.c",
+			"inode_hash.c",
+			"isdirectory.c",
+			"isqrt.c",
+			"last_char_is.c",
+			"llist.c",
+			"make_directory.c",
+			"messages.c",
+			"mode_string.c",
+			"parse_mode.c",
+			"perror_msg.c",
+			"perror_nomsg_and_die.c",
+			"printable_string.c",
+			"process_escape_sequence.c",
+			"procps.c",
+			"ptr_to_globals.c",
+			"read.c",
+			"read_printf.c",
+			"recursive_action.c",
+			"remove_file.c",
+			"safe_poll.c",
+			"safe_strncpy.c",
+			"safe_write.c",
+			"signals.c",
+			"single_argv.c",
+			"skip_whitespace.c",
+			"sysconf.c",
+			"time.c",
+			"u_signal_names.c",
+			"verror_msg.c",
+			"vfork_daemon_rexec.c",
+			"wfopen.c",
+			"wfopen_input.c",
+			"xatonum.c",
+			"xfunc_die.c",
+			"xfuncs.c",
+			"xfuncs_printf.c",
+			"xgetcwd.c",
+			"xreadlink.c",
+			"xrealloc_vector.c",
+			"xregcomp.c",
+		0},
+		"/1/tmp/protobusybox/libbb", "/1/tmp/protobusybox/libbb.a");
 
 
 	log(STDOUT, "Compiling standalone protobusybox applets...");
@@ -889,8 +876,7 @@ int _start() {
 
 	log(STDOUT, "--- stage 1 cutoff point ---");
 
-	char* STAGE2_ARGS[] = {"/2/src/stage2.sh", NULL};
-	assert(execve("/2/src/stage2.sh", STAGE2_ARGS, NULL));
+	assert(execve("/2/src/stage2.sh", (char*[]) {"stage2.sh", 0}, NULL));
 
 	log(STDERR, "could not exec into stage 2!");
 	return 99;
