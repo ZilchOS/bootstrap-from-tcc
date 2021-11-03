@@ -52,8 +52,9 @@ done
 if $STAGE_1_NEEDS_REBUILD; then
 	./seed.sh
 	env -i unshare -nrR stage \
-		/0/out/tcc-seed -nostdinc -nostdlib -run /1/src/stage1.c \
-			| tee log
+		/0/out/tcc-seed -nostdinc -nostdlib -Werror -run \
+			/1/src/stage1.c \
+				| tee log
 	EX=${PIPESTATUS[0]}; echo "--- stage 1+ exit code $EX ---"; exit $EX
 fi
 
