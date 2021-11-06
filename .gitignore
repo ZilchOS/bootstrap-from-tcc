@@ -1,12 +1,14 @@
-/tcc-seed
+/0/tcc-seed
+/0/result
 
 /stage
 /downloads
+/tmp
 
 /log
 /log.tmp
 /result*
 /scratch
-/stage*.tar
+/pkgs
 
 /TODO

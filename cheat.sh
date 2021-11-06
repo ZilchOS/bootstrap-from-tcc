@@ -35,6 +35,12 @@ fi
 #	rm result
 #fi
 
+if [[ ! -e stage/cheat/file ]]; then
+	nix build "$NIXPKGS#pkgsStatic.file"
+	cp result/bin/file stage/cheat/file
+	rm result
+fi
+
 if [[ ! -e stage/cheat/busybox ]]; then
 	nix build "$NIXPKGS#pkgsStatic.busybox"
 	cp result/bin/busybox stage/cheat/busybox
@@ -48,11 +54,10 @@ fi
 if [[ -n "$@" ]]; then
 	mkdir -p stage/dev
 	touch stage/dev/null
-	_PATH='/2/out/gnugcc4/bin'
-	_PATH+=':/2/out/binutils/bin'
-	_PATH+=':/2/out/gnumake/bin'
-	#_PATH+=':/1/out/tinycc/wrappers'
-	_PATH+=':/1/out/protobusybox/bin'
+	_PATH='/1/out/protobusybox/bin'
+	_PATH+=':/2/01-gnumake/out/bin'
+	_PATH+=":/2/02-static-binutils/out/bin"
+	_PATH+=":/2/03-static-gnugcc4/out/bin"
 	env -i PATH=$_PATH \
 		$(command -v unshare) -nrR stage \
 			"$@"

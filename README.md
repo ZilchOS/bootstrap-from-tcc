@@ -6,12 +6,24 @@ Bootstrap as much of an operating system as possible
 starting from a random trusted statically linked seed tcc
 (+ trusted kernel on trusted hardware, of course).
 
+~320 KB binary + ~2 GB of sources = a usable Linux userland to chroot into,
+usable for building much more serious stuff.
+
+It's not a Linux distribution as it doesn't come with a kernel.
+Instead, I plan to beeline for bootstrapping Nix package manager
+and then building an real Linux distribution from that bootstrapped Nix later.
+
+Separate packages aren't just dumped into `/`, they're properly managed,
+each one residing
+
 `x86_64`-only for now.
 
 ## Why
 
 I wanted to build a minimal distro to understand NixOS better,
 so I decided to have a decent trusted binary core bootstrap as well.
+
+Could be of use for bootstrapping other distributions.
 
 I'm aware of https://savannah.nongnu.org/projects/stage0 which does even better,
 but I'm not as hardcore as them, so, let's start small.
@@ -20,13 +32,35 @@ but I'm not as hardcore as them, so, let's start small.
 
 ### In brief
 
-seeded binary `tcc` ->
-`protomusl` -> our `tcc` -> `protomusl` -> our final `tcc` -> `protomusl` ->
-`protobusybox` -> `gnumake` -> ??? ->
-`gcc` -> ??? ->
-`linux`, `nix`
+* stage 0: seeded binary `tcc`
+* stage 1 (`1/src/stage1.c` using no libc):
+  * `libtcc1`
+  * `protomusl`
+  * `tcc`
+  * `libtcc1`
+  * `protomusl`
+  * `tcc` that is gonna be the final one
+  * `libtcc1`
+  * `protomusl`
+  * `tcc` that we build just to prove the finality of the previous one
+  * `protobusybox`
+* stage 2 (`2/*.sh`):
+  * `gnumake`
+  * `gnumake`
+  * `binutils`
+  * `gnugcc4`
+  * `musl`
+  * `gnugcc4`
+  * `binutils`
+  * `linux-headers`
+  * `busybox`
+* stage 3: ???
+  * Nix?
+  * Linux?
 
-### In detail
+Compiler chain so far: `tcc` -> `gnugcc 4` -> `gnugcc 4`
+
+### In more detail
 
 given:
 
@@ -39,15 +73,9 @@ given:
   (`syscall.h`)
 * a bunch of sources to execute along the way
 
-`download.sh" downloads:
+`download.sh" downloads a ton of sources, scraping hashes/URLs from recipes
 
-* `musl` sources (`downloads/musl-1.2.2.tar.gz`)
-* `tinycc` sources (`downloads/tinycc-mob-git1645616.tar.gz`)
-* `busybox` sources (`downloads/busybox-1.34.1.tar.bz2`)
-* `gnumake` sources (`downloads/make-4.3.tar.gz`)
-* `linux` sources (`downloads/linux-5.10.74.tar.xz`)
-
-`seed.sh` seeds (populates `/stage/N/src` dirs):
+`seed.sh` seeds:
 
 * unpacks sources into the stage area
 * FIXME: uses host `sed`/`rm` for preprocessing stage 1 source code,
@@ -80,21 +108,29 @@ At the end of stage 1 we have, all linked statically:
 
 `stage2.sh`, executed with protobusybox `ash`:
 
-* configures and builds statically-linked GNU `make` (`gnumake`)
-* rebuilds GNU `make` with GNU `make`
+* Performs 'compiler ascension' from tcc to GNU GCC 4:
+  * `gnumake`, intermediate, built without make
+  * `gnumake`, statically linked
+  * `binutils`, statically linked
+  * `gnugcc4`, statically linked
 
-TODO (undecided):
+* Recompiles the world with GNU GCC 4:
+  * `musl` usable for dynamic linking
+  * `gnugcc4` that can dynamically link against it
+  * `binutils`
+  * `linux-headers`
+  * `busybox`
+  * `gnumake` (TODO)
 
-* `gcc 4`?
-* modern `gcc`?
-* normal `musl`?
-* normal `busybox`?
-* normal `gnumake`?
-* `clang`?
-* ???
+What's next (undecided):
+
+* rebuild gnumake dynamically over in stage 2
+* try raising first `gnugcc` version within 4?
+* try raising second `gnugcc` version as far as possible?
+* add c++ support to second `gnugcc`?
+* build `clang`?
 * `nix`
-* ???
 * non-GNU `make`?
-* ???
 * `linux`?
-* ???
+* switch over to building in VM or UML at some point,
+  so that there's at least a `/dev/null`??

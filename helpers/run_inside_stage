@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+# Run a command inside stage with env unset (+w/o network, +with EUID=EGID=0):
+exec env -i unshare -nrR stage "$@"

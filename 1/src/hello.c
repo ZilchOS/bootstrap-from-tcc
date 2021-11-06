@@ -2,6 +2,7 @@
 
 int main(int argc, char** argv) {
 	printf("Hello world!\n2*2=%d\n", 2*2);
+
 	printf("Own source:\n");
 	FILE* f = fopen("/1/src/hello.c", "r");
 	while (!feof(f)) {
@@ -10,5 +11,6 @@ int main(int argc, char** argv) {
 	if (ferror(f))
 		return 99;
 	fclose(f);
+
 	return 42;
 }

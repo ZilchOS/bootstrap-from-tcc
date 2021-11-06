@@ -68,7 +68,7 @@ ash configure \
 export PATH=/2/out/binutils/bin:$PATH
 
 
-echo 'Building GNU GCC 4'
+echo 'Building GNU GCC 4 (C only)'
 rm -rf /2/tmp/gnugcc4
 cp -ra /2/src/gnugcc4 /2/tmp/
 cd /2/tmp/gnugcc4
@@ -111,7 +111,12 @@ cp -ra /2/src/musl /2/tmp/
 cd /2/tmp/musl
 sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
 	tools/*.sh \
-	src/stdio/popen.c src/process/system.c  # =(
+# Hardcode /usr/bin/env sh instead of /bin/sh for popen and system calls.
+# At least one hardcode less and env is dumber than sh =(
+# TODO: build and bundle an env with musl at this step?
+sed -i 's|/bin/sh|/usr/bin/env|' src/stdio/popen.c src/process/system.c
+sed -i 's|"sh", "-c"|"/usr/bin/env", "sh", "-c"|' \
+	src/stdio/popen.c src/process/system.c
 mkdir -p /2/out/musl/bin
 ash ./configure --target x86_64-linux --prefix=/2/out/musl
 /2/out/gnumake/bin/gnumake
@@ -158,6 +163,17 @@ sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
 rm -rf /2/out/busybox; mkdir -p /2/out/busybox
 /2/out/gnumake/bin/gnumake $BUSYBOX_FLAGS install \
 	CONFIG_PREFIX=/2/out/busybox/
+
+
+echo 'Rebuilding musl with /usr/bin/env hardcoded instead of /bin/sh (big sigh)'
+rm -rf /3/tmp/musl
+cp -ra /2/src/musl /3/tmp/
+cd /3/tmp/musl
+sed -i 's|/bin/sh|/2/out/busybox/bin/ash|' tools/*.sh
+mkdir -p /3/out/musl/bin
+ash ./configure --target x86_64-linux --prefix=/3/out/musl
+/2/out/gnumake/bin/gnumake
+/2/out/gnumake/bin/gnumake install
 
 
 echo 'Cleaning up stage 2'

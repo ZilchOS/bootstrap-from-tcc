@@ -88,14 +88,17 @@ int write_(int fd, const char* msg) {
 		exit(134);  \
 	}
 
-void log_(int fd, const char* msg) {
-	assert(write_(fd, msg) == strlen(msg));
-}
+void err(const char* msg) { assert(write_(STDERR, msg) == strlen(msg)); }
 
-void log(int fd, const char* msg) {
-	log_(fd, msg);
-	log_(fd, "\n");
+void log_begin_line(const char* msg) {
+	assert(write_(STDOUT, "### 1/src/stage.c: ") == 19);
+	assert(write_(STDOUT, msg) == strlen(msg));
 }
+void log_continue_line(const char* msg) {
+	assert(write_(STDOUT, msg) == strlen(msg));
+}
+void log_end_line() { assert(write_(STDOUT, "\n") == 1); }
+void log(const char* msg) { log_begin_line(msg); log_end_line(); };
 
 
 // more library function substitutes //////////////////////////////////////////
@@ -154,7 +157,7 @@ int run_(const char* cmd, const char* const args[], const char* const env[]) {
 		if (!termsig) {
 			return (status & 0xff00) >> 8;  // WEXITSTATUS
 		} else {
-			log(STDERR, "child has been killed");
+			err("child has been killed");
 			exit(termsig);
 		}
 	} else {
@@ -168,12 +171,12 @@ int run_(const char* cmd, const char* const args[], const char* const env[]) {
 		const char const* __env[] = {NULL}; \
 		const char const* __args[] = {(first_arg), ##args, NULL}; \
 		int __i; \
-		log_(STDOUT, "run() running: "); \
+		log_begin_line("run() running: "); \
 		for(__i = 0; __args[__i]; __i++) { \
-			log_(STDOUT, __args[__i]); \
-			log_(STDOUT, " "); \
+			log_continue_line(__args[__i]); \
+			log_continue_line(" "); \
 		} \
-		log_(STDOUT, "\n"); \
+		log_end_line(); \
 		assert(run_(first_arg, __args, __env) == (expected_retcode)); \
 	} while (0)
 #define run0(first_arg, args...) run(0, (first_arg), ## args)
@@ -231,12 +234,12 @@ void aa_sort(struct args_accumulator* aa) {
 }
 int aa_run(const struct args_accumulator* aa) {
 	int i;
-	log_(STDOUT, "aa_run() running: ");
+	log_begin_line("aa_run() running: ");
 	for (i = 0; aa->pointers[i]; i++) {
-		log_(STDOUT, aa->pointers[i]);
-		log_(STDOUT, " ");
+		log_continue_line(aa->pointers[i]);
+		log_continue_line(" ");
 	}
-	log_(STDOUT, "\n");
+	log_end_line(STDOUT, "\n");
 	return run_(aa->pointers[0], aa->pointers, (char*[]) { NULL });
 }
 #define aa_run0(aa_ptr) do { assert(aa_run(aa_ptr) == 0); } while (0)
@@ -292,7 +295,6 @@ void aa_extend_from_dir(struct args_accumulator* aa_out,
 				out_subpath = strcpy(out_subpath, "/");
 				out_subpath = strcpy(out_subpath, d->d_name);
 				aa_append(&aa, buf);
-				log(STDOUT, buf);
 			}
 			d = (struct linux_dirent*) ((char*) d + d->d_reclen);
 		}
@@ -353,15 +355,15 @@ void mass_compile(const char* cc, const void* compile_args,
 void sanity_test() {
 	struct args_accumulator aa1, aa2;
 
-	log(STDOUT, "Sanity-testing run()...");
-	log(STDOUT, "* testing run() -> retcode 0...");
+	log("sanity-testing run()...");
+	log("* testing run() -> retcode 0...");
 	run0("/0/out/tcc-seed", "--help");
-	log(STDOUT, "* testing run() -> retcode 1...");
+	log("* testing run() -> retcode 1...");
 	run(1, "/0/out/tcc-seed", "-ar", "--help");
-	log(STDOUT, "run() seems to work OK");
+	log("run() seems to work OK");
 
-	log(STDOUT, "Sanity-testing args accumulator...");
-	log(STDOUT, "* testing aa_append, aa_extend, aa_sort and aa_run0...");
+	log("sanity-testing args accumulator...");
+	log("* testing aa_append, aa_extend, aa_sort and aa_run0...");
 	aa_init(&aa1);
 	aa_init(&aa2);
 	aa_append(&aa1, "/0/out/tcc-seed");
@@ -376,7 +378,7 @@ void sanity_test() {
 	assert(NULL == ((char**) &aa1)[4]);
 	aa_run0(&aa1);
 
-	log(STDOUT, "* testing aa_multi and aa_run for 1...");
+	log("* testing aa_multi and aa_run for 1...");
 	aa_init(&aa1, "/0/out/tcc-seed", "-ar", "--help");
 	assert(aa_run(&aa1) == 1);
 }
@@ -386,7 +388,7 @@ void sanity_test() {
 
 
 void compile_libtcc1_1st_time_nostd(const char* cc) {
-	log(STDOUT, "Compiling our first libtcc1.a...");
+	log("compiling our first libtcc1.a...");
 	mkdirs_at("/1", "tmp/tinycc/libtcc1", "out/tinycc/lib");
 	mass_compile(cc, (char* []) { TCC_ARGS_NOSTD, "-DTCC_MUSL", NULL },
 		"/1/src/tinycc/lib", (char* []) {
@@ -428,7 +430,7 @@ void compile_protomusl(const char* cc) {
 	struct args_accumulator aa;
 	aa_init(&aa);
 
-	log(STDOUT, "Compiling part of musl (protomusl)...");
+	log("compiling part of musl (protomusl)...");
 	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/conf");
 	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/ctype");
 	aa_extend_from_dir(&aa, 1, "/1/src/protomusl/src/dirent");
@@ -476,7 +478,7 @@ void compile_protomusl(const char* cc) {
 		"/1/src/protomusl/src", &aa,
 		"/1/tmp/protomusl", "/1/out/protomusl/lib/libc.a");
 
-	log(STDOUT, "Compiling crt bits of protomusl...");
+	log("compiling crt bits of protomusl...");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INTERNAL_INCLUDES, "-DCRT",
 		"-c", "/1/src/protomusl/crt/crt1.c",
 		"-o", "/1/out/protomusl/lib/crt1.o");
@@ -490,7 +492,7 @@ void compile_protomusl(const char* cc) {
 
 
 void test_example_1st_time_nostd(const char* cc) {
-	log(STDOUT, "Linking an example (1st time)...");
+	log("linking an example (1st time)...");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES,
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
 		"/1/src/hello.c",
@@ -498,7 +500,7 @@ void test_example_1st_time_nostd(const char* cc) {
 		"/1/out/tinycc/lib/libtcc1.a",
 		"-o", "/1/tmp/protomusl-hello");
 
-	log(STDOUT, "Executing an example...");
+	log("executing an example...");
 	run(42, "/1/tmp/protomusl-hello");
 }
 
@@ -506,7 +508,7 @@ void test_example_1st_time_nostd(const char* cc) {
 // Interesting parts: recompiling tcc //////////////////////////////////////////
 
 void compile_libtcc1(const char* cc) {
-	log(STDOUT, "Recompiling libtcc1.a...");
+	log("recompiling libtcc1.a...");
 	mass_compile(cc, (char*[]) { "-DTCC_MUSL", PROTOMUSL_INCLUDES, 0},
 		"/1/src//tinycc/lib", (char*[]) {
 			"libtcc1.c", "alloca.S",
@@ -534,7 +536,7 @@ void compile_libtcc1(const char* cc) {
 		"-DCONFIG_TCC_PREDEFS=1"
 
 void compile_tcc_1st_time_nostd(const char* cc) {
-	log(STDOUT, "Compiling tcc's conftest...");
+	log("compiling tcc's conftest...");
 	mkdirs_at("/1/tmp/tinycc", "gen", "lib", "bin");
 	mkdirs_at("/1/out/tinycc", "lib", "bin");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES,
@@ -544,11 +546,11 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 		"/1/out/tinycc/lib/libtcc1.a",
 		"-o", "/1/tmp/tinycc/conftest"
 		);
-	log(STDOUT, "Generating tccdefs_.h with conftest...");
+	log("generating tccdefs_.h with conftest...");
 	run0("/1/tmp/tinycc/conftest", "/1/src/tinycc/include/tccdefs.h",
 		"/1/tmp/tinycc/gen/tccdefs_.h");
 
-	log(STDOUT, "Compiling libtcc...");
+	log("compiling libtcc...");
 	mass_compile(cc, (char*[]) {
 			TCC_ARGS_NOSTD,
 			PROTOMUSL_INCLUDES,
@@ -572,7 +574,7 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 
 
 void compile_tcc(const char* cc) {
-	log(STDOUT, "Recompiling libtcc...");
+	log("recompiling libtcc...");
 	mass_compile(cc, (char*[]) { PROTOMUSL_INCLUDES, TCC_CFLAGS, 0},
 		"/1/src/tinycc", (char*[]) {
 			"libtcc.c", "tccpp.c", "tccgen.c", "tccelf.c",
@@ -586,19 +588,19 @@ void compile_tcc(const char* cc) {
 }
 
 void test_example_intermediate(const char* cc) {
-	log(STDOUT, "Linking an example (our tcc, includes not installed)...");
+	log("linking an example (our tcc, includes not installed)...");
 	run0(cc, PROTOMUSL_INCLUDES, "-static",
 		"/1/src/hello.c", "-o", "/1/tmp/protomusl-hello");
 
-	log(STDOUT, "Executing an example...");
+	log("executing an example...");
 	run(42, "/1/tmp/protomusl-hello");
 }
 
 void test_example_final(const char* cc_wrapper) {
-	log(STDOUT, "Linking an example (wrapped tcc, includes installed)...");
+	log("linking an example (wrapped tcc, includes installed)...");
 	run0(cc_wrapper, "/1/src/hello.c", "-o", "/1/tmp/protomusl-hello");
 
-	log(STDOUT, "Executing an example...");
+	log("executing an example...");
 	run(42, "/1/tmp/protomusl-hello");
 }
 
@@ -606,7 +608,7 @@ void test_example_final(const char* cc_wrapper) {
 // Interesting parts: hacky standalone busybox applets /////////////////////////
 
 void compile_standalone_busybox_applets(const char* cc) {
-	log(STDOUT, "Compiling protolibbb...");
+	log("compiling protolibbb...");
 	mass_compile(cc, (char*[]) {
 		PROTOMUSL_INCLUDES,
 		"-I/1/src/protobusybox/include/",
@@ -681,10 +683,12 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"/1/tmp/protobusybox/libbb", "/1/tmp/protobusybox/libbb.a");
 
 
-	log(STDOUT, "Compiling standalone protobusybox applets...");
+	log("compiling standalone protobusybox applets...");
 	mkreqdirs("/1/out/protobusybox/bin/");
 	#define compile_applet(applet_name, files...) \
 			run0(cc, PROTOMUSL_INCLUDES, \
+					"-D__GNUC__=2", \
+					"-D__GNUC_MINOR__=7", \
 					"-static", \
 					"-I/1/src/protobusybox/include", \
 					"-I/1/src/", \
@@ -729,6 +733,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 		"/1/src/protobusybox/coreutils/libcoreutils/cp_mv_stat.c",
 		"/1/src/protobusybox/coreutils/mv.c");
 	compile_applet("od", "/1/src/protobusybox/coreutils/od.c");
+	compile_applet("pwd", "/1/src/protobusybox/coreutils/pwd.c");
 	compile_applet("rm", "/1/src/protobusybox/coreutils/rm.c");
 	compile_applet("rmdir", "/1/src/protobusybox/coreutils/rmdir.c");
 	compile_applet("sleep", "/1/src/protobusybox/coreutils/sleep.c");
@@ -743,9 +748,17 @@ void compile_standalone_busybox_applets(const char* cc) {
 	#define LIBARCHIVE "/1/src/protobusybox/archival/libarchive"
 	compile_applet("bzip2",
 		LIBARCHIVE "/decompress_bunzip2.c",
+		LIBARCHIVE "/decompress_gunzip.c",
+		LIBARCHIVE "/decompress_unxz.c",
 		LIBARCHIVE "/open_transformer.c",
 		"/1/src/protobusybox/archival/bbunzip.c",
 		"/1/src/protobusybox/archival/bzip2.c");
+	compile_applet("gzip",
+		LIBARCHIVE "/decompress_bunzip2.c",
+		LIBARCHIVE "/decompress_gunzip.c",
+		LIBARCHIVE "/open_transformer.c",
+		"/1/src/protobusybox/archival/bbunzip.c",
+		"/1/src/protobusybox/archival/gzip.c");
 	compile_applet("tar",
 		LIBARCHIVE "/data_align.c",
 		LIBARCHIVE "/data_extract_all.c",
@@ -840,9 +853,9 @@ int _start() {
 	struct args_accumulator aa_cmd;
 	struct args_accumulator aa_link_objs;
 
-	log(STDOUT, "Hello from stage1!");
+	log("hello from stage1!");
 
-	log(STDOUT, "Creating directories...");
+	log("creating directories...");
 	mkdirs_at("/1", "/tmp", "/out");
 	sanity_test();
 
@@ -872,12 +885,12 @@ int _start() {
 	compose_stage2();
 	wrap_tcc_tools();
 	test_example_final("/1/out/tinycc/wrappers/cc");
-	clean_up();
+	//clean_up();
 
-	log(STDOUT, "--- stage 1 cutoff point ---");
+	log("done");
 
-	assert(execve("/2/src/stage2.sh", (char*[]) {"stage2.sh", 0}, NULL));
+	assert(execve("/2/stage2.sh", (char*[]) {"stage2.sh", 0}, NULL));
 
-	log(STDERR, "could not exec into stage 2!");
+	log("could not exec into stage 2 (ok when building with make)");
 	return 99;
 }

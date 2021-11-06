@@ -6,5 +6,5 @@ let
   }) {};
 in
   nixpkgs.pkgsStatic.tinycc.overrideAttrs(oa: {
-    patches = ./tcc-fix-weak-ar.patch;
+    patches = [ ./tcc-fix-weak-ar.patch ];
   })
