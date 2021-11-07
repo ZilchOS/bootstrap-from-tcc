@@ -25,6 +25,7 @@ ash configure \
 	CONFIG_SHELL=/1/out/protobusybox/bin/ash \
 	SHELL=/1/out/protobusybox/bin/ash \
 	CFLAGS='-D__LITTLE_ENDIAN__=1' \
+	--enable-deterministic-archives \
 	--host x86_64-linux --build x86_64-linux \
 	--disable-bootstrap --disable-libquadmath \
 	--prefix=/2/02-static-binutils/out

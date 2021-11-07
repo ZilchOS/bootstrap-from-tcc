@@ -28,6 +28,7 @@ ash configure \
 	TMPDIR=/2/06-binutils/tmp/tmpdir \
 	CONFIG_SHELL=/1/out/protobusybox/bin/ash \
 	SHELL=/1/out/protobusybox/bin/ash \
+	--enable-deterministic-archives \
 	--host x86_64-linux --build x86_64-linux \
 	--prefix=/2/06-binutils/out
 gnumake
