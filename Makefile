@@ -200,9 +200,14 @@ all-pkgs: pkgs/2/08-busybox.pkg
 
 .PHONY: verify-pkgs-checksums update-pkgs-checksums
 verify-pkgs-checksums:
-	status=true; \
+	@status=true; \
 	while read expected_csum pkgname; do \
 		pkg=$${pkgname%%.tar}.pkg; \
+		if [[ ! -e $$pkg ]]; then \
+			status=false; \
+			echo "MISSING $$pkgname"; \
+			continue; \
+		fi; \
 		computed_csum=$$(zstd -cd "$$pkg" | sha256sum); \
 		computed_csum=$$(<<<$$computed_csum tr ' ' '\t' | cut -f1); \
 		short_csum=$$(<<<$$computed_csum head -c7); \
@@ -217,8 +222,8 @@ verify-pkgs-checksums:
 	done < verify.pkgs.sha256; $$status\
 
 update-pkgs-checksums:
-	:> verify.pkgs.sha256
-	find pkgs | grep '\.pkg$$' | grep -v '\.test\.pkg$$' | sort | \
+	@:> verify.pkgs.sha256
+	@find pkgs | grep '\.pkg$$' | grep -v '\.test\.pkg$$' | sort | \
 	while read pkg; do \
 		name=$${pkg%%.pkg}.tar; \
 		csum=$$(zstd -cd "$$pkg" | sha256sum | tr ' ' '\t' | cut -f1); \
