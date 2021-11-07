@@ -6,5 +6,11 @@ let
   }) {};
 in
   nixpkgs.pkgsStatic.tinycc.overrideAttrs(oa: {
-    patches = [ ./tcc-fix-weak-ar.patch ];
+    version = "unstable-2021-10-30";
+    src = nixpkgs.fetchFromRepoOrCz {
+      repo = "tinycc";
+      rev = "da11cf651576f94486dbd043dbfcde469e497574";
+      sha256 = "sha256-LWdM/1fjx88eCj+Bz4YN9zLEWhSjlX4ULZiPx82nocA=";
+    };
+    configureFlags = nixpkgs.lib.remove "--enable-cross" oa.configureFlags;
   })

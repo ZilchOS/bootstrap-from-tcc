@@ -37,14 +37,16 @@ downloads/%:
 
 ################################################################################
 
-0/tcc-seed: 0/tcc-patched.nix 0/tcc-fix-weak-ar.patch
+TCC_CHECKSUM=46c35b3fbc8e0f432596349a48d4c8f5485902db73d0afbafef2a7bc1c2d3f39
+0/tcc-seed: 0/tcc-updated.nix
 	@echo "### Makefile: You are supposed to supply a trusted 0/tcc-seed."
 	@echo "### Makefile: Since you have not, building one from nixpkgs..."
 	cd 0; \
-		nix-build tcc-patched.nix; \
+		nix-build tcc-updated.nix; \
 		cat result/bin/tcc > tcc-seed; \
 		chmod +x tcc-seed; \
-		rm result;
+		sha256sum -c <<<"$(TCC_CHECKSUM) tcc-seed"; \
+		rm result
 
 # Stage 0 is special in that there are no sources, we just add tcc-seed
 pkgs/0.pkg: 0/tcc-seed
