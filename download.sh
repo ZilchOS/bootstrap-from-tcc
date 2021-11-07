@@ -72,6 +72,5 @@ else
 fi
 
 for f in $files; do
-	echo "$f"
 	process_commands_in $f
 done
