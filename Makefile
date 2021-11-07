@@ -208,7 +208,7 @@ verify-pkgs-checksums:
 			echo "MISSING $$pkgname"; \
 			continue; \
 		fi; \
-		computed_csum=$$(zstd -cd "$$pkg" | sha256sum); \
+		computed_csum=$$(zstd -qcd "$$pkg" | sha256sum); \
 		computed_csum=$$(<<<$$computed_csum tr ' ' '\t' | cut -f1); \
 		short_csum=$$(<<<$$computed_csum head -c7); \
 		if [[ "$$expected_csum" == "$$computed_csum" ]]; then \
@@ -216,17 +216,17 @@ verify-pkgs-checksums:
 		else \
 			status=false; \
 			echo "$$short_csum $$pkgname NOT OK"; \
-			echo "computed: $$computed_csum"; \
-			echo "expected: $$expected_csum"; \
+			echo "    computed: $$computed_csum"; \
+			echo "    expected: $$expected_csum"; \
 		fi; \
 	done < verify.pkgs.sha256; $$status\
 
 update-pkgs-checksums:
 	@:> verify.pkgs.sha256
 	@find pkgs | grep '\.pkg$$' | grep -v '\.test\.pkg$$' | sort | \
-	while read pkg; do \
-		name=$${pkg%%.pkg}.tar; \
-		csum=$$(zstd -cd "$$pkg" | sha256sum | tr ' ' '\t' | cut -f1); \
+	while read p; do \
+		name=$${p%%.pkg}.tar; \
+		csum=$$(zstd -qcd "$$p" | sha256sum | tr ' ' '\t' | cut -f1); \
 		short_csum=$$(<<<$$csum head -c7); \
 		echo "$$csum $$name" >> verify.pkgs.sha256; \
 		echo "$$short_csum $$name"; \
