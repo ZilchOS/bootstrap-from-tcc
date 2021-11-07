@@ -46,8 +46,8 @@ sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
 	gcc/genmultilib */*.sh gcc/exec-tool.in \
 	install-sh */install-sh
 sed -i 's|^\(\s*\)sh |\1/1/out/protobusybox/bin/ash |' Makefile* */Makefile*
-#sed -i 's|/lib64/ld-linux-x86-64.so.2|/2/out/musl/lib/libc.so|' \
-#	gcc/config/i386/linux64.h
+# see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
+sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh */ltmain.sh
 ash configure \
 	CONFIG_SHELL='/1/out/protobusybox/bin/ash' \
 	SHELL='/1/out/protobusybox/bin/ash' \

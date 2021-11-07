@@ -22,6 +22,8 @@ mkdir fakes; export PATH=/2/06-binutils/tmp/fakes:$PATH
 ln -s /1/out/protobusybox/bin/true fakes/makeinfo
 sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
 	missing install-sh mkinstalldirs
+# see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
+sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh
 
 mkdir tmpdir
 ash configure \
