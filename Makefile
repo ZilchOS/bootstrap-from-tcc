@@ -11,7 +11,7 @@ all:
 all-at-once: build.sh seed.sh download.sh [012345]/* [012345]/*/*
 	./build.sh
 
-all-with-make: 2
+all-with-make: all-pkgs verify-pkgs-checksums
 
 ################################################################################
 
@@ -179,32 +179,69 @@ pkgs/2/05.test.pkg: pkgs/2/02-static-binutils.pkg
 pkgs/2/05.test.pkg: pkgs/2/04-musl.pkg
 pkgs/2/05.test.pkg: pkgs/2/05-gnugcc4.pkg
 
-#tests/%: tests/%.sh
-#	@echo "### Makefile: creating a temporary test area for $*..."
-#	rm -rf "tmp/build/tests/$*"; mkdir -p "tmp/build/tests/$*"
-#	helpers/inject "tmp/build/tests/$*" $^
-#	@echo "### Makefile: stage $*: building"
-#	set +e; env -i unshare -nrR "./tmp/build/tests/$*" "/tests/$*.sh" \
-#	set -e; [[ $${EXIT_CODE} == 77 ]]
-#	@echo "### Makefile: test $* has passed successfully"
+################################################################################
+
+.PHONY: all-pkgs
+all-pkgs: pkgs/0.pkg
+all-pkgs: pkgs/1.pkg
+all-pkgs: pkgs/2/00-intermediate-gnumake.pkg
+all-pkgs: pkgs/2/01-gnumake.pkg
+all-pkgs: pkgs/2/02-static-binutils.pkg
+all-pkgs: pkgs/2/03-static-gnugcc4.pkg
+all-pkgs: pkgs/2/04-musl.pkg
+all-pkgs: pkgs/2/05-gnugcc4.pkg
+all-pkgs: pkgs/2/06-binutils.pkg
+all-pkgs: pkgs/2/07-linux-headers.pkg
+all-pkgs: pkgs/2/08-busybox.pkg
+
+.PHONY: all-tests
 
 ################################################################################
 
-.PHONY: 2
-2: pkgs/2/08-busybox.pkg
-2: pkgs/2/04.test.pkg
-2: pkgs/2/05.test.pkg
+.PHONY: verify-pkgs-checksums update-pkgs-checksums
+verify-pkgs-checksums:
+	status=true; \
+	while read expected_csum pkgname; do \
+		pkg=$${pkgname%%.tar}.pkg; \
+		computed_csum=$$(zstd -cd "$$pkg" | sha256sum); \
+		computed_csum=$$(<<<$$computed_csum tr ' ' '\t' | cut -f1); \
+		short_csum=$$(<<<$$computed_csum head -c7); \
+		if [[ "$$expected_csum" == "$$computed_csum" ]]; then \
+			echo "$$short_csum $$pkgname OK"; \
+		else \
+			status=false; \
+			echo "$$short_csum $$pkgname NOT OK"; \
+			echo "computed: $$computed_csum"; \
+			echo "expected: $$expected_csum"; \
+		fi; \
+	done < verify.pkgs.sha256; $$status\
+
+update-pkgs-checksums:
+	:> verify.pkgs.sha256
+	find pkgs | grep '\.pkg$$' | grep -v '\.test\.pkg$$' | sort | \
+	while read pkg; do \
+		name=$${pkg%%.pkg}.tar; \
+		csum=$$(zstd -cd "$$pkg" | sha256sum | tr ' ' '\t' | cut -f1); \
+		short_csum=$$(<<<$$csum head -c7); \
+		echo "$$csum $$name" >> verify.pkgs.sha256; \
+		echo "$$short_csum $$name"; \
+	done
+verify.pkgs.sha256: all-pkgs update-pkgs-checksums
 
 ################################################################################
 
 clean-tmp:
-	@echo "### Makefile: cleaning up tmp, keeping pkgs and downloads..."
+	@echo "### Makefile: removing tmp, keeping stage, pkgs and downloads..."
 	rm -rf tmp
 
+clean-stage:
+	@echo "### Makefile: removing stage, keeping tmp, pkgs and downloads..."
+	rm -rf stage
+
 clean:
-	@echo "### Makefile: cleaning up tmp and pkgs, keeping downloads..."
-	rm -rf tmp pkgs
+	@echo "### Makefile: removing stage, tmp, pkgs, keeping downloads..."
+	rm -rf stage tmp pkgs
 
 deepclean:
-	@echo "### Makefile: cleaning up tmp, pkgs and downloads..."
+	@echo "### Makefile: removing stage, tmp, pkgs and downloads..."
 	rm -rf tmp pkgs downloads
