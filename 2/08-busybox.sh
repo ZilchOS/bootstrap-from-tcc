@@ -39,16 +39,16 @@ sed -i \
 	scripts/*/*.sh scripts/*.sh \
 	scripts/mkconfigs scripts/embedded_scripts scripts/trylink
 :>null
-gnumake $BUSYBOX_FLAGS \
+gnumake $MKOPTS $BUSYBOX_FLAGS \
 	defconfig
 sed -i 's|CONFIG_INSTALL_NO_USR=y|CONFIG_INSTALL_NO_USR=n|' .config
 
 echo "### $0: building busybox..."
-gnumake $BUSYBOX_FLAGS busybox busybox.links
+gnumake $MKOPTS $BUSYBOX_FLAGS busybox busybox.links
 sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
 
 echo "### $0: installing busybox..."
-gnumake $BUSYBOX_FLAGS install CONFIG_PREFIX=/2/08-busybox/out/
+gnumake $MKOPTS $BUSYBOX_FLAGS install CONFIG_PREFIX=/2/08-busybox/out/
 
 #rm -rf /2/08-busybox/tmp
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

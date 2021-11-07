@@ -23,6 +23,7 @@ SHELL := bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 .PHONY: all all-at-once all-with-make clean-stage clean deepclean
+MKOPTS ?=  # for inner make invocations, one can pass -j# this way
 
 SOURCE_DATE_EPOCH := 0
 TAR := tar
@@ -99,7 +100,7 @@ pkgs/%.pkg: %.sh
 	rm -rf "tmp/build/$*"; mkdir -p "tmp/build/$*"
 	helpers/inject "tmp/build/$*" $^
 	@echo "### Makefile: stage $*: building"
-	env -i unshare -nrR "./tmp/build/$*" "/$*.sh"
+	env -i "MKOPTS=$(MKOPTS)" unshare -nrR "./tmp/build/$*" "/$*.sh"
 	mkdir -p "$(shell dirname "pkgs/$*.pkg")"
 	$(TAR_REPR) -Izstd -cf "pkgs/$*.pkg" -C "tmp/build/$*" "$*/out"
 	rm -rf "tmp/build/$*"

@@ -65,9 +65,9 @@ ash configure \
 	--with-sysroot=/1/out/protomusl \
 	--with-native-system-header-dir=/include \
 	--host x86_64-linux --build x86_64-linux
-gnumake
+gnumake $MKOPTS
 echo "### $0: installing static GNU GCC 4 (C only)"
-gnumake install
+gnumake $MKOPTS install
 
 #rm -rf /2/03-static-gnugcc4/tmp
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

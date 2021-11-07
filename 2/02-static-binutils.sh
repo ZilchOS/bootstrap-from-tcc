@@ -31,9 +31,9 @@ ash configure \
 	--host x86_64-linux --build x86_64-linux \
 	--disable-bootstrap --disable-libquadmath \
 	--prefix=/2/02-static-binutils/out
-gnumake
+gnumake $MKOPTS
 
 echo "### $0: installing static binutils..."
-gnumake install
+gnumake $MKOPTS install
 
 #rm -rf /2/02-static-binutils/tmp

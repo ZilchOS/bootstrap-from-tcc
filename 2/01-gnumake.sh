@@ -21,7 +21,7 @@ ash ./configure \
 	--disable-dependency-tracking \
 	CONFIG_SHELL='/1/out/protobusybox/bin/ash' \
 	SHELL='/1/out/protobusybox/bin/ash'
-gnumake
+gnumake $MKOPTS
 
 echo "### $0: installing gnumake"
 mkdir -p /2/01-gnumake/out/bin

@@ -30,8 +30,8 @@ mkdir -p /2/04-musl/out/bin
 ash ./configure --target x86_64-linux --prefix=/2/04-musl/out
 
 echo "### $0: installing musl..."
-gnumake
-gnumake install
+gnumake $MKOPTS
+gnumake $MKOPTS install
 #ln -sfn /2/04-musl/out/lib /2/out/gnugcc4/sys-root/lib
 #ln -sfn /2/04-musl/out/include /2/out/gnugcc4/sys-root/include
 

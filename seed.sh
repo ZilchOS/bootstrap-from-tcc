@@ -11,5 +11,6 @@ rm -rf stage
 mkdir -p stage/0/out
 cp 0/tcc-seed stage/0/out/tcc-seed
 
-cp -ra --reflink=auto downloads 0 1 2 stage/
+cp -raL --reflink=auto downloads 0 1 2 stage/
+sed -i "s|\$MKOPTS|$MKOPTS|" stage/2/*.sh  # too lazy to pass it through stage1
 DESTDIR=stage 1/seed.host-executed.sh

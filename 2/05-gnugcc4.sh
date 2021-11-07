@@ -91,9 +91,9 @@ ash configure \
 	--with-native-system-header-dir=/include \
 	--host x86_64-linux --build x86_64-linux
 	#--enable-languages=c,c++ \
-gnumake
+gnumake $MKOPTS
 echo "### $0: installing GNU GCC 4 (C only)"  # TODO: add cpp
-gnumake install
+gnumake $MKOPTS install
 
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr
 #rm -rf /2/05-gnugcc4/tmp

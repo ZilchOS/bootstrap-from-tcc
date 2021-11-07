@@ -26,11 +26,11 @@ fetch() {
 		popd >/dev/null
 		mv "downloads/.tmp$$/$filename" downloads/
 		rm -d downloads/.tmp$$
-		if [[ "${DESTDIR:-}" != downloads ]]; then
-			mkdir -p "$DESTDIR"
-			cp --reflink=auto "downloads/$filename" \
-				"$DESTDIR/$filename"
-		fi
+	fi
+	if [[ "${DESTDIR:-}" != downloads ]]; then
+		mkdir -p "$DESTDIR"
+		cp -a --reflink=auto "downloads/$filename" \
+			"$DESTDIR/$filename"
 	fi
 }
 

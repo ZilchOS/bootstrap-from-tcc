@@ -9,6 +9,8 @@
 
 set -uex
 
+export MKOPTS=${MKOPTS:-$@}
+
 if [[ ! -e ./0/tcc-seed ]]; then
 	echo 'You need to supply a statically linked build of tinycc in ./0/.'
 	echo 'You can `make 0/out/tcc-seed` if you have `nix` and trust in me.'
@@ -28,7 +30,7 @@ mkdir -p stage
 # Exec into stage1.c inside stage with env unset,
 # without network and with EUID=EGID=0.
 # Alternatively, you can chroot if you're not a fan of user namespaces.
-exec env -i unshare -nrR stage \
+exec env -i "MKOPTS=$MKOPTS" unshare -nrR stage \
 	/0/out/tcc-seed -nostdinc -nostdlib -Werror -run /1/src/stage1.c
 
 # There's no next step, on completion stage 1 will chain-exec into stage 2, etc.

@@ -33,9 +33,9 @@ ash configure \
 	--enable-deterministic-archives \
 	--host x86_64-linux --build x86_64-linux \
 	--prefix=/2/06-binutils/out
-gnumake
+gnumake $MKOPTS
 
 echo "### $0: installing binutils..."
-gnumake install
+gnumake $MKOPTS install
 
 #rm -rf /2/06-binutils/tmp
