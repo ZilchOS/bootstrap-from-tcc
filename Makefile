@@ -11,7 +11,7 @@ all:
 all-at-once: build.sh seed.sh download.sh [012345]/* [012345]/*/*
 	./build.sh
 
-all-with-make: all-pkgs verify-pkgs-checksums
+all-with-make: all-pkgs verify-all-pkgs-checksums
 
 ################################################################################
 
@@ -198,7 +198,7 @@ all-pkgs: pkgs/2/08-busybox.pkg
 
 ################################################################################
 
-.PHONY: verify-pkgs-checksums update-pkgs-checksums
+.PHONY: verify-pkgs-checksums verify-all-pkgs-checksums update-pkgs-checksums
 verify-pkgs-checksums:
 	@status=true; \
 	while read expected_csum pkgname; do \
@@ -220,6 +220,9 @@ verify-pkgs-checksums:
 			echo "    expected: $$expected_csum"; \
 		fi; \
 	done < verify.pkgs.sha256; $$status\
+
+verify-all-pkgs-checksums: all-pkgs
+	$(MAKE) verify-pkgs-checksums
 
 update-pkgs-checksums:
 	@:> verify.pkgs.sha256
