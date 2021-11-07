@@ -26,6 +26,7 @@ echo "### $0: configuring busybox..."
 BUSYBOX_FLAGS='CONFIG_SHELL=/1/out/protobusybox/bin/ash'
 BUSYBOX_FLAGS="$BUSYBOX_FLAGS CC=gcc HOSTCC=gcc"
 BUSYBOX_FLAGS="$BUSYBOX_FLAGS CFLAGS=-I/2/07-linux-headers/out/include"
+BUSYBOX_FLAGS="$BUSYBOX_FLAGS KCONFIG_NOTIMESTAMP=y"
 echo -e '#!/1/out/protobusybox/bin/ash\nprintf 9999' > scripts/gcc-version.sh
 sed -i \
 	-e 's|/dev/null|/2/08-busybox/tmp/null|g' \
