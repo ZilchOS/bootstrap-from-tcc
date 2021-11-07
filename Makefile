@@ -203,7 +203,7 @@ verify-pkgs-checksums:
 	@status=true; \
 	while read expected_csum pkgname; do \
 		pkg=$${pkgname%%.tar}.pkg; \
-		if [[ ! -e $$pkg ]]; then \
+		if [[ ! -e "$$pkg" ]]; then \
 			status=false; \
 			echo "MISSING $$pkgname"; \
 			continue; \
@@ -211,6 +211,13 @@ verify-pkgs-checksums:
 		computed_csum=$$(zstd -qcd "$$pkg" | sha256sum); \
 		computed_csum=$$(<<<$$computed_csum tr ' ' '\t' | cut -f1); \
 		short_csum=$$(<<<$$computed_csum head -c7); \
+		if [[ "$$pkg" == pkgs/0.pkg ]]; then \
+			if ! sha256sum -c <<<"$(TCC_CHECKSUM) 0/tcc-seed" \
+					>/dev/null; then \
+				echo "$$short_csum pkgs/0.tar CUSTOM"; \
+				continue; \
+			fi; \
+		fi; \
 		if [[ "$$expected_csum" == "$$computed_csum" ]]; then \
 			echo "$$short_csum $$pkgname OK"; \
 		else \
