@@ -299,7 +299,7 @@ void aa_extend_from_dir(struct args_accumulator* aa_out,
 			d = (struct linux_dirent*) ((char*) d + d->d_reclen);
 		}
 	}
-	aa_sort(aa_out);  // iteration order isn't guaranteed, make stable
+	aa_sort(&aa);  // iteration order isn't guaranteed, make stable
 	aa_extend_from(aa_out, &aa);
 }
 
