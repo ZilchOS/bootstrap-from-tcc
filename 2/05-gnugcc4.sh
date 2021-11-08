@@ -57,6 +57,8 @@ echo "### $0: fixing up GNU GCC 4 sources..."
 sed -i 's|/dev/null|/2/05-gnugcc4/tmp/null|g' \
 	config.sub configure* */configure \
 	libtool.m4 ltmain.sh */ltmain.sh \
+	*/acinclude.m4 */*/acinclude.m4 \
+	*/Makefile* */*/Makefile* \
 	mkinstalldirs \
 	fixincludes/genfixes fixincludes/*.* \
 	gcc/genmultilib
@@ -68,10 +70,11 @@ sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
 sed -i 's|^\(\s*\)sh |\1/1/out/protobusybox/bin/ash |' Makefile* */Makefile*
 sed -i 's|/lib64/ld-linux-x86-64.so.2|/2/04-musl/out/lib/libc.so|' \
 	gcc/config/i386/linux64.h
+sed -i 's|"os/gnu-linux"|"os/generic"|' libstdc++-v3/configure.host
 # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
 sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh */ltmain.sh
 
-echo "### $0: building GNU GCC 4 (C only)"  # TODO: add cpp
+echo "### $0: building GNU GCC 4 (dynamically linked, with C++ support)"
 ash configure \
 	cache_file=nonex \
 	CONFIG_SHELL='/1/out/protobusybox/bin/ash' \
@@ -79,20 +82,22 @@ ash configure \
 	CC=cc CPP=cpp LD=ld \
 	--with-build-time-tools=/2/02-static-binutils/out/bin \
 	--prefix=/2/05-gnugcc4/out \
-	--enable-languages=c \
+	--with-sysroot=$SYSROOT \
+	--enable-languages=c,c++ \
+	--with-specs='%{!static:%x{-rpath=/2/05-gnugcc4/out/lib64}}' \
+	--with-native-system-header-dir=/include \
 	--disable-bootstrap \
-	--disable-multilib \
-	--disable-multiarch \
+	--disable-quadmath --disable-decimal-float --disable-fixed-point \
+	--disable-lto \
+	--disable-libgomp \
+	--disable-multilib --disable-multiarch \
 	--disable-libmudflap --disable-libsanitizer \
 	--disable-libssp --disable-libmpx \
-	--disable-libquadmath \
-	--disable-libgomp \
-	--with-sysroot=$SYSROOT \
-	--with-native-system-header-dir=/include \
+	--disable-nls \
+	--disable-libitm \
 	--host x86_64-linux --build x86_64-linux
-	#--enable-languages=c,c++ \
 gnumake $MKOPTS
-echo "### $0: installing GNU GCC 4 (C only)"  # TODO: add cpp
+echo "### $0: installing GNU GCC 4 (dynamically linked, with C++ support)"
 gnumake $MKOPTS install
 
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

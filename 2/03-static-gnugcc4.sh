@@ -34,7 +34,7 @@ gzip -d < /downloads/mpfr-2.4.2.tar.gz | tar -x --strip-components=1 -C mpfr
 gzip -d < /downloads/mpc-0.8.1.tar.gz | tar -x --strip-components=1 -C mpc
 bzip2 -d < /downloads/gmp-4.3.2.tar.bz2 | tar -x --strip-components=1 -C gmp
 
-echo "### $0: building static GNU GCC 4 (C only)"
+echo "### $0: building static GNU GCC 4 (statically linked, C only)"
 sed -i 's|/dev/null|/2/03-static-gnugcc4/tmp/null|g' \
 	config.sub configure* */configure \
 	libtool.m4 ltmain.sh */ltmain.sh \
@@ -53,20 +53,20 @@ ash configure \
 	SHELL='/1/out/protobusybox/bin/ash' \
 	--with-build-time-tools=/2/02-static-binutils/out/bin \
 	--prefix=/2/03-static-gnugcc4/out \
-	--disable-bootstrap \
-	--disable-decimal-float \
+	--with-sysroot=/1/out/protomusl \
 	--enable-languages=c \
-	--disable-multilib \
-	--disable-multiarch \
+	--with-native-system-header-dir=/include \
+	--disable-bootstrap \
+	--disable-quadmath --disable-decimal-float --disable-fixed-point \
+	--disable-lto \
+	--disable-libgomp \
+	--disable-multilib --disable-multiarch \
 	--disable-libmudflap --disable-libsanitizer \
 	--disable-libssp --disable-libmpx \
-	--disable-libquadmath \
-	--disable-libgomp \
-	--with-sysroot=/1/out/protomusl \
-	--with-native-system-header-dir=/include \
+	--disable-nls \
 	--host x86_64-linux --build x86_64-linux
 gnumake $MKOPTS
-echo "### $0: installing static GNU GCC 4 (C only)"
+echo "### $0: installing static GNU GCC 4 (statically linked, C only)"
 gnumake $MKOPTS install
 
 #rm -rf /2/03-static-gnugcc4/tmp

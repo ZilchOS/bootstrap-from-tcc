@@ -31,4 +31,16 @@ gnumake -B va_test CC=gcc LDFLAGS=-static  # no specifying sysroot anymore
 ./va_test var
 [ "$(./va_test var)" == varargs ]
 
+echo "### $0: testing (dynamic C++)..."
+cat > cpp_test.cpp <<\EOF
+#include <iostream>
+using namespace std;
+int main() { cout << "this is c+" << "+" << endl; return 0; }
+EOF
+gnumake cpp_test
+grep /2/04-musl/out/lib/libc.so cpp_test
+( ! grep ld-linux cpp_test )
+./cpp_test
+[ "$(./cpp_test)" == 'this is c++' ]
+
 touch /2/05.test/out  # indicator of successful completion
