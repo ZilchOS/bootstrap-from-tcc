@@ -218,6 +218,7 @@ all-tests: pkgs/2/05.test.pkg
 all-pkgs: pkgs/0.pkg
 all-pkgs: pkgs/1.pkg
 all-pkgs: pkgs/2/00-intermediate-gnumake.pkg
+all-pkgs: pkgs/2/00.ccache.pkg
 all-pkgs: pkgs/2/01-gnumake.pkg
 all-pkgs: pkgs/2/02-static-binutils.pkg
 all-pkgs: pkgs/2/03-static-gnugcc4.pkg
