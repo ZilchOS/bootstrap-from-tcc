@@ -39,12 +39,10 @@ mkdir wrappers
 echo '#!/1/out/protobusybox/bin/ash' > wrappers/cc
 echo '#!/1/out/protobusybox/bin/ash' > wrappers/cpp
 echo '#!/1/out/protobusybox/bin/ash' > wrappers/ld
-echo '/2/03-static-gnugcc4/out/bin/gcc $_SYSROOT -Wl,$_LDFLAG "$@"' \
-	>> wrappers/cc
-echo '/2/03-static-gnugcc4/out/bin/cpp $_NEWINC "$@"' >> wrappers/cpp
-echo '/2/02-static-binutils/out/bin/ld $_LDFLAG "$@"' >> wrappers/ld
+echo 'exec gcc $_SYSROOT -Wl,$_LDFLAG "$@"' >> wrappers/cc
+echo 'exec /2/03-static-gnugcc4/out/bin/cpp $_NEWINC "$@"' >> wrappers/cpp
+echo 'exec /2/02-static-binutils/out/bin/ld $_LDFLAG "$@"' >> wrappers/ld
 chmod +x wrappers/cc wrappers/cpp wrappers/ld
-export PATH="/2/05-gnugcc4/tmp/wrappers:$PATH"
 
 echo "### $0: unpacking GNU GCC 4 sources..."
 mkdir mpfr mpc gmp
@@ -79,7 +77,9 @@ ash configure \
 	cache_file=nonex \
 	CONFIG_SHELL='/1/out/protobusybox/bin/ash' \
 	SHELL='/1/out/protobusybox/bin/ash' \
-	CC=cc CPP=cpp LD=ld \
+	CC=/2/05-gnugcc4/tmp/wrappers/cc \
+	CPP=/2/05-gnugcc4/tmp/wrappers/cpp \
+	LD=/2/05-gnugcc4/tmp/wrappers/ld \
 	--with-build-time-tools=/2/02-static-binutils/out/bin \
 	--prefix=/2/05-gnugcc4/out \
 	--with-sysroot=$SYSROOT \
