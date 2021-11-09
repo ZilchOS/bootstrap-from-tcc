@@ -80,19 +80,20 @@ ash configure \
 	CC=/2/05-gnugcc4/tmp/wrappers/cc \
 	CPP=/2/05-gnugcc4/tmp/wrappers/cpp \
 	LD=/2/05-gnugcc4/tmp/wrappers/ld \
+	--with-sysroot=$SYSROOT \
+	--with-native-system-header-dir=/include \
 	--with-build-time-tools=/2/02-static-binutils/out/bin \
 	--prefix=/2/05-gnugcc4/out \
-	--with-sysroot=$SYSROOT \
-	--enable-languages=c,c++ \
 	--with-specs='%{!static:%x{-rpath=/2/05-gnugcc4/out/lib64}}' \
-	--with-native-system-header-dir=/include \
+	--enable-languages=c,c++ \
 	--disable-bootstrap \
-	--disable-quadmath --disable-decimal-float --disable-fixed-point \
+	--disable-libquadmath \
 	--disable-lto \
 	--disable-libgomp \
-	--disable-multilib --disable-multiarch \
-	--disable-libmudflap --disable-libsanitizer \
-	--disable-libssp --disable-libmpx \
+	--disable-multilib \
+	--disable-multiarch \
+	--disable-libmudflap \
+	--disable-libssp \
 	--disable-nls \
 	--disable-libitm \
 	--host x86_64-linux --build x86_64-linux

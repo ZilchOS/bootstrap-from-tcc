@@ -51,18 +51,19 @@ sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh */ltmain.sh
 ash configure \
 	CONFIG_SHELL='/1/out/protobusybox/bin/ash' \
 	SHELL='/1/out/protobusybox/bin/ash' \
+	--with-sysroot=/1/out/protomusl \
+	--with-native-system-header-dir=/include \
 	--with-build-time-tools=/2/02-static-binutils/out/bin \
 	--prefix=/2/03-static-gnugcc4/out \
-	--with-sysroot=/1/out/protomusl \
 	--enable-languages=c \
-	--with-native-system-header-dir=/include \
 	--disable-bootstrap \
 	--disable-quadmath --disable-decimal-float --disable-fixed-point \
 	--disable-lto \
 	--disable-libgomp \
-	--disable-multilib --disable-multiarch \
-	--disable-libmudflap --disable-libsanitizer \
-	--disable-libssp --disable-libmpx \
+	--disable-multilib \
+	--disable-multiarch \
+	--disable-libmudflap \
+	--disable-libssp \
 	--disable-nls \
 	--host x86_64-linux --build x86_64-linux
 gnumake $MKOPTS
