@@ -186,6 +186,13 @@ pkgs/2/08-busybox.pkg: pkgs/2/06-binutils.pkg
 pkgs/2/08-busybox.pkg: pkgs/2/07-linux-headers.pkg
 pkgs/2/08-busybox.pkg: downloads/busybox-1.34.1.tar.bz2
 
+pkgs/2/09-gnumake.pkg: pkgs/1.pkg
+pkgs/2/09-gnumake.pkg: pkgs/2/01-gnumake.pkg
+pkgs/2/09-gnumake.pkg: pkgs/2/04-musl.pkg
+pkgs/2/09-gnumake.pkg: pkgs/2/05-gnugcc4.pkg
+pkgs/2/09-gnumake.pkg: pkgs/2/06-binutils.pkg
+pkgs/2/09-gnumake.pkg: downloads/make-4.3.tar.gz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -219,6 +226,7 @@ all-pkgs: pkgs/2/05-gnugcc4.pkg
 all-pkgs: pkgs/2/06-binutils.pkg
 all-pkgs: pkgs/2/07-linux-headers.pkg
 all-pkgs: pkgs/2/08-busybox.pkg
+all-pkgs: pkgs/2/09-gnumake.pkg
 
 ################################################################################
 
@@ -230,6 +238,7 @@ pkgs/2/04-musl.pkg: pkgs/2/00.ccache.pkg
 pkgs/2/05-gnugcc4.pkg: pkgs/2/00.ccache.pkg
 pkgs/2/06-binutils.pkg: pkgs/2/00.ccache.pkg
 pkgs/2/08-busybox.pkg: pkgs/2/00.ccache.pkg
+pkgs/2/09-gnumake.pkg: pkgs/2/00.ccache.pkg
 endif
 
 ################################################################################
