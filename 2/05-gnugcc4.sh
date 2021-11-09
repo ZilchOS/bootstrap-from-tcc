@@ -14,10 +14,12 @@
 
 set -uex
 
-export PATH='/2/01-gnumake/out/bin'
+
+export PATH='/2/00.ccache/out/wrappers/c'  # may or may not exist
+export PATH="$PATH:/1/out/protobusybox/bin"
+export PATH="$PATH:/2/01-gnumake/out/bin"
 export PATH="$PATH:/2/02-static-binutils/out/bin"
 export PATH="$PATH:/2/03-static-gnugcc4/out/bin"
-export PATH="$PATH:/1/out/protobusybox/bin"
 
 mkdir -p /2/05-gnugcc4/tmp; cd /2/05-gnugcc4/tmp
 
@@ -102,4 +104,5 @@ echo "### $0: installing GNU GCC 4 (dynamically linked, with C++ support)"
 gnumake $MKOPTS install
 
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr
+[ ! -e /2/00.ccache/out/bin/ccache ] || /2/00.ccache/out/bin/ccache -sz
 #rm -rf /2/05-gnugcc4/tmp

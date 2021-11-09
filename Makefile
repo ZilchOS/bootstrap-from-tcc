@@ -11,7 +11,7 @@ all:
 all-at-once: build.sh seed.sh download.sh [012345]/* [012345]/*/*
 	./build.sh
 
-all-with-make: all-pkgs verify-all-pkgs-checksums
+all-with-make: all-pkgs all-tests verify-all-pkgs-checksums
 
 ################################################################################
 
@@ -24,6 +24,7 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 .PHONY: all all-at-once all-with-make clean-stage clean deepclean
 MKOPTS ?=  # for inner make invocations, one can pass -j# this way
+USE_CCACHE ?= 0  # for faster iterative debugging only
 
 SOURCE_DATE_EPOCH := 0
 TAR := tar
@@ -99,22 +100,45 @@ pkgs/%.pkg: %.sh
 	@echo "### Makefile: creating a temporary build area tmp/build/$*..."
 	rm -rf "tmp/build/$*"; mkdir -p "tmp/build/$*"
 	helpers/inject "tmp/build/$*" $^
+ifeq ($(USE_CCACHE), 1)
+	mkdir -p "tmp/build/$*/ccache"
+	[[ ! -e "tmp/ccache/$*.tar.zstd" ]] || \
+		tar -Izstd -xf "tmp/ccache/$*.tar.zstd" -C "tmp/build/$*/ccache"
+endif
 	@echo "### Makefile: stage $*: building"
 	env -i "MKOPTS=$(MKOPTS)" unshare -nrR "./tmp/build/$*" "/$*.sh"
+	@echo "### Makefile: stage $*: packing up"
 	mkdir -p "$(shell dirname "pkgs/$*.pkg")"
 	$(TAR_REPR) -Izstd -cf "pkgs/$*.pkg" -C "tmp/build/$*" "$*/out"
+ifeq ($(USE_CCACHE), 1)
+	if ! rmdir "tmp/build/$*/ccache" 2>/dev/null; then \
+		mkdir -p "$(shell dirname tmp/ccache/$*)"; \
+		$(TAR_REPR) -Izstd -cf "tmp/ccache/$*.tar.zstd" \
+			-C "tmp/build/$*/ccache" .; \
+	fi
+endif
+	@echo "### Makefile: stage $*: cleaning up"
 	rm -rf "tmp/build/$*"
 	@echo "### Makefile: $* has been built as pkgs/$*.pkg"
 
 # Dependency graph:
 
-pkgs/2/00-intermediate-gnumake.pkg: downloads/make-4.3.tar.gz pkgs/1.pkg
+pkgs/2/00-intermediate-gnumake.pkg: pkgs/1.pkg
+pkgs/2/00-intermediate-gnumake.pkg: downloads/make-4.3.tar.gz
 
+ifeq ($(USE_CCACHE), 1)
+pkgs/2/00.ccache.pkg: pkgs/1.pkg
+pkgs/2/00.ccache.pkg: pkgs/2/00-intermediate-gnumake.pkg
+pkgs/2/00.ccache.pkg: downloads/ccache-3.7.12.tar.gz
+endif
+
+pkgs/2/01-gnumake.pkg: pkgs/1.pkg
+pkgs/2/01-gnumake.pkg: pkgs/2/00-intermediate-gnumake.pkg
 pkgs/2/01-gnumake.pkg: downloads/make-4.3.tar.gz
-pkgs/2/01-gnumake.pkg: pkgs/1.pkg pkgs/2/00-intermediate-gnumake.pkg
 
+pkgs/2/02-static-binutils.pkg: pkgs/1.pkg
+pkgs/2/02-static-binutils.pkg: pkgs/2/01-gnumake.pkg
 pkgs/2/02-static-binutils.pkg: downloads/binutils-2.37.tar.gz
-pkgs/2/02-static-binutils.pkg: pkgs/1.pkg pkgs/2/01-gnumake.pkg
 
 pkgs/2/03-static-gnugcc4.pkg: pkgs/1.pkg
 pkgs/2/03-static-gnugcc4.pkg: pkgs/2/01-gnumake.pkg
@@ -166,19 +190,20 @@ pkgs/2/08-busybox.pkg: downloads/busybox-1.34.1.tar.bz2
 
 # Separate one for tests to help readability of the above
 
-pkgs/2/04.test.pkg:
 pkgs/2/04.test.pkg: pkgs/1.pkg
 pkgs/2/04.test.pkg: pkgs/2/01-gnumake.pkg
 pkgs/2/04.test.pkg: pkgs/2/02-static-binutils.pkg
 pkgs/2/04.test.pkg: pkgs/2/03-static-gnugcc4.pkg
 pkgs/2/04.test.pkg: pkgs/2/04-musl.pkg
 
-pkgs/2/05.test.pkg:
 pkgs/2/05.test.pkg: pkgs/1.pkg
 pkgs/2/05.test.pkg: pkgs/2/01-gnumake.pkg
 pkgs/2/05.test.pkg: pkgs/2/02-static-binutils.pkg
 pkgs/2/05.test.pkg: pkgs/2/04-musl.pkg
 pkgs/2/05.test.pkg: pkgs/2/05-gnugcc4.pkg
+
+all-tests: pkgs/2/04.test.pkg
+all-tests: pkgs/2/05.test.pkg
 
 ################################################################################
 
@@ -195,7 +220,17 @@ all-pkgs: pkgs/2/06-binutils.pkg
 all-pkgs: pkgs/2/07-linux-headers.pkg
 all-pkgs: pkgs/2/08-busybox.pkg
 
-.PHONY: all-tests
+################################################################################
+
+ifeq ($(USE_CCACHE), 1)
+pkgs/2/01-gnumake.pkg: pkgs/2/00.ccache.pkg
+pkgs/2/02-static-binutils.pkg: pkgs/2/00.ccache.pkg
+pkgs/2/03-static-gnugcc4.pkg: pkgs/2/00.ccache.pkg
+pkgs/2/04-musl.pkg: pkgs/2/00.ccache.pkg
+pkgs/2/05-gnugcc4.pkg: pkgs/2/00.ccache.pkg
+pkgs/2/06-binutils.pkg: pkgs/2/00.ccache.pkg
+pkgs/2/08-busybox.pkg: pkgs/2/00.ccache.pkg
+endif
 
 ################################################################################
 

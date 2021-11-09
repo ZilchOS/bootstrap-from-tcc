@@ -5,7 +5,8 @@
 
 set -uex
 
-export PATH='/1/out/protobusybox/bin'
+export PATH='/2/00.ccache/out/wrappers/c'  # may or may not exist
+export PATH="$PATH:/1/out/protobusybox/bin"
 export PATH="$PATH:/2/01-gnumake/out/bin"
 export PATH="$PATH:/2/05-gnugcc4/out/bin"
 export PATH="$PATH:/2/06-binutils/out/bin"
@@ -50,5 +51,6 @@ sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
 echo "### $0: installing busybox..."
 gnumake $MKOPTS $BUSYBOX_FLAGS install CONFIG_PREFIX=/2/08-busybox/out/
 
+[ ! -e /2/00.ccache/out/bin/ccache ] || /2/00.ccache/out/bin/ccache -sz
 #rm -rf /2/08-busybox/tmp
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

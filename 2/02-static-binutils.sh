@@ -5,8 +5,10 @@
 
 set -uex
 
-export PATH='/2/01-gnumake/out/bin'
-export PATH="$PATH:/1/out/tinycc/wrappers:/1/out/protobusybox/bin"
+export PATH='/2/00.ccache/out/wrappers/cc-only'  # may or may not exist
+export PATH="$PATH:/1/out/tinycc/wrappers"
+export PATH="$PATH:/1/out/protobusybox/bin"
+export PATH="$PATH:/2/01-gnumake/out/bin"
 
 echo "### $0: unpacking binutils sources..."
 mkdir -p /2/02-static-binutils/tmp; cd /2/02-static-binutils/tmp
@@ -36,4 +38,5 @@ gnumake $MKOPTS
 echo "### $0: installing static binutils..."
 gnumake $MKOPTS install
 
+[ ! -e /2/00.ccache/out/bin/ccache ] || /2/00.ccache/out/bin/ccache -sz
 #rm -rf /2/02-static-binutils/tmp

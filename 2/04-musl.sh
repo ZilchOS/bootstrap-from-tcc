@@ -5,10 +5,11 @@
 
 set -uex
 
-export PATH='/2/01-gnumake/out/bin'
+export PATH='/2/00.ccache/out/wrappers/c'  # may or may not exist
+export PATH="$PATH:/1/out/protobusybox/bin"
+export PATH="$PATH:/2/01-gnumake/out/bin"
 export PATH="$PATH:/2/02-static-binutils/out/bin"
 export PATH="$PATH:/2/03-static-gnugcc4/out/bin"
-export PATH="$PATH:/1/out/protobusybox/bin"
 
 mkdir -p /2/04-musl/tmp; cd /2/04-musl/tmp
 
@@ -27,7 +28,7 @@ sed -i 's|/bin/sh|/usr/bin/env|' src/stdio/popen.c src/process/system.c
 sed -i 's|"sh", "-c"|"/usr/bin/env", "sh", "-c"|' \
 	src/stdio/popen.c src/process/system.c
 mkdir -p /2/04-musl/out/bin
-ash ./configure --target x86_64-linux --prefix=/2/04-musl/out
+ash ./configure --prefix=/2/04-musl/out
 
 echo "### $0: installing musl..."
 gnumake $MKOPTS
@@ -35,4 +36,5 @@ gnumake $MKOPTS install
 #ln -sfn /2/04-musl/out/lib /2/out/gnugcc4/sys-root/lib
 #ln -sfn /2/04-musl/out/include /2/out/gnugcc4/sys-root/include
 
+[ ! -e /2/00.ccache/out/bin/ccache ] || /2/00.ccache/out/bin/ccache -sz
 #rm -rf /2/04-musl/tmp

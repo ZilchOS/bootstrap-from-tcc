@@ -5,8 +5,10 @@
 
 set -uex
 
-export PATH='/2/00-intermediate-gnumake/out/bin'
-export PATH="$PATH:/1/out/tinycc/wrappers:/1/out/protobusybox/bin"
+export PATH='/2/00.ccache/out/wrappers/cc-only'  # may or may not exist
+export PATH="$PATH:/1/out/tinycc/wrappers"
+export PATH="$PATH:/1/out/protobusybox/bin"
+export PATH="$PATH:/2/00-intermediate-gnumake/out/bin"
 
 echo "### $0: unpacking intermediate GNU Make sources..."
 mkdir -p /2/01-gnumake/tmp; cd /2/01-gnumake/tmp
@@ -27,4 +29,5 @@ echo "### $0: installing gnumake"
 mkdir -p /2/01-gnumake/out/bin
 cp make /2/01-gnumake/out/bin/gnumake
 
+[ ! -e /2/00.ccache/out/bin/ccache ] || /2/00.ccache/out/bin/ccache -sz
 #rm -rf /2/01-gnumake/tmp

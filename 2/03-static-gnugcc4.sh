@@ -14,8 +14,10 @@
 
 set -uex
 
-export PATH='/2/01-gnumake/out/bin'
-export PATH="$PATH:/1/out/tinycc/wrappers:/1/out/protobusybox/bin"
+export PATH='/2/00.ccache/out/wrappers/cc-only'  # may or may not exist
+export PATH="$PATH:/1/out/tinycc/wrappers"
+export PATH="$PATH:/1/out/protobusybox/bin"
+export PATH="$PATH:/2/01-gnumake/out/bin"
 
 mkdir -p /2/03-static-gnugcc4/tmp; cd /2/03-static-gnugcc4/tmp
 
@@ -72,3 +74,4 @@ gnumake $MKOPTS install
 
 #rm -rf /2/03-static-gnugcc4/tmp
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr
+[ ! -e /2/00.ccache/out/bin/ccache ] || /2/00.ccache/out/bin/ccache -sz
