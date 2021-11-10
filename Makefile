@@ -264,11 +264,17 @@ verify-pkgs-checksums:
 				continue; \
 			fi; \
 		fi; \
-		if [[ "$$expected_csum" == "$$computed_csum" ]]; then \
-			echo "$$short_csum $$pkgname OK"; \
+		if make -sq "$$pkg"; then \
+			dated=''; \
 		else \
 			status=false; \
-			echo "$$short_csum $$pkgname NOT OK"; \
+			dated=" OUTDATED"; \
+		fi; \
+		if [[ "$$expected_csum" == "$$computed_csum" ]]; then \
+			echo "$$short_csum $$pkgname OK$$dated"; \
+		else \
+			status=false; \
+			echo "$$short_csum $$pkgname NOT OK$$dated"; \
 			echo "    computed: $$computed_csum"; \
 			echo "    expected: $$expected_csum"; \
 		fi; \
