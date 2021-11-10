@@ -2,63 +2,44 @@
 set -ue
 
 NIXPKGS=nixpkgs/8eeae5320e741d55ec1b891853fa48419e3a5a26
+DESTDIR=$DESTDIR
 
-mkdir -p stage/cheat
+mkdir -p $DESTDIR/cheat
 
-if [[ ! -e stage/cheat/make ]]; then
+if [[ ! -e $DESTDIR/cheat/make ]]; then
 	nix build "$NIXPKGS#pkgsStatic.gnumake"
-	cp result/bin/make stage/cheat/make
+	cp result/bin/make $DESTDIR/cheat/make
 	rm result
 fi
 
-#if [[ ! -e stage/cheat/dash ]]; then
-#	nix build "$NIXPKGS#pkgsStatic.dash"
-#	cp result/bin/dash stage/cheat/dash
-#	rm result
-#fi
-
-if [[ ! -e stage/cheat/bash ]]; then
+if [[ ! -e $DESTDIR/cheat/bash ]]; then
 	nix build "$NIXPKGS#pkgsStatic.bash"
-	cp result/bin/bash stage/cheat/bash
+	cp result/bin/bash $DESTDIR/cheat/bash
 	rm result
 fi
 
-if [[ ! -e stage/cheat/strace ]]; then
+if [[ ! -e $DESTDIR/cheat/strace ]]; then
 	nix build "$NIXPKGS#pkgsStatic.strace"
-	cp result/bin/strace stage/cheat/
+	cp result/bin/strace $DESTDIR/cheat/
 	rm result
 fi
 
-#if [[ ! -e stage/cheat/sed ]]; then
-#	nix build "$NIXPKGS#pkgsStatic.gnused"
-#	cp result/bin/sed stage/cheat/sed
-#	rm result
-#fi
-
-if [[ ! -e stage/cheat/file ]]; then
-	nix build "$NIXPKGS#pkgsStatic.file"
-	cp result/bin/file stage/cheat/file
-	rm result
-fi
-
-if [[ ! -e stage/cheat/busybox ]]; then
+if [[ ! -e $DESTDIR/cheat/busybox ]]; then
 	nix build "$NIXPKGS#pkgsStatic.busybox"
-	cp result/bin/busybox stage/cheat/busybox
+	cp result/bin/busybox $DESTDIR/cheat/busybox
 	for f in $(ls result/bin/); do
 		[[ $(basename $f) == busybox ]] ||
-			ln -s /cheat/busybox stage/cheat/$(basename $f)
+			ln -s /cheat/busybox $DESTDIR/cheat/$(basename $f)
 	done
 	rm result
 fi
 
 if [[ -n "$@" ]]; then
-	mkdir -p stage/dev
-	touch stage/dev/null
 	_PATH='/1/out/protobusybox/bin'
 	_PATH+=':/2/01-gnumake/out/bin'
 	_PATH+=":/2/02-static-binutils/out/bin"
 	_PATH+=":/2/03-static-gnugcc4/out/bin"
 	env -i PATH=$_PATH \
-		$(command -v unshare) -nrR stage \
+		$(command -v unshare) -nrR $DESTDIR \
 			"$@"
 fi
