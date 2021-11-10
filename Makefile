@@ -26,9 +26,9 @@ MAKEFLAGS += --no-builtin-rules
 MKOPTS ?=  # for inner make invocations, one can pass -j# this way
 USE_CCACHE ?= 0  # for faster iterative debugging only
 
-SOURCE_DATE_EPOCH := 0
+SOURCE_DATE_EPOCH ?= $(shell date '--date=01 Jan 1970 00:00:00 UTC' +%s)
 TAR := tar
-TAR_REPR = ${TAR} --sort=name --mtime="@${SOURCE_DATE_EPOCH}" \
+TAR_REPR = $(TAR) --sort=name '--mtime=@$(SOURCE_DATE_EPOCH)' \
 	--owner=0 --group=0 --numeric-owner \
 	--pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime
 
