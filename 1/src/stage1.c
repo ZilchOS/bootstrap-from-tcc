@@ -801,9 +801,6 @@ void verify_tcc_stability(void) {
 
 void compose_stage2(void) {
 	run0("/1/out/protobusybox/bin/ash", "-uexvc", "
-		# FIXME REMOVE
-		/1/out/protobusybox/bin/install -m 755 /0/out/tcc-seed /x
-
 		:> /1/tmp/empty.c
 		/1/out/tinycc/bin/tcc -c /1/tmp/empty.c -o /1/tmp/empty.o
 		/1/out/tinycc/bin/tcc -ar /1/tmp/empty.a /1/tmp/empty.o
