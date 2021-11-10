@@ -14,7 +14,6 @@
 
 set -uex
 
-
 export PATH='/2/00.ccache/out/wrappers/c'  # may or may not exist
 export PATH="$PATH:/1/out/protobusybox/bin"
 export PATH="$PATH:/2/01-gnumake/out/bin"
@@ -89,7 +88,7 @@ ash configure \
 	--with-specs='%{!static:%x{-rpath=/2/05-gnugcc4/out/lib64}}' \
 	--enable-languages=c,c++ \
 	--disable-bootstrap \
-	--disable-libquadmath \
+	--disable-libquadmath --disable-decimal-float --disable-fixed-point \
 	--disable-lto \
 	--disable-libgomp \
 	--disable-multilib \
