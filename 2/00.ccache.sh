@@ -17,11 +17,7 @@ mkdir -p /2/00.ccache/tmp; cd /2/00.ccache/tmp
 gzip -d < /downloads/ccache-3.7.12.tar.gz | tar -x --strip-components=1
 
 echo "### $0: building ccache..."
-sed -i 's|/dev/null|/2/00.ccache/tmp/null|g' \
-	configure
-:> null
-sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
-	configure
+sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' configure
 ash configure \
 	--host x86_64-linux --build x86_64-linux \
 	--prefix=/2/00.ccache/out

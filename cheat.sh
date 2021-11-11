@@ -2,7 +2,7 @@
 set -ue
 
 NIXPKGS=nixpkgs/8eeae5320e741d55ec1b891853fa48419e3a5a26
-DESTDIR=$DESTDIR
+: ${DESTDIR:=stage}
 
 mkdir -p $DESTDIR/cheat
 

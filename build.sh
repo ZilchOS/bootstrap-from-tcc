@@ -28,9 +28,22 @@ mkdir -p stage
 ./seed.sh
 
 # Exec into stage1.c inside stage with env unset,
-# without network and with EUID=EGID=0.
+# without network, with EUID=EGID=0 and with /dev/null being a /dev/null.
+# See helpers/chroot and helpers/chroot-inner for more explanations
 # Alternatively, you can chroot if you're not a fan of user namespaces.
-exec env -i "MKOPTS=$MKOPTS" unshare -nrR stage \
-	/0/out/tcc-seed -nostdinc -nostdlib -Werror -run /1/src/stage1.c
+MOUNT=$(command -v mount)
+if [[ -e /run/wrappers/bin/mount.real ]]; then  # NixOS wrapper might be buggy
+	MOUNT=$(cat /run/wrappers/bin/mount.real)
+fi
+MKDIR=$(command -v mkdir)
+CHROOT=$(command -v chroot)
+
+exec env -i "MKOPTS=$MKOPTS" unshare -nrm bash -uexs <<EOF
+	$MKDIR stage/dev; :> stage/dev/null
+	$MOUNT --bind /dev/null stage/dev/null
+
+	exec $CHROOT stage \
+		/0/out/tcc-seed -nostdinc -nostdlib -Werror -run /1/src/stage1.c
+EOF
 
 # There's no next step, on completion stage 1 will chain-exec into stage 2, etc.

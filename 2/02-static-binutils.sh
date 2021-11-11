@@ -15,8 +15,6 @@ mkdir -p /2/02-static-binutils/tmp; cd /2/02-static-binutils/tmp
 gzip -d < /downloads/binutils-2.37.tar.gz | tar -x --strip-components=1
 
 echo "### $0: building static binutils..."
-sed -i 's|/dev/null|/2/02-static-binutils/tmp/null|g' \
-	config.sub configure* */configure libtool.m4 ltmain.sh
 mkdir fakes; export PATH=/2/02-static-binutils/tmp/fakes:$PATH
 ln -s /1/out/protobusybox/bin/true fakes/makeinfo
 sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \

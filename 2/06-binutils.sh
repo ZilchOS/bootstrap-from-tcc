@@ -16,8 +16,6 @@ mkdir -p /2/06-binutils/tmp; cd /2/06-binutils/tmp
 gzip -d < /downloads/binutils-2.37.tar.gz | tar -x --strip-components=1
 
 echo "### $0: building binutils..."
-sed -i 's|/dev/null|/2/06-binutils/tmp/null|g' \
-	config.* configure* */configure libtool.m4 ltmain.sh
 sed -i 's|date +%Y|echo 0000|' config.guess
 mkdir fakes; export PATH=/2/06-binutils/tmp/fakes:$PATH
 ln -s /1/out/protobusybox/bin/true fakes/makeinfo

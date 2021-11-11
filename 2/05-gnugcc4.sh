@@ -53,15 +53,6 @@ gzip -d < /downloads/mpc-0.8.1.tar.gz | tar -x --strip-components=1 -C mpc
 bzip2 -d < /downloads/gmp-4.3.2.tar.bz2 | tar -x --strip-components=1 -C gmp
 
 echo "### $0: fixing up GNU GCC 4 sources..."
-sed -i 's|/dev/null|/2/05-gnugcc4/tmp/null|g' \
-	config.sub configure* */configure \
-	libtool.m4 ltmain.sh */ltmain.sh \
-	*/acinclude.m4 */*/acinclude.m4 \
-	*/Makefile* */*/Makefile* \
-	mkinstalldirs \
-	fixincludes/genfixes fixincludes/*.* \
-	gcc/genmultilib
-:> null
 sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
 	missing move-if-change mkdep mkinstalldirs symlink-tree \
 	gcc/genmultilib */*.sh gcc/exec-tool.in \

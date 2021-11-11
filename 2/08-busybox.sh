@@ -29,19 +29,12 @@ BUSYBOX_FLAGS="$BUSYBOX_FLAGS CC=gcc HOSTCC=gcc"
 BUSYBOX_FLAGS="$BUSYBOX_FLAGS CFLAGS=-I/2/07-linux-headers/out/include"
 BUSYBOX_FLAGS="$BUSYBOX_FLAGS KCONFIG_NOTIMESTAMP=y"
 echo -e '#!/1/out/protobusybox/bin/ash\nprintf 9999' > scripts/gcc-version.sh
-sed -i \
-	-e 's|/dev/null|/2/08-busybox/tmp/null|g' \
-	-e 's|/bin/sh|/1/out/protobusybox/bin/ash|g' \
-	Makefile scripts/Kbuild.include arch/x86_64/Makefile \
-	scripts/kconfig/*.c \
-	applets/busybox.mkscripts \
-	applets/usage_compressed \
-	applets/install.sh \
-	scripts/*/*.sh scripts/*.sh \
-	scripts/mkconfigs scripts/embedded_scripts scripts/trylink
-:>null
-gnumake $MKOPTS $BUSYBOX_FLAGS \
-	defconfig
+sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|g' \
+	scripts/gen_build_files.sh \
+	scripts/mkconfigs scripts/embedded_scripts scripts/trylink \
+	scripts/generate_BUFSIZ.sh \
+	applets/usage_compressed applets/busybox.mkscripts applets/install.sh
+gnumake $MKOPTS $BUSYBOX_FLAGS defconfig
 sed -i 's|CONFIG_INSTALL_NO_USR=y|CONFIG_INSTALL_NO_USR=n|' .config
 
 echo "### $0: building busybox..."

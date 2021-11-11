@@ -22,8 +22,6 @@ sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' \
 # Hardcode /usr/bin/env sh instead of /bin/sh for popen and system calls.
 # At least one hardcode less and env is dumber than sh =(
 # TODO: build and bundle an env with musl at this step?
-sed -i 's|/dev/null|/2/04-musl/tmp/null|g' \
-	configure
 sed -i 's|/bin/sh|/usr/bin/env|' src/stdio/popen.c src/process/system.c
 sed -i 's|"sh", "-c"|"/usr/bin/env", "sh", "-c"|' \
 	src/stdio/popen.c src/process/system.c

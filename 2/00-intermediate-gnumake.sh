@@ -19,7 +19,6 @@ rm src/getopt.h
 for f in src/getopt.c src/getopt1.c; do :> $f; done
 for f in lib/fnmatch.c lib/glob.c lib/xmalloc.c lib/error.c; do :> $f; done
 sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' src/job.c
-sed -i 's|/dev/null|/2/00-intermediate-gnumake/tmp/null|' configure build.sh
 ash ./configure \
 	--build x86_64-linux \
 	--disable-posix-spawn \

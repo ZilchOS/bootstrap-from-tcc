@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# Run a command chrooted inside $DESTDIR w/o network, with /dev/null, outline:
+#
+#     [helpers/chroot, outer script]
+#     unshare
+#       -n                                            # without network
+#       -r                                            # with EUID=EGID=0
+#       -m                                            # separate mount namespace
+#         [helpers/chroot-inner, this script]
+#  /      mount --bind /dev/null $DESTDIR/dev/null    # unprivileged /dev/null!
+# |       &&
+# |       env -i                                      # with env unset
+#  \        chroot $DESTDIR                           # unprivileged chroot!
+
+set -uex
+
+: ${DESTDIR:=stage}
+: ${MKOPTS:=''}
+
+mkdir -p "$DESTDIR/dev"; :> "$DESTDIR/dev/null"
+if [[ -e /run/wrappers/bin/mount.real ]]; then
+	MOUNT=$(cat /run/wrappers/bin/mount.real)
+else
+	MOUNT=mount
+fi
+$MOUNT --bind /dev/null "$DESTDIR/dev/null"
+
+exec env -i "MKOPTS=$MKOPTS" chroot "$DESTDIR" "$@"

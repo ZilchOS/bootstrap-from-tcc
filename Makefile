@@ -15,11 +15,9 @@ all-with-make: all-pkgs all-tests verify-all-pkgs-checksums
 
 ################################################################################
 
-# TODO: get rid of helpers/
-
 SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
-.DELETE_ON_ERROR:  # if only it also worked for dirs, see helpers/add_to_arena
+.DELETE_ON_ERROR:  # if only it also worked for dirs, see helpers/inject
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 .PHONY: all all-at-once all-with-make clean-stage clean deepclean
@@ -106,7 +104,7 @@ ifeq ($(USE_CCACHE), 1)
 		tar -Izstd -xf "tmp/ccache/$*.tar.zstd" -C "tmp/build/$*/ccache"
 endif
 	@echo "### Makefile: stage $*: building"
-	env -i "MKOPTS=$(MKOPTS)" unshare -nrR "./tmp/build/$*" "/$*.sh"
+	DESTDIR="./tmp/build/$*" MKOPTS="$(MKOPTS)" ./helpers/chroot "/$*.sh"
 	@echo "### Makefile: stage $*: packing up"
 	mkdir -p "$(shell dirname "pkgs/$*.pkg")"
 	$(TAR_REPR) -Izstd -cf "pkgs/$*.pkg" -C "tmp/build/$*" "$*/out"

@@ -8,16 +8,12 @@ for arg; do
 	#if [[ "$arg" =~ .*/build ]]; then continue; fi
 
 	if [[ "$arg" =~ .*\.pkg ]]; then
-		#echo "### $0: Unpacking $arg into $DESTDIR..."
-		#[[ ! -d "$DESTDIR/.unpack.tmp" ]] || \
-		#	rm -rf "$DESTDIR/.unpack.tmp"
-		#mkdir -p "$DESTDIR/.unpack.tmp"
+		# That one's for package dependencies
 		tar -xf "$arg" -Izstd -C "$DESTDIR"
-		#touch "$DESTDIR/.unpack.tmp"
-		#mv $DESTDIR/.unpack.tmp/* ./$DESTDIR/
-		#rm -d ./$DESTDIR/.unpack.tmp
 	else
-		if [[ ! -e "./$DESTDIR/$arg" || "$arg" -nt "./$DESTDIR/$arg" ]]; then
+		# That one's for copying over downloads and sources
+		if [[ ! -e "./$DESTDIR/$arg" || "$arg" -nt "./$DESTDIR/$arg" ]]
+		then
 			echo "Copying $arg into $DESTDIR..."
 			mkdir -p "$DESTDIR/$(dirname "$arg")"
 			cp -a --reflink=auto "$arg" "$DESTDIR/$arg"

@@ -11,3 +11,4 @@ set -uex
 /2/06-binutils.sh
 /2/07-linux-headers.sh
 /2/08-busybox.sh
+/2/09-gnumake.sh

@@ -19,7 +19,6 @@ echo "### $0: building gnumake with intermediate GNU make"
 sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' build-aux/install-sh
 #sed -i 's|/bin/sh|sh|' src/job.c
 #sed -i 's|r = posix_spawn (|r = posix_spawnp (|' src/job.c
-sed -i 's|/dev/null|/2/09-gnumake/tmp/null|' configure
 ash ./configure \
 	CONFIG_SHELL=ash SHELL=ash MAKEINFO=true \
 	--build x86_64-linux \

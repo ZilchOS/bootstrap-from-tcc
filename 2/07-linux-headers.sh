@@ -22,7 +22,6 @@ gzip -d < /downloads/linux-5.15.tar.gz | tar -x --strip-components=1 \
 	linux-5.15/tools
 
 echo "### $0: building Linux headers..."
-sed -i 's|/dev/null|/2/07-linux-headers/tmp/null|g' Makefile
 gnumake $MKOPTS \
 	CONFIG_SHELL=/1/out/protobusybox/bin/ash CC=gcc HOSTCC=gcc ARCH=x86_64 \
 	headers

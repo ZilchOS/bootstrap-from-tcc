@@ -16,7 +16,6 @@ gzip -d < /downloads/make-4.3.tar.gz | tar -x --strip-components=1
 
 echo "### $0: building gnumake with intermediate GNU make"
 sed -i 's|/bin/sh|/1/out/protobusybox/bin/ash|' src/job.c build-aux/install-sh
-sed -i 's|/dev/null|/2/01-gnumake/tmp/null|' configure
 ash ./configure \
 	--build x86_64-linux \
 	--disable-posix-spawn \
