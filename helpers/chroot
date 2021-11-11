@@ -15,8 +15,4 @@
 
 set -uex
 
-: ${DESTDIR:=stage}
-: ${MKOPTS:=''}
-
-DESTDIR="$DESTDIR" MKOPTS="$MKOPTS" \
-	exec unshare -nrm helpers/chroot-inner "$@"
+exec unshare -nrm helpers/chroot-inner "$@"
