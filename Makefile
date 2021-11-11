@@ -207,8 +207,16 @@ pkgs/2/05.test.pkg: pkgs/2/02-static-binutils.pkg
 pkgs/2/05.test.pkg: pkgs/2/04-musl.pkg
 pkgs/2/05.test.pkg: pkgs/2/05-gnugcc4.pkg
 
+pkgs/2/09.test.pkg: pkgs/1.pkg
+pkgs/2/09.test.pkg: pkgs/2/04-musl.pkg
+pkgs/2/09.test.pkg: pkgs/2/05-gnugcc4.pkg
+pkgs/2/09.test.pkg: pkgs/2/06-binutils.pkg
+pkgs/2/09.test.pkg: pkgs/2/08-busybox.pkg
+pkgs/2/09.test.pkg: pkgs/2/09-gnumake.pkg
+
 all-tests: pkgs/2/04.test.pkg
 all-tests: pkgs/2/05.test.pkg
+all-tests: pkgs/2/09.test.pkg
 
 ################################################################################
 
