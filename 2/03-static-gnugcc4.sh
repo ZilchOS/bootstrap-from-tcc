@@ -53,7 +53,7 @@ ash configure \
 	--prefix=/2/03-static-gnugcc4/out \
 	--enable-languages=c \
 	--disable-bootstrap \
-	--disable-quadmath --disable-decimal-float --disable-fixed-point \
+	--disable-libquadmath --disable-decimal-float --disable-fixed-point \
 	--disable-lto \
 	--disable-libgomp \
 	--disable-multilib \
