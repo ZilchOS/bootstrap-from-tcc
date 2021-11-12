@@ -191,6 +191,17 @@ pkgs/2/09-gnumake.pkg: pkgs/2/05-gnugcc4.pkg
 pkgs/2/09-gnumake.pkg: pkgs/2/06-binutils.pkg
 pkgs/2/09-gnumake.pkg: downloads/make-4.3.tar.gz
 
+pkgs/2/90-gnugcc10.pkg: pkgs/1.pkg
+pkgs/2/90-gnugcc10.pkg: pkgs/2/01-gnumake.pkg
+pkgs/2/90-gnugcc10.pkg: pkgs/2/02-static-binutils.pkg
+pkgs/2/90-gnugcc10.pkg: pkgs/2/04-musl.pkg
+pkgs/2/90-gnugcc10.pkg: pkgs/2/05-gnugcc4.pkg
+pkgs/2/90-gnugcc10.pkg: downloads/gcc-10.3.0.tar.gz
+pkgs/2/90-gnugcc10.pkg: downloads/gmp-6.1.0.tar.bz2
+pkgs/2/90-gnugcc10.pkg: downloads/mpc-1.0.3.tar.gz
+pkgs/2/90-gnugcc10.pkg: downloads/mpfr-3.1.4.tar.gz
+pkgs/2/90-gnugcc10.pkg: downloads/isl-0.18.tar.bz2
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -214,9 +225,17 @@ pkgs/2/09.test.pkg: pkgs/2/06-binutils.pkg
 pkgs/2/09.test.pkg: pkgs/2/08-busybox.pkg
 pkgs/2/09.test.pkg: pkgs/2/09-gnumake.pkg
 
+pkgs/2/90.test.pkg: pkgs/1.pkg
+pkgs/2/90.test.pkg: pkgs/2/04-musl.pkg
+pkgs/2/90.test.pkg: pkgs/2/06-binutils.pkg
+pkgs/2/90.test.pkg: pkgs/2/08-busybox.pkg
+pkgs/2/90.test.pkg: pkgs/2/09-gnumake.pkg
+pkgs/2/90.test.pkg: pkgs/2/90-gnugcc10.pkg
+
 all-tests: pkgs/2/04.test.pkg
 all-tests: pkgs/2/05.test.pkg
 all-tests: pkgs/2/09.test.pkg
+all-tests: pkgs/2/90.test.pkg
 
 ################################################################################
 
@@ -233,6 +252,7 @@ all-pkgs: pkgs/2/06-binutils.pkg
 all-pkgs: pkgs/2/07-linux-headers.pkg
 all-pkgs: pkgs/2/08-busybox.pkg
 all-pkgs: pkgs/2/09-gnumake.pkg
+all-pkgs: pkgs/2/90-gnugcc10.pkg
 
 ################################################################################
 
@@ -245,6 +265,7 @@ pkgs/2/05-gnugcc4.pkg: pkgs/2/00.ccache.pkg
 pkgs/2/06-binutils.pkg: pkgs/2/00.ccache.pkg
 pkgs/2/08-busybox.pkg: pkgs/2/00.ccache.pkg
 pkgs/2/09-gnumake.pkg: pkgs/2/00.ccache.pkg
+pkgs/2/90-gnugcc10.pkg: pkgs/2/00.ccache.pkg
 endif
 
 ################################################################################
