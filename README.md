@@ -32,6 +32,9 @@ but I'm not as hardcore as them, so, let's start small.
 
 ### In brief
 
+Compiler chain so far:
+input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 4 -> GNU GCC 10
+
 * stage 0: seeded binary `tcc`
 * stage 1 (`1/src/stage1.c` using no libc):
   * `libtcc1`
@@ -54,11 +57,11 @@ but I'm not as hardcore as them, so, let's start small.
   * `binutils`
   * `linux-headers`
   * `busybox`
+  * `gnumake`
+  * `gnugcc10`
 * stage 3: ???
   * Nix?
   * Linux?
-
-Compiler chain so far: `tcc` -> `gnugcc 4` -> `gnugcc 4`
 
 ### In more detail
 
@@ -116,24 +119,23 @@ At the end of stage 1 we have, all linked statically:
 
 * Recompiles the world with GNU GCC 4:
   * `musl` usable for dynamic linking
-  * `gnugcc4` that can dynamically link against it
+  * `gnugcc4` that can dynamically link against it and supports c++
   * `binutils`
   * `linux-headers`
   * `busybox`
-  * `gnumake` (TODO)
+  * `gnumake`
+
+* Venture forth without a plan yet
+  * `gcc 10`
 
 What's next (undecided):
 
-* rebuild gnumake dynamically over in stage 2
-* try raising first `gnugcc` version within 4?
-* try raising second `gnugcc` version as far as possible?
-* add c++ support to second `gnugcc`?
+* try compiling gcc 4 just once somehow?
 * build `clang`?
 * `nix`
 * non-GNU `make`?
 * `linux`?
-* switch over to building in VM or UML at some point,
-  so that there's at least a `/dev/null`??
+* switch over to building in VM or UML at some point?
 
 ### Reproducibility
 
