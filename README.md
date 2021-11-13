@@ -141,14 +141,12 @@ What's next (undecided):
 
 Reproducibility is deeply cared about, but only lightly tested at this point.
 
-At fd0e2b2, I've tested three configurations:
+At 8a1ecde, I've tested two configurations:
 
 * NixOS ~21.11 master, Linux 5.14.15, btrfs filesystem, tcc built with Nix
-* NixOS ~21.11 master, Linux 5.14.15, btrfs filesystem, tcc built on Alpine
-* NixOS 19.09 release, Linux 5.4.33, ext4 filesystem, tcc built with Nix
+* NixOS 19.09 release, Linux 5.4.33, ext4 filesystem, tcc built on Alpine
 
-Checksums of all stage 1/2 packages of the time matched up
-(up to and including `2/08-busybox`).
+Checksums of all available packages of the time past stage0 matched up
 TinyCC was built from mob branch, da11cf6 commit.
 
 Something like a year change or a kernel version change still might break it,
