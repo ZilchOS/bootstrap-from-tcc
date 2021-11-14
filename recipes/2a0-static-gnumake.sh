@@ -44,4 +44,3 @@ mkdir /store/2a0-static-gnumake/wrappers; cd /store/2a0-static-gnumake/wrappers
 echo "#!/store/1-stage1/protobusybox/bin/ash" > make
 echo "exec /store/2a0-static-gnumake/bin/make SHELL=\$SHELL \"\$@\"" \ >> make
 chmod +x make
-

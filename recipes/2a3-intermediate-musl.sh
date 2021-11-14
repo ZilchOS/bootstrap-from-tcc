@@ -26,7 +26,7 @@ sed -i 's|/bin/sh|/usr/bin/env|' src/stdio/popen.c src/process/system.c
 sed -i 's|"sh", "-c"|"/usr/bin/env", "sh", "-c"|' \
 	src/stdio/popen.c src/process/system.c
 ash ./configure --prefix=/store/2a3-intermediate-musl
+make -j $NPROC
 
 echo "### $0: installing musl..."
-make -j $NPROC
 make -j $NPROC install

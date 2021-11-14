@@ -26,4 +26,4 @@ ash ./configure \
 make -j $NPROC
 
 echo "### $0: installing GNU Make with itself to test it..."
-./make -j $NPROC SHELL=ash install
+./make -j $NPROC SHELL=ash install-strip

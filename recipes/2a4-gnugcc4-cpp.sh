@@ -92,6 +92,6 @@ ash configure \
 	--host x86_64-linux --build x86_64-linux
 make -j $NPROC
 echo "### $0: installing GNU GCC 4 (dynamically linked, with C++ support)"
-make -j $NPROC install
+make -j $NPROC install-strip
 
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

@@ -32,4 +32,4 @@ ash configure \
 make -j $NPROC
 
 echo "### $0: installing binutils..."
-make -j $NPROC install
+make -j $NPROC install-strip

@@ -82,6 +82,6 @@ ash configure \
 	--host x86_64-linux-musl --build x86_64-linux-musl
 make -j $NPROC
 echo "### $0: installing GNU GCC 10"
-make -j $NPROC install
+make -j $NPROC install-strip
 
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr
