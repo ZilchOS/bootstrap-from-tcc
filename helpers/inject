@@ -5,8 +5,6 @@ DESTDIR=$1
 shift
 
 for arg; do
-	#if [[ "$arg" =~ .*/build ]]; then continue; fi
-
 	if [[ "$arg" =~ .*\.pkg ]]; then
 		# That one's for package dependencies
 		tar -xf "$arg" -Izstd -C "$DESTDIR"

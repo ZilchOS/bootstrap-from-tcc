@@ -35,10 +35,10 @@ if [[ ! -e $DESTDIR/cheat/busybox ]]; then
 fi
 
 if [[ -n "$@" ]]; then
-	_PATH='/1/out/protobusybox/bin'
-	_PATH+=':/2/01-gnumake/out/bin'
-	_PATH+=":/2/02-static-binutils/out/bin"
-	_PATH+=":/2/03-static-gnugcc4/out/bin"
+	_PATH=''
+	for bindir in $DESTDIR/store/*/bin $DESTDIR/store/*/*/bin; do
+		_PATH="${bindir##$DESTDIR}:$_PATH"
+	done
 	env -i PATH=$_PATH \
 		$(command -v unshare) -nrR $DESTDIR \
 			"$@"

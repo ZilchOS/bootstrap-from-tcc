@@ -33,10 +33,10 @@ but I'm not as hardcore as them, so, let's start small.
 ### In brief
 
 Compiler chain so far:
-input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 4 -> GNU GCC 10
+input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 10
 
 * stage 0: seeded binary `tcc`
-* stage 1 (`1/src/stage1.c` using no libc):
+* stage 1 (`recipes/1-stage1.c` using no libc):
   * `libtcc1`
   * `protomusl`
   * `tcc`
@@ -47,19 +47,22 @@ input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 4 -> GNU GCC 10
   * `protomusl`
   * `tcc` that we build just to prove the finality of the previous one
   * `protobusybox`
-* stage 2 (`2/*.sh`):
-  * `gnumake`
+* stage 2 "compiler ascension" part (`recipes/2a*.sh`):
   * `gnumake`
   * `binutils`
   * `gnugcc4`
   * `musl`
   * `gnugcc4`
+  * `gnugcc10`
+* stage 2 "build with the new compiler" part (`recipes/2b*.sh`):
+  * `musl`
+  * `gnugcc10`
   * `binutils`
   * `linux-headers`
   * `busybox`
   * `gnumake`
-  * `gnugcc10`
-* stage 3: ???
+* stage 3: clang 13?
+* stage 4: ???
   * Nix?
   * Linux?
 
@@ -88,7 +91,7 @@ given:
 At the end of it we obtain
 a ton of sources and a single externally seeded `tcc` binary.
 
-`stage1.c`, executed with `tcc -run`:
+`recipes/1-stage1.c`, executed with `tcc -run`:
 
 * compiles a `libtcc1.a` from `tinycc` sources
 * compiles a protomusl `libc.a` and others from `musl` sources
@@ -116,21 +119,20 @@ At the end of stage 1 we have, all linked statically:
   * `gnumake`, statically linked
   * `binutils`, statically linked
   * `gnugcc4`, statically linked
+  * `musl`, now a shared library as well
+  * `gnugcc4` with C++ support and linking to a shared musl
+  * `gnugcc10`
 
-* Recompiles the world with GNU GCC 4:
+* Recompiles the world with GNU GCC 10:
   * `musl` usable for dynamic linking
-  * `gnugcc4` that can dynamically link against it and supports c++
+  * `gnugcc10` that can dynamically link against it and supports c++
   * `binutils`
   * `linux-headers`
   * `busybox`
   * `gnumake`
 
-* Venture forth without a plan yet
-  * `gcc 10`
-
 What's next (undecided):
 
-* try compiling gcc 4 just once somehow?
 * build `clang`?
 * `nix`
 * non-GNU `make`?

@@ -65,12 +65,7 @@ process_commands_in() {
 	done < $1
 }
 
-if [[ $# == 0 ]]; then
-	files="1/seed.host-executed.sh 2/[0-9]*.sh"
-else
-	files="$@"
-fi
-
+[[ $# == 0 ]] && files='recipes/*.sh recipes/*/*.sh' || files = "$@"
 for f in $files; do
 	process_commands_in $f
 done

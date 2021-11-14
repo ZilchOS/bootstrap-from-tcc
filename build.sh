@@ -9,11 +9,12 @@
 
 set -uex
 
-export MKOPTS=${MKOPTS:-$@}
+export NPROC=${NPROC:-$1}
 
-if [[ ! -e ./0/tcc-seed ]]; then
-	echo 'You need to supply a statically linked build of tinycc in ./0/.'
-	echo 'You can `make 0/out/tcc-seed` if you have `nix` and trust in me.'
+if [[ ! -e tcc-seed ]]; then
+	echo 'You need to supply a statically linked TinyCC as `tcc-seed`.'
+	echo -n 'You can `./compile-tcc-seed-with-nix.sh` '
+	echo 'if you have `nix` and trust in me.'
 	exit 1
 fi
 
@@ -38,12 +39,14 @@ fi
 MKDIR=$(command -v mkdir)
 CHROOT=$(command -v chroot)
 
-exec env -i "MKOPTS=$MKOPTS" unshare -nrm bash -uexs <<EOF
+exec env -i "NPROC=$NPROC" unshare -nrm bash -uexs <<EOF
 	$MKDIR stage/dev; :> stage/dev/null
 	$MOUNT --bind /dev/null stage/dev/null
 
 	exec $CHROOT stage \
-		/0/out/tcc-seed -nostdinc -nostdlib -Werror -run /1/src/stage1.c
+		/store/0-tcc-seed -nostdinc -nostdlib -Werror -run \
+			/recipes/1-stage1.c
 EOF
 
-# There's no next step, on completion stage 1 will chain-exec into stage 2, etc.
+# There's no next step,
+# upon completion stage1.c will exec into recipes/all-past-stage1.sh

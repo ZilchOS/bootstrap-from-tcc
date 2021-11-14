@@ -16,7 +16,7 @@
 set -uex
 
 : ${DESTDIR:=stage}
-: ${MKOPTS:=''}
+: ${NPROC:=1}
 
 mkdir -p "$DESTDIR/dev"; :> "$DESTDIR/dev/null"
 if [[ -e /run/wrappers/bin/mount.real ]]; then
@@ -26,4 +26,4 @@ else
 fi
 $MOUNT --bind /dev/null "$DESTDIR/dev/null"
 
-exec env -i "MKOPTS=$MKOPTS" chroot "$DESTDIR" "$@"
+exec env -i "NPROC=$NPROC" chroot "$DESTDIR" "$@"
