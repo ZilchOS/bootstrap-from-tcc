@@ -27,3 +27,10 @@ make -j $NPROC
 
 echo "### $0: installing GNU Make with itself to test it..."
 ./make -j $NPROC SHELL=ash install-strip
+
+echo "### $0: creating a wrapper that respects \$SHELL..."
+# FIXME: patch make to use getenv?
+mkdir /store/2b5-gnumake/wrappers; cd /store/2b5-gnumake/wrappers
+echo "#!/store/2b4-busybox/bin/ash" > make
+echo "exec /store/2b5-gnumake/bin/make SHELL=\$SHELL \"\$@\"" \ >> make
+chmod +x make

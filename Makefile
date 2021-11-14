@@ -220,6 +220,14 @@ pkgs/2b5-gnumake.pkg: pkgs/2b2-binutils.pkg
 pkgs/2b5-gnumake.pkg: pkgs/2b4-busybox.pkg
 pkgs/2b5-gnumake.pkg: downloads/make-4.3.tar.gz
 
+pkgs/3a-cmake.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-cmake.pkg: pkgs/2b1-gnugcc10.pkg
+pkgs/3a-cmake.pkg: pkgs/2b2-binutils.pkg
+pkgs/3a-cmake.pkg: pkgs/2b3-linux-headers.pkg
+pkgs/3a-cmake.pkg: pkgs/2b4-busybox.pkg
+pkgs/3a-cmake.pkg: pkgs/2b5-gnumake.pkg
+pkgs/3a-cmake.pkg: downloads/cmake-3.21.4.tar.gz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -270,6 +278,7 @@ all-pkgs: pkgs/2b2-binutils.pkg
 all-pkgs: pkgs/2b3-linux-headers.pkg
 all-pkgs: pkgs/2b4-busybox.pkg
 all-pkgs: pkgs/2b5-gnumake.pkg
+all-pkgs: pkgs/3a-cmake.pkg
 
 ################################################################################
 
@@ -285,6 +294,7 @@ pkgs/2b2-binutils.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b3-linux-headers.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b4-busybox.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b5-gnumake.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-cmake.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
