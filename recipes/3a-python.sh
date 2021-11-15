@@ -29,16 +29,25 @@ tar --strip-components=1 -xf /downloads/Python-3.10.0.tar.xz
 
 echo "### $0: fixing up CPython sources..."
 sed -i "s|/bin/sh|$SHELL|" configure
+# the precompiled pyc files aren't reproducible,
+# but it's not like I need to waste time on them anyway.
+# break their generation
+mv Lib/compileall.py Lib/compileall.py.bak
+echo 'import sys; sys.exit(0)' > Lib/compileall.py; chmod +x Lib/compileall.py
 
 echo "### $0: building CPython..."
 ash configure \
 	CPPFLAGS='-I/store/3a-zlib/include' \
 	LDFLAGS='-L/store/3a-zlib/lib' \
+	--without-static-libpython \
+	--enable-shared \
 	--build x86_64-linux-musl \
 	--prefix=/store/3a-python
 make -j $NPROC
 
 echo "### $0: installing CPython..."
 make -j $NPROC install
+# restore compileall just in case
+cat Lib/compileall.py.bak > /store/3a-python/lib/python3.10/compileall.py
 
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr
