@@ -101,8 +101,11 @@ ifeq ($(USE_CCACHE), 1)
 		tar -Izstd -xf "tmp/ccache/$*.tar.zstd" -C "tmp/build/$*/ccache"
 endif
 	@echo "### Makefile: building $*"
-	DESTDIR="./tmp/build/$*" NPROC="$(NPROC)" ./helpers/chroot \
-		"/recipes/$*.sh"
+	env \
+		DESTDIR="./tmp/build/$*" \
+		NPROC="$(NPROC)" \
+		SOURCE_DATE_EPOCH="$(SOURCE_DATE_EPOCH)" \
+		./helpers/chroot "/recipes/$*.sh"
 	@echo "### Makefile: packing up $*"
 	$(TAR_REPR) -Izstd -cf "pkgs/$*.pkg" -C "tmp/build/$*" "store/$*"
 ifeq ($(USE_CCACHE), 1)

@@ -17,6 +17,7 @@ set -uex
 
 : ${DESTDIR:=stage}
 : ${NPROC:=1}
+: ${SOURCE_DATE_EPOCH:=0}
 
 mkdir -p "$DESTDIR/dev"; :> "$DESTDIR/dev/null"
 if [[ -e /run/wrappers/bin/mount.real ]]; then
@@ -26,4 +27,5 @@ else
 fi
 $MOUNT --bind /dev/null "$DESTDIR/dev/null"
 
-exec env -i "NPROC=$NPROC" chroot "$DESTDIR" "$@"
+exec env -i "NPROC=$NPROC" SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH \
+	chroot "$DESTDIR" "$@"
