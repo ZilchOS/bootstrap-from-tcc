@@ -1,6 +1,6 @@
 #!/store/2b4-busybox/bin/ash
 
-#> FETCH d9570a95c215f4c988dd0f0564ca4ef8d18c30750f157238ea12669c2985978
+#> FETCH d9570a95c215f4c9886dd0f0564ca4ef8d18c30750f157238ea12669c2985978
 #>  FROM https://github.com/Kitware/CMake/releases/download/v3.21.4/cmake-3.21.4.tar.gz
 
 set -uex
