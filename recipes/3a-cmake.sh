@@ -31,4 +31,4 @@ ash configure \
 	-DCMAKE_USE_OPENSSL=OFF
 make -j $NPROC
 echo "### $0: installing CMake..."
-make -j $NPROC install
+make -j $NPROC install/strip
