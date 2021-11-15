@@ -235,6 +235,15 @@ pkgs/3a-zlib.pkg: pkgs/2b4-busybox.pkg
 pkgs/3a-zlib.pkg: pkgs/2b5-gnumake.pkg
 pkgs/3a-zlib.pkg: downloads/zlib-1.2.11.tar.gz
 
+pkgs/3a-python.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-python.pkg: pkgs/2b1-gnugcc10.pkg
+pkgs/3a-python.pkg: pkgs/2b2-binutils.pkg
+pkgs/3a-python.pkg: pkgs/2b3-linux-headers.pkg
+pkgs/3a-python.pkg: pkgs/2b4-busybox.pkg
+pkgs/3a-python.pkg: pkgs/2b5-gnumake.pkg
+pkgs/3a-python.pkg: pkgs/3a-zlib.pkg
+pkgs/3a-python.pkg: downloads/Python-3.10.0.tar.xz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -286,6 +295,7 @@ all-pkgs: pkgs/2b3-linux-headers.pkg
 all-pkgs: pkgs/2b4-busybox.pkg
 all-pkgs: pkgs/2b5-gnumake.pkg
 all-pkgs: pkgs/3a-cmake.pkg
+all-pkgs: pkgs/3a-python.pkg
 
 ################################################################################
 
@@ -302,6 +312,7 @@ pkgs/2b3-linux-headers.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b4-busybox.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b5-gnumake.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-cmake.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-python.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
