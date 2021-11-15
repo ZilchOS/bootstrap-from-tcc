@@ -2,6 +2,8 @@
 
 set -uex
 
+export SOURCE_DATE_EPOCH=0
+
 /recipes/2a0-static-gnumake.sh
 /recipes/2a1-static-binutils.sh
 /recipes/2a2-static-gnugcc4-c.sh
