@@ -228,6 +228,13 @@ pkgs/3a-cmake.pkg: pkgs/2b4-busybox.pkg
 pkgs/3a-cmake.pkg: pkgs/2b5-gnumake.pkg
 pkgs/3a-cmake.pkg: downloads/cmake-3.21.4.tar.gz
 
+pkgs/3a-zlib.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-zlib.pkg: pkgs/2b1-gnugcc10.pkg
+pkgs/3a-zlib.pkg: pkgs/2b2-binutils.pkg
+pkgs/3a-zlib.pkg: pkgs/2b4-busybox.pkg
+pkgs/3a-zlib.pkg: pkgs/2b5-gnumake.pkg
+pkgs/3a-zlib.pkg: downloads/zlib-1.2.11.tar.gz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above

@@ -14,3 +14,4 @@ set -uex
 /recipes/2b3-linux-headers.sh
 /recipes/2b4-busybox.sh
 /recipes/2b5-gnumake.sh
+/recipes/3a-zlib.sh
