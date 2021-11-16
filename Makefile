@@ -247,6 +247,16 @@ pkgs/3a-python.pkg: pkgs/2b5-gnumake.pkg
 pkgs/3a-python.pkg: pkgs/3a-zlib.pkg
 pkgs/3a-python.pkg: downloads/Python-3.10.0.tar.xz
 
+pkgs/3a-clang.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-clang.pkg: pkgs/2b1-gnugcc10.pkg
+pkgs/3a-clang.pkg: pkgs/2b2-binutils.pkg
+pkgs/3a-clang.pkg: pkgs/2b3-linux-headers.pkg
+pkgs/3a-clang.pkg: pkgs/2b4-busybox.pkg
+pkgs/3a-clang.pkg: pkgs/2b5-gnumake.pkg
+pkgs/3a-clang.pkg: pkgs/3a-python.pkg
+pkgs/3a-clang.pkg: pkgs/3a-cmake.pkg
+pkgs/3a-clang.pkg: downloads/llvm-project-13.0.0.src.tar.xz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -275,10 +285,17 @@ pkgs/_2b2.test.pkg: pkgs/2b0-musl.pkg
 pkgs/_2b2.test.pkg: pkgs/2b1-gnugcc10.pkg
 pkgs/_2b2.test.pkg: pkgs/2b2-binutils.pkg
 
+pkgs/_3a.test.pkg: pkgs/2b0-musl.pkg
+pkgs/_3a.test.pkg: pkgs/2b1-gnugcc10.pkg  # TODO: get rid of
+pkgs/_3a.test.pkg: pkgs/2b4-busybox.pkg
+pkgs/_3a.test.pkg: pkgs/2b5-gnumake.pkg
+pkgs/_3a.test.pkg: pkgs/3a-clang.pkg
+
 all-tests: pkgs/_2a3.test.pkg
 all-tests: pkgs/_2a4.test.pkg
 all-tests: pkgs/_2a5.test.pkg
 all-tests: pkgs/_2b2.test.pkg
+all-tests: pkgs/_3a.test.pkg
 
 ################################################################################
 
@@ -298,7 +315,9 @@ all-pkgs: pkgs/2b3-linux-headers.pkg
 all-pkgs: pkgs/2b4-busybox.pkg
 all-pkgs: pkgs/2b5-gnumake.pkg
 all-pkgs: pkgs/3a-cmake.pkg
+all-pkgs: pkgs/3a-zlib.pkg
 all-pkgs: pkgs/3a-python.pkg
+all-pkgs: pkgs/3a-clang.pkg
 
 ################################################################################
 
@@ -315,7 +334,9 @@ pkgs/2b3-linux-headers.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b4-busybox.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b5-gnumake.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-cmake.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-zlib.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-python.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-clang.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
