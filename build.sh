@@ -9,7 +9,7 @@
 
 set -uex
 
-export NPROC=${NPROC:-$1}
+export NPROC=${NPROC:-${1:-1}}
 
 if [[ ! -e tcc-seed ]]; then
 	echo 'You need to supply a statically linked TinyCC as `tcc-seed`.'
