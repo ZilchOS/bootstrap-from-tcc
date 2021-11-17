@@ -42,6 +42,8 @@ CHROOT=$(command -v chroot)
 exec env -i "NPROC=$NPROC" unshare -nrm bash -uexs <<EOF
 	$MKDIR stage/dev; :> stage/dev/null
 	$MOUNT --bind /dev/null stage/dev/null
+	$MKDIR stage/proc
+	$MOUNT --rbind /proc stage/proc
 
 	exec $CHROOT stage \
 		/store/0-tcc-seed -nostdinc -nostdlib -Werror -run \

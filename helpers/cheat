@@ -34,12 +34,12 @@ if [[ ! -e $DESTDIR/cheat/busybox ]]; then
 	rm result
 fi
 
-if [[ -n "$@" ]]; then
+if [[ -z "$@" ]]; then
 	_PATH=''
 	for bindir in $DESTDIR/store/*/bin $DESTDIR/store/*/*/bin; do
 		_PATH="${bindir##$DESTDIR}:$_PATH"
 	done
-	env -i PATH=$_PATH \
-		$(command -v unshare) -nrR $DESTDIR \
-			"$@"
+	helpers/chroot /cheat/env "PATH=$PATH" /cheat/ash
+else
+	helpers/chroot "$@"
 fi

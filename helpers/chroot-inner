@@ -19,13 +19,17 @@ set -uex
 : ${NPROC:=1}
 : ${SOURCE_DATE_EPOCH:=0}
 
-mkdir -p "$DESTDIR/dev"; :> "$DESTDIR/dev/null"
 if [[ -e /run/wrappers/bin/mount.real ]]; then
 	MOUNT=$(cat /run/wrappers/bin/mount.real)
 else
 	MOUNT=mount
 fi
+
+mkdir -p "$DESTDIR/dev"; :> "$DESTDIR/dev/null"
 $MOUNT --bind /dev/null "$DESTDIR/dev/null"
 
-exec env -i "NPROC=$NPROC" SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH \
+mkdir -p "$DESTDIR/proc"
+$MOUNT --rbind /proc "$DESTDIR/proc"
+
+exec env -i "NPROC=$NPROC" "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH" \
 	chroot "$DESTDIR" "$@"

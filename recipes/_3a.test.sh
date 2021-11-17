@@ -8,9 +8,6 @@ export PATH="$PATH:/store/3a-clang/bin/generic-names"
 
 mkdir -p /tmp/_3a.test; cd /tmp/_3a.test
 
-# TODO: get rid of (why is it even needed if rpath is set right?)
-export LD_LIBRARY_PATH='/store/2b1-gnugcc10/lib'
-
 echo "### $0: preparing..."
 cat > va_test.c <<\EOF
 #include <stdio.h>
