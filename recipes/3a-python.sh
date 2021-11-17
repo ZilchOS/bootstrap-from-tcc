@@ -11,7 +11,6 @@ export PATH="$PATH:/store/2b2-binutils/bin"
 export PATH="$PATH:/store/2b5-gnumake/wrappers"
 
 export SHELL=/store/2b4-busybox/bin/ash
-export LD_LIBRARY_PATH=/store/3a-zlib/lib
 
 mkdir -p /tmp/3a-python; cd /tmp/3a-python
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
@@ -37,12 +36,11 @@ echo 'import sys; sys.exit(0)' > Lib/compileall.py; chmod +x Lib/compileall.py
 
 echo "### $0: building CPython..."
 ash configure \
-	CPPFLAGS='-I/store/3a-zlib/include' \
-	LDFLAGS='-L/store/3a-zlib/lib' \
 	--without-static-libpython \
-	--enable-shared \
 	--build x86_64-linux-musl \
-	--prefix=/store/3a-python
+	--prefix=/store/3a-python \
+	--enable-shared \
+	--with-ensurepip=no
 make -j $NPROC
 
 echo "### $0: installing CPython..."
