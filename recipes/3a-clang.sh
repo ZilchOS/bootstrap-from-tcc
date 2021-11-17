@@ -40,7 +40,7 @@ cmake -S llvm -B build -G 'Unix Makefiles' \
 	-DC_INCLUDE_DIRS=/store/2b0-musl/include \
 	-DDEFAULT_SYSROOT=/store/2b0-musl \
 	-DGCC_INSTALL_PREFIX=$GCC_PATH \
-	-DLLVM_ENABLE_PROJECTS='clang;lld;compiler-rt' \
+	-DLLVM_ENABLE_PROJECTS='clang;lld;compiler-rt;libcxx;libcxxabi' \
 	-DCMAKE_C_FLAGS=-I/store/2b3-linux-headers/include \
 	-DCMAKE_CXX_FLAGS=-I/store/2b3-linux-headers/include \
 	-DCLANG_DEFAULT_LINKER=lld \
@@ -70,7 +70,7 @@ cmake -S llvm -B build -G 'Unix Makefiles' \
 	-DCOMPILER_RT_USE_BUILTINS_LIBRARY=YES \
 	-DCLANG_DEFAULT_RTLIB=compiler-rt \
 	-DCLANG_CONFIG_FILE_SYSTEM_DIR=/store/3a-clang/cfg \
-	-DLIBCXX_HAS_MUSL_LIBC=YES
+	-DLIBCXX_HAS_MUSL_LIBC=YES \
 
 	#-DLLVM_ENABLE_RUNTIMES='compiler-rt' \
 	#-DLLVM_BUILD_RUNTIME=NO \
