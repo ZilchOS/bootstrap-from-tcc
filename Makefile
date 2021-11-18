@@ -8,7 +8,7 @@ all:
 	@echo 'This Makefile is for debugging purposes, use ./build.sh'
 	exit 1
 
-all-at-once: build.sh seed.sh download.sh [012345]/* [012345]/*/*
+all-at-once: build.sh seed.sh download.sh recipes/*.sh recipes/*/*
 	./build.sh
 
 all-with-make: all-pkgs all-tests verify-all-pkgs-checksums
