@@ -38,7 +38,7 @@ using namespace std;
 int main() { cout << "this is c+" << "+" << endl; return 0; }
 EOF
 # FIXME flags!
-make cpp_test CXX=c++ CXXFLAGS='-stdlib=libc++ -I/store/3a-clang/include/c++/v1' LDFLAGS='-L/store/3a-clang/lib -rpath /store/3a-clang/lib'
+make cpp_test CXX=c++ CXXFLAGS='-I/store/3a-clang/include/c++/v1' LDFLAGS='-L/store/3a-clang/lib -rpath /store/3a-clang/lib'
 grep /store/2b0-musl/lib/libc.so cpp_test
 ( ! grep /store/2a3-intermediate-musl/lib/libc.so cpp_test )
 ( ! grep ld-linux cpp_test )
