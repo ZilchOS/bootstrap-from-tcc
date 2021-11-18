@@ -39,7 +39,11 @@ if [[ -z "$@" ]]; then
 	for bindir in $DESTDIR/store/*/bin $DESTDIR/store/*/*/bin; do
 		_PATH="${bindir##$DESTDIR}:$_PATH"
 	done
-	helpers/chroot /cheat/env "PATH=$PATH" /cheat/ash
+	LIBC=$(find $DESTDIR/store/*/lib/libc.so | tail -n1)
+	if [[ -n "$LIBC" && ! -e $DESTDIR/cheat/ldd ]]; then
+		ln -s "${LIBC##$DESTDIR}" $DESTDIR/cheat/ldd
+	fi
+	helpers/chroot /cheat/env "PATH=$_PATH" /cheat/ash
 else
 	helpers/chroot "$@"
 fi
