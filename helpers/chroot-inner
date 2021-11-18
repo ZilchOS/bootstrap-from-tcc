@@ -24,12 +24,8 @@ if [[ -e /run/wrappers/bin/mount.real ]]; then
 else
 	MOUNT=mount
 fi
-
 mkdir -p "$DESTDIR/dev"; :> "$DESTDIR/dev/null"
 $MOUNT --bind /dev/null "$DESTDIR/dev/null"
-
-mkdir -p "$DESTDIR/proc"
-$MOUNT --rbind /proc "$DESTDIR/proc"
 
 exec env -i "NPROC=$NPROC" "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH" \
 	chroot "$DESTDIR" "$@"

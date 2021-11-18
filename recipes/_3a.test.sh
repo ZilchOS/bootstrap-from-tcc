@@ -6,6 +6,9 @@ export PATH='/store/2b4-busybox/bin'
 export PATH="$PATH:/store/2b5-gnumake/bin"
 export PATH="$PATH:/store/3a-clang/bin/generic-names"
 
+# TODO: get rid of that $ORIGIN in clang's rpath that breaks resolving w/o /proc
+export LD_LIBRARY_PATH='/store/2b1-gnugcc10/lib'
+
 mkdir -p /tmp/_3a.test; cd /tmp/_3a.test
 
 echo "### $0: preparing..."
