@@ -17,5 +17,4 @@ export SOURCE_DATE_EPOCH=0
 /recipes/2b4-busybox.sh
 /recipes/2b5-gnumake.sh
 /recipes/3a-cmake.sh
-/recipes/3a-zlib.sh
 /recipes/3a-python.sh
