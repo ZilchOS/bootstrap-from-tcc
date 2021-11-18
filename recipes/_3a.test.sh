@@ -31,17 +31,18 @@ make -B va_test LDFLAGS=-static
 ./va_test var
 [ "$(./va_test var)" == varargs ]
 
-#echo "### $0: testing (dynamic C++)..."
-#cat > cpp_test.cpp <<\EOF
-##include <iostream>
-#using namespace std;
-#int main() { cout << "this is c+" << "+" << endl; return 0; }
-#EOF
-#make cpp_test CXX=c++
-#grep /store/2b0-musl/lib/libc.so cpp_test
-#( ! grep /store/2a3-intermediate-musl/lib/libc.so cpp_test )
-#( ! grep ld-linux cpp_test )
-#./cpp_test
-#[ "$(./cpp_test)" == 'this is c++' ]
+echo "### $0: testing (dynamic C++)..."
+cat > cpp_test.cpp <<\EOF
+#include <iostream>
+using namespace std;
+int main() { cout << "this is c+" << "+" << endl; return 0; }
+EOF
+# FIXME flags!
+make cpp_test CXX=c++ CXXFLAGS='-stdlib=libc++ -I/store/3a-clang/include/c++/v1' LDFLAGS='-L/store/3a-clang/lib -rpath /store/3a-clang/lib'
+grep /store/2b0-musl/lib/libc.so cpp_test
+( ! grep /store/2a3-intermediate-musl/lib/libc.so cpp_test )
+( ! grep ld-linux cpp_test )
+./cpp_test
+[ "$(./cpp_test)" == 'this is c++' ]
 
 touch /store/_3a.test  # indicator of successful completion
