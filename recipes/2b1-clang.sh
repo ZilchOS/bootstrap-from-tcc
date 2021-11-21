@@ -7,8 +7,8 @@ set -uex
 
 export PATH='/store/1-stage1/protobusybox/bin/'
 export PATH="$PATH:/store/2a0-static-gnumake/wrappers"
-export PATH="$PATH:/store/2a6-python/bin"
 export PATH="$PATH:/store/2a7-cmake/bin"
+export PATH="$PATH:/store/2a8-python/bin"
 # 2a9-intermediate-clang intentionally not added to $PATH to prevent confusion
 
 export SHELL=/store/1-stage1/protobusybox/bin/ash
