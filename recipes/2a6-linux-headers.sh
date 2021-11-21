@@ -7,10 +7,10 @@ set -uex
 
 export PATH='/store/1-stage1/protobusybox/bin'
 export PATH="$PATH:/store/2a0-static-gnumake/bin"
-export PATH="$PATH:/store/2b1-gnugcc10/bin"
-export PATH="$PATH:/store/2b2-binutils/bin"
+export PATH="$PATH:/store/2a1-static-binutils/bin"
+export PATH="$PATH:/store/2a5-gnugcc10/bin"
 
-mkdir -p /tmp/2b3-linux-headers; cd /tmp/2b3-linux-headers
+mkdir -p /tmp/2a6-linux-headers; cd /tmp/2a6-linux-headers
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
 
 echo "### $0: unpacking Linux sources..."
@@ -28,6 +28,6 @@ make -j $NPROC \
 	headers
 
 echo "### $0: installing Linux headers..."
-mkdir -p /store/2b3-linux-headers/
+mkdir -p /store/2a6-linux-headers/
 find usr/include -name '.*' | xargs rm
-cp -rv usr/include /store/2b3-linux-headers/
+cp -rv usr/include /store/2a6-linux-headers/

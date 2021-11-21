@@ -40,7 +40,7 @@ if [[ -z "$@" ]]; then
 		_PATH="${bindir##$DESTDIR}:$_PATH"
 	done
 	LIBC=$(find $DESTDIR/store/*/lib/libc.so | tail -n1)
-	if [[ -n "$LIBC" && ! -e $DESTDIR/cheat/ldd ]]; then
+	if [[ -n "$LIBC" ]] && [[ ! -h $DESTDIR/cheat/ldd ]]; then
 		ln -s "${LIBC##$DESTDIR}" $DESTDIR/cheat/ldd
 	fi
 	helpers/chroot /cheat/env "PATH=$_PATH" /cheat/ash

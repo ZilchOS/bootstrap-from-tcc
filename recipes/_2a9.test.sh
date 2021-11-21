@@ -4,10 +4,9 @@ set -uex
 
 export PATH='/store/1-stage1/protobusybox/bin'
 export PATH="$PATH:/store/2a0-static-gnumake/bin"
-export PATH="$PATH:/store/2b1-gnugcc10/bin"
-export PATH="$PATH:/store/2b2-binutils/bin"
+export PATH="$PATH:/store/2a9-intermediate-clang/bin/generic-names"
 
-mkdir -p /tmp/_2b2.test; cd /tmp/_2b2.test
+mkdir -p /tmp/_2a9.test; cd /tmp/_2a9.test
 
 echo "### $0: preparing..."
 cat > va_test.c <<\EOF
@@ -18,17 +17,15 @@ EOF
 cat va_test.c
 
 echo "### $0: testing (dynamic)..."
-make va_test CC=gcc
-grep /store/2b0-musl/lib/libc.so va_test
-( ! grep /store/2a3-intermediate-musl/lib/libc.so va_test )
+make va_test
+grep /store/2a3-intermediate-musl/lib/libc.so va_test
 ( ! grep ld-linux va_test )
 ./va_test var
 [ "$(./va_test var)" == varargs ]
 
 echo "### $0: testing (static)..."
-make -B va_test CC=gcc LDFLAGS=-static
-( ! grep /store/2b0-musl/lib/libc.so va_test )
-( ! grep /store/2a3-intermediate-musl/lib/libc.so va_test )
+make -B va_test LDFLAGS=-static
+( ! grep libc.so va_test )
 ( ! grep ld-linux va_test )
 ./va_test var
 [ "$(./va_test var)" == varargs ]
@@ -39,11 +36,11 @@ cat > cpp_test.cpp <<\EOF
 using namespace std;
 int main() { cout << "this is c+" << "+" << endl; return 0; }
 EOF
-make cpp_test
-grep /store/2b0-musl/lib/libc.so cpp_test
-( ! grep /store/2a3-intermediate-musl/lib/libc.so cpp_test )
+# FIXME flags!
+make cpp_test CXX=c++ LDFLAGS='-rpath /store/2a9-intermediate-clang/lib'
+grep /store/2a3-intermediate-musl/lib/libc.so cpp_test
 ( ! grep ld-linux cpp_test )
 ./cpp_test
 [ "$(./cpp_test)" == 'this is c++' ]
 
-touch /store/_2b2.test  # indicator of successful completion
+touch /store/_2a9.test  # indicator of successful completion

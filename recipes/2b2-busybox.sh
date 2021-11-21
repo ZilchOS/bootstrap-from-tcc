@@ -7,10 +7,10 @@ set -uex
 
 export PATH='/store/1-stage1/protobusybox/bin'
 export PATH="$PATH:/store/2a0-static-gnumake/bin"
-export PATH="$PATH:/store/2b1-gnugcc10/bin"
-export PATH="$PATH:/store/2b2-binutils/bin"
+export PATH="$PATH:/store/2b1-clang/bin"
+export PATH="$PATH:/store/2b2-patchelf/bin"
 
-mkdir -p /tmp/2b4-busybox; cd /tmp/2b4-busybox
+mkdir -p /tmp/2b2-busybox; cd /tmp/2b2-busybox
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
 
 echo "### $0: unpacking busybox sources..."
@@ -22,12 +22,12 @@ echo "### $0: providing /usr/bin/env and sh in PATH for popen..."
 mkdir /usr; mkdir /usr/bin
 ln -s /store/1-stage1/protobusybox/bin/env /usr/bin/env
 mkdir aliases; ln -s /store/1-stage1/protobusybox/bin/ash aliases/sh
-export PATH="/tmp/2b4-busybox/aliases:$PATH"
+export PATH="/tmp/2b2-busybox/aliases:$PATH"
 
 echo "### $0: configuring busybox..."
 BUSYBOX_FLAGS='CONFIG_SHELL=/store/1-stage1/protobusybox/bin/ash'
-BUSYBOX_FLAGS="$BUSYBOX_FLAGS CC=gcc HOSTCC=gcc"
-BUSYBOX_FLAGS="$BUSYBOX_FLAGS CFLAGS=-I/store/2b3-linux-headers/include"
+BUSYBOX_FLAGS="$BUSYBOX_FLAGS CC=cc HOSTCC=cc"
+BUSYBOX_FLAGS="$BUSYBOX_FLAGS CFLAGS=-I/store/2a6-linux-headers/include"
 BUSYBOX_FLAGS="$BUSYBOX_FLAGS KCONFIG_NOTIMESTAMP=y"
 echo -e '#!/store/1-stage1/protobusybox/bin/ash\nprintf 9999' \
 	> scripts/gcc-version.sh
@@ -40,10 +40,10 @@ make -j $NPROC $BUSYBOX_FLAGS defconfig
 sed -i 's|CONFIG_INSTALL_NO_USR=y|CONFIG_INSTALL_NO_USR=n|' .config
 
 echo "### $0: building busybox..."
-make -j $NPROC $BUSYBOX_FLAGS busybox busybox.links
+make -j $NPROC $BUSYBOX_FLAGS busybox busybox.links CFLAGS=-O2
 sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
 
 echo "### $0: installing busybox..."
-make -j $NPROC $BUSYBOX_FLAGS install CONFIG_PREFIX=/store/2b4-busybox
+make -j $NPROC $BUSYBOX_FLAGS install CONFIG_PREFIX=/store/2b2-busybox
 
 rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

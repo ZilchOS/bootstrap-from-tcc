@@ -1,15 +1,12 @@
-#!/store/2b4-busybox/bin/ash
+#!/store/1-stage1/protobusybox/bin/ash
 
 set -uex
 
-export PATH='/store/2b4-busybox/bin'
-export PATH="$PATH:/store/2b5-gnumake/bin"
-export PATH="$PATH:/store/3a-clang/bin/generic-names"
+export PATH='/store/1-stage1/protobusybox/bin'
+export PATH="$PATH:/store/2a0-static-gnumake/bin"
+export PATH="$PATH:/store/2b1-clang/bin"
 
-# TODO: get rid of that $ORIGIN in clang's rpath that breaks resolving w/o /proc
-export LD_LIBRARY_PATH='/store/2b1-gnugcc10/lib'
-
-mkdir -p /tmp/_3a.test; cd /tmp/_3a.test
+mkdir -p /tmp/_2b1.test; cd /tmp/_2b1.test
 
 echo "### $0: preparing..."
 cat > va_test.c <<\EOF
@@ -41,11 +38,11 @@ using namespace std;
 int main() { cout << "this is c+" << "+" << endl; return 0; }
 EOF
 # FIXME flags!
-make cpp_test CXX=c++ CXXFLAGS='-I/store/3a-clang/include/c++/v1' LDFLAGS='-L/store/3a-clang/lib -rpath /store/3a-clang/lib'
+make cpp_test CXX=c++ LDFLAGS='-rpath /store/2b1-clang/lib'
 grep /store/2b0-musl/lib/libc.so cpp_test
 ( ! grep /store/2a3-intermediate-musl/lib/libc.so cpp_test )
 ( ! grep ld-linux cpp_test )
 ./cpp_test
 [ "$(./cpp_test)" == 'this is c++' ]
 
-touch /store/_3a.test  # indicator of successful completion
+touch /store/_2b1.test  # indicator of successful completion

@@ -6,7 +6,7 @@ Bootstrap as much of an operating system as possible
 starting from a random trusted statically linked seed tcc
 (+ trusted kernel on trusted hardware, of course).
 
-~320 KB binary + ~2 GB of sources = a usable Linux userland to chroot into,
+~320 KB binary + gigs of sources = a usable Linux userland to chroot into,
 usable for building much more serious stuff.
 
 It's not a Linux distribution as it doesn't come with a kernel.
@@ -16,7 +16,7 @@ and then building an real Linux distribution from that bootstrapped Nix later.
 Separate packages aren't just dumped into `/`, they're properly managed,
 each one residing
 
-`x86_64`-only for now.
+`x86_64`-only for now, maybe forever.
 
 ## Why
 
@@ -33,7 +33,9 @@ but I'm not as hardcore as them, so, let's start small.
 ### In brief
 
 Compiler chain so far:
-input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 10
+input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 10 -> -> Clang
+
+### Outlined
 
 * stage 0: seeded binary `tcc`
 * stage 1 (`recipes/1-stage1.c` using no libc):
@@ -54,15 +56,18 @@ input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 10
   * `musl`
   * `gnugcc4`
   * `gnugcc10`
+  * `linux-headers`
+  * `cmake`
+  * `python`
+  * `clang`
 * stage 2 "build with the new compiler" part (`recipes/2b*.sh`):
   * `musl`
-  * `gnugcc10`
-  * `binutils`
-  * `linux-headers`
+  * `clang`
   * `busybox`
   * `gnumake`
-* stage 3: clang 13?
-* stage 4: ???
+* stage 3 "dependencies of useful stuff" (`recipes/3a*.sh`): ???
+  * `patchelf`
+* stage 3 "useful stuff" (`recipes/3b*.sh`): ???
   * Nix?
   * Linux?
 
@@ -122,22 +127,24 @@ At the end of stage 1 we have, all linked statically:
   * `musl`, now a shared library as well
   * `gnugcc4` with C++ support and linking to a shared musl
   * `gnugcc10`
+  * `linux-headers` (clang & cmake dependency)
+  * `cmake` (clang dependency)
+  * `python` (clang dependency, presumably)
+  * `clang`, intermediate, 2-stage
 
-* Recompiles the world with GNU GCC 10:
-  * `musl` usable for dynamic linking
-  * `gnugcc10` that can dynamically link against it and supports c++
-  * `binutils`
-  * `linux-headers`
-  * `busybox`
-  * `gnumake`
+* Recompile the world with clang, free of GNU runtime libs:
+  * `musl`, final
+  * `clang`, final
+  * `busybox`, final
+  * `gnumake`, final
 
-What's next (undecided):
-
-* build `clang`?
-* `nix`
-* non-GNU `make`?
-* `linux`?
-* switch over to building in VM or UML at some point?
+* What's next (undecided):
+  * `patchelf`
+  * build `clang`?
+  * `nix`
+  * non-GNU `make`?
+  * `linux`?
+  * switch over to building in VM or UML at some point?
 
 ### Reproducibility
 

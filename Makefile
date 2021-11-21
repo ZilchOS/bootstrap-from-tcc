@@ -175,79 +175,73 @@ pkgs/2a5-gnugcc10.pkg: downloads/mpc-1.0.3.tar.gz
 pkgs/2a5-gnugcc10.pkg: downloads/mpfr-3.1.4.tar.xz
 pkgs/2a5-gnugcc10.pkg: downloads/isl-0.18.tar.bz2
 
+pkgs/2a6-linux-headers.pkg: pkgs/1-stage1.pkg
+pkgs/2a6-linux-headers.pkg: pkgs/2a0-static-gnumake.pkg
+pkgs/2a6-linux-headers.pkg: pkgs/2a1-static-binutils.pkg
+pkgs/2a6-linux-headers.pkg: pkgs/2a3-intermediate-musl.pkg
+pkgs/2a6-linux-headers.pkg: pkgs/2a5-gnugcc10.pkg
+pkgs/2a6-linux-headers.pkg: downloads/linux-5.15.tar.xz
+
+pkgs/2a7-cmake.pkg: pkgs/1-stage1.pkg
+pkgs/2a7-cmake.pkg: pkgs/2a0-static-gnumake.pkg
+pkgs/2a7-cmake.pkg: pkgs/2a1-static-binutils.pkg
+pkgs/2a7-cmake.pkg: pkgs/2a3-intermediate-musl.pkg
+pkgs/2a7-cmake.pkg: pkgs/2a5-gnugcc10.pkg
+pkgs/2a7-cmake.pkg: pkgs/2a6-linux-headers.pkg
+pkgs/2a7-cmake.pkg: downloads/cmake-3.21.4.tar.gz
+
+pkgs/2a8-python.pkg: pkgs/1-stage1.pkg
+pkgs/2a8-python.pkg: pkgs/2a0-static-gnumake.pkg
+pkgs/2a8-python.pkg: pkgs/2a1-static-binutils.pkg
+pkgs/2a8-python.pkg: pkgs/2a3-intermediate-musl.pkg
+pkgs/2a8-python.pkg: pkgs/2a5-gnugcc10.pkg
+pkgs/2a8-python.pkg: downloads/Python-3.10.0.tar.xz
+
+pkgs/2a9-intermediate-clang.pkg: pkgs/1-stage1.pkg
+pkgs/2a9-intermediate-clang.pkg: pkgs/2a0-static-gnumake.pkg
+pkgs/2a9-intermediate-clang.pkg: pkgs/2a1-static-binutils.pkg
+pkgs/2a9-intermediate-clang.pkg: pkgs/2a3-intermediate-musl.pkg
+pkgs/2a9-intermediate-clang.pkg: pkgs/2a5-gnugcc10.pkg
+pkgs/2a9-intermediate-clang.pkg: pkgs/2a6-linux-headers.pkg
+pkgs/2a9-intermediate-clang.pkg: pkgs/2a7-cmake.pkg
+pkgs/2a9-intermediate-clang.pkg: pkgs/2a8-python.pkg
+pkgs/2a9-intermediate-clang.pkg: downloads/llvm-project-13.0.0.src.tar.xz
+
 pkgs/2b0-musl.pkg: pkgs/1-stage1.pkg
 pkgs/2b0-musl.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/2b0-musl.pkg: pkgs/2a1-static-binutils.pkg
 pkgs/2b0-musl.pkg: pkgs/2a3-intermediate-musl.pkg
-pkgs/2b0-musl.pkg: pkgs/2a5-gnugcc10.pkg
+pkgs/2b0-musl.pkg: pkgs/2a9-intermediate-clang.pkg
 pkgs/2b0-musl.pkg: downloads/musl-1.2.2.tar.gz
 
-pkgs/2b1-gnugcc10.pkg: pkgs/1-stage1.pkg
-pkgs/2b1-gnugcc10.pkg: pkgs/2a0-static-gnumake.pkg
-pkgs/2b1-gnugcc10.pkg: pkgs/2a1-static-binutils.pkg
-pkgs/2b1-gnugcc10.pkg: pkgs/2a3-intermediate-musl.pkg
-pkgs/2b1-gnugcc10.pkg: pkgs/2a5-gnugcc10.pkg
-pkgs/2b1-gnugcc10.pkg: pkgs/2b0-musl.pkg
-pkgs/2b1-gnugcc10.pkg: downloads/gcc-10.3.0.tar.xz
-pkgs/2b1-gnugcc10.pkg: downloads/gmp-6.1.0.tar.xz
-pkgs/2b1-gnugcc10.pkg: downloads/mpc-1.0.3.tar.gz
-pkgs/2b1-gnugcc10.pkg: downloads/mpfr-3.1.4.tar.xz
-pkgs/2b1-gnugcc10.pkg: downloads/isl-0.18.tar.bz2
+pkgs/2b1-clang.pkg: pkgs/1-stage1.pkg
+pkgs/2b1-clang.pkg: pkgs/2a0-static-gnumake.pkg
+pkgs/2b1-clang.pkg: pkgs/2a3-intermediate-musl.pkg
+pkgs/2b1-clang.pkg: pkgs/2a6-linux-headers.pkg
+pkgs/2b1-clang.pkg: pkgs/2a7-cmake.pkg
+pkgs/2b1-clang.pkg: pkgs/2a8-python.pkg
+pkgs/2b1-clang.pkg: pkgs/2a9-intermediate-clang.pkg
+pkgs/2b1-clang.pkg: pkgs/2b0-musl.pkg
+pkgs/2b1-clang.pkg: downloads/llvm-project-13.0.0.src.tar.xz
 
-pkgs/2b2-binutils.pkg: pkgs/1-stage1.pkg
-pkgs/2b2-binutils.pkg: pkgs/2a0-static-gnumake.pkg
-pkgs/2b2-binutils.pkg: pkgs/2a1-static-binutils.pkg
-pkgs/2b2-binutils.pkg: pkgs/2b0-musl.pkg
-pkgs/2b2-binutils.pkg: pkgs/2b1-gnugcc10.pkg
-pkgs/2b2-binutils.pkg: downloads/binutils-2.37.tar.xz
+pkgs/2b2-busybox.pkg: pkgs/1-stage1.pkg
+pkgs/2b2-busybox.pkg: pkgs/2a0-static-gnumake.pkg
+pkgs/2b2-busybox.pkg: pkgs/2b0-musl.pkg
+pkgs/2b2-busybox.pkg: pkgs/2b1-clang.pkg
+pkgs/2b2-busybox.pkg: pkgs/2a6-linux-headers.pkg
+pkgs/2b2-busybox.pkg: downloads/busybox-1.34.1.tar.bz2
 
-pkgs/2b3-linux-headers.pkg: pkgs/1-stage1.pkg
-pkgs/2b3-linux-headers.pkg: pkgs/2a0-static-gnumake.pkg
-pkgs/2b3-linux-headers.pkg: pkgs/2b0-musl.pkg
-pkgs/2b3-linux-headers.pkg: pkgs/2b1-gnugcc10.pkg
-pkgs/2b3-linux-headers.pkg: pkgs/2b2-binutils.pkg
-pkgs/2b3-linux-headers.pkg: downloads/linux-5.15.tar.xz
+pkgs/2b3-gnumake.pkg: pkgs/2a0-static-gnumake.pkg
+pkgs/2b3-gnumake.pkg: pkgs/2b0-musl.pkg
+pkgs/2b3-gnumake.pkg: pkgs/2b1-clang.pkg
+pkgs/2b3-gnumake.pkg: pkgs/2b2-busybox.pkg
+pkgs/2b3-gnumake.pkg: downloads/make-4.3.tar.gz
 
-pkgs/2b4-busybox.pkg: pkgs/1-stage1.pkg
-pkgs/2b4-busybox.pkg: pkgs/2a0-static-gnumake.pkg
-pkgs/2b4-busybox.pkg: pkgs/2b0-musl.pkg
-pkgs/2b4-busybox.pkg: pkgs/2b1-gnugcc10.pkg
-pkgs/2b4-busybox.pkg: pkgs/2b2-binutils.pkg
-pkgs/2b4-busybox.pkg: pkgs/2b3-linux-headers.pkg
-pkgs/2b4-busybox.pkg: downloads/busybox-1.34.1.tar.bz2
-
-pkgs/2b5-gnumake.pkg: pkgs/2a0-static-gnumake.pkg
-pkgs/2b5-gnumake.pkg: pkgs/2b0-musl.pkg
-pkgs/2b5-gnumake.pkg: pkgs/2b1-gnugcc10.pkg
-pkgs/2b5-gnumake.pkg: pkgs/2b2-binutils.pkg
-pkgs/2b5-gnumake.pkg: pkgs/2b4-busybox.pkg
-pkgs/2b5-gnumake.pkg: downloads/make-4.3.tar.gz
-
-pkgs/3a-cmake.pkg: pkgs/2b0-musl.pkg
-pkgs/3a-cmake.pkg: pkgs/2b1-gnugcc10.pkg
-pkgs/3a-cmake.pkg: pkgs/2b2-binutils.pkg
-pkgs/3a-cmake.pkg: pkgs/2b3-linux-headers.pkg
-pkgs/3a-cmake.pkg: pkgs/2b4-busybox.pkg
-pkgs/3a-cmake.pkg: pkgs/2b5-gnumake.pkg
-pkgs/3a-cmake.pkg: downloads/cmake-3.21.4.tar.gz
-
-pkgs/3a-python.pkg: pkgs/2b0-musl.pkg
-pkgs/3a-python.pkg: pkgs/2b1-gnugcc10.pkg
-pkgs/3a-python.pkg: pkgs/2b2-binutils.pkg
-pkgs/3a-python.pkg: pkgs/2b3-linux-headers.pkg
-pkgs/3a-python.pkg: pkgs/2b4-busybox.pkg
-pkgs/3a-python.pkg: pkgs/2b5-gnumake.pkg
-pkgs/3a-python.pkg: downloads/Python-3.10.0.tar.xz
-
-pkgs/3a-clang.pkg: pkgs/2b0-musl.pkg
-pkgs/3a-clang.pkg: pkgs/2b1-gnugcc10.pkg
-pkgs/3a-clang.pkg: pkgs/2b2-binutils.pkg
-pkgs/3a-clang.pkg: pkgs/2b3-linux-headers.pkg
-pkgs/3a-clang.pkg: pkgs/2b4-busybox.pkg
-pkgs/3a-clang.pkg: pkgs/2b5-gnumake.pkg
-pkgs/3a-clang.pkg: pkgs/3a-python.pkg
-pkgs/3a-clang.pkg: pkgs/3a-cmake.pkg
-pkgs/3a-clang.pkg: downloads/llvm-project-13.0.0.src.tar.xz
+pkgs/3a-patchelf.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-patchelf.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-patchelf.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-patchelf.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-patchelf.pkg: downloads/patchelf-0.13.tar.bz2
 
 ################################################################################
 
@@ -271,23 +265,21 @@ pkgs/_2a5.test.pkg: pkgs/2a1-static-binutils.pkg
 pkgs/_2a5.test.pkg: pkgs/2a3-intermediate-musl.pkg
 pkgs/_2a5.test.pkg: pkgs/2a5-gnugcc10.pkg
 
-pkgs/_2b2.test.pkg: pkgs/1-stage1.pkg
-pkgs/_2b2.test.pkg: pkgs/2a0-static-gnumake.pkg
-pkgs/_2b2.test.pkg: pkgs/2b0-musl.pkg
-pkgs/_2b2.test.pkg: pkgs/2b1-gnugcc10.pkg
-pkgs/_2b2.test.pkg: pkgs/2b2-binutils.pkg
+pkgs/_2a9.test.pkg: pkgs/1-stage1.pkg
+pkgs/_2a9.test.pkg: pkgs/2a0-static-gnumake.pkg
+pkgs/_2a9.test.pkg: pkgs/2a3-intermediate-musl.pkg
+pkgs/_2a9.test.pkg: pkgs/2a9-intermediate-clang.pkg
 
-pkgs/_3a.test.pkg: pkgs/2b0-musl.pkg
-pkgs/_3a.test.pkg: pkgs/2b1-gnugcc10.pkg  # TODO: get rid of
-pkgs/_3a.test.pkg: pkgs/2b4-busybox.pkg
-pkgs/_3a.test.pkg: pkgs/2b5-gnumake.pkg
-pkgs/_3a.test.pkg: pkgs/3a-clang.pkg
+pkgs/_2b1.test.pkg: pkgs/1-stage1.pkg
+pkgs/_2b1.test.pkg: pkgs/2a0-static-gnumake.pkg
+pkgs/_2b1.test.pkg: pkgs/2b0-musl.pkg
+pkgs/_2b1.test.pkg: pkgs/2b1-clang.pkg
 
 all-tests: pkgs/_2a3.test.pkg
 all-tests: pkgs/_2a4.test.pkg
 all-tests: pkgs/_2a5.test.pkg
-all-tests: pkgs/_2b2.test.pkg
-all-tests: pkgs/_3a.test.pkg
+all-tests: pkgs/_2a9.test.pkg
+all-tests: pkgs/_2b1.test.pkg
 
 ################################################################################
 
@@ -300,15 +292,15 @@ all-pkgs: pkgs/2a2-static-gnugcc4-c.pkg
 all-pkgs: pkgs/2a3-intermediate-musl.pkg
 all-pkgs: pkgs/2a4-gnugcc4-cpp.pkg
 all-pkgs: pkgs/2a5-gnugcc10.pkg
+all-pkgs: pkgs/2a6-linux-headers.pkg
+all-pkgs: pkgs/2a7-cmake.pkg
+all-pkgs: pkgs/2a8-python.pkg
+all-pkgs: pkgs/2a9-intermediate-clang.pkg
 all-pkgs: pkgs/2b0-musl.pkg
-all-pkgs: pkgs/2b1-gnugcc10.pkg
-all-pkgs: pkgs/2b2-binutils.pkg
-all-pkgs: pkgs/2b3-linux-headers.pkg
-all-pkgs: pkgs/2b4-busybox.pkg
-all-pkgs: pkgs/2b5-gnumake.pkg
-all-pkgs: pkgs/3a-cmake.pkg
-all-pkgs: pkgs/3a-python.pkg
-all-pkgs: pkgs/3a-clang.pkg
+all-pkgs: pkgs/2b1-clang.pkg
+all-pkgs: pkgs/3a-patchelf.pkg
+all-pkgs: pkgs/2b2-busybox.pkg
+all-pkgs: pkgs/2b3-gnumake.pkg
 
 ################################################################################
 
@@ -318,15 +310,14 @@ pkgs/2a2-static-gnugcc4-c.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2a3-intermediate-musl.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2a4-gnugcc4-cpp.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2a5-gnugcc10.pkg: pkgs/_2a0-ccache.pkg
+pkgs/2a6-linux-headers.pkg: pkgs/_2a0-ccache.pkg
+pkgs/2a7-cmake.pkg: pkgs/_2a0-ccache.pkg
+pkgs/2a8-python.pkg: pkgs/_2a0-ccache.pkg
+pkgs/2a9-intermediate-clang.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b0-musl.pkg: pkgs/_2a0-ccache.pkg
-pkgs/2b1-gnugcc10.pkg: pkgs/_2a0-ccache.pkg
-pkgs/2b2-binutils.pkg: pkgs/_2a0-ccache.pkg
-pkgs/2b3-linux-headers.pkg: pkgs/_2a0-ccache.pkg
-pkgs/2b4-busybox.pkg: pkgs/_2a0-ccache.pkg
-pkgs/2b5-gnumake.pkg: pkgs/_2a0-ccache.pkg
-pkgs/3a-cmake.pkg: pkgs/_2a0-ccache.pkg
-pkgs/3a-python.pkg: pkgs/_2a0-ccache.pkg
-pkgs/3a-clang.pkg: pkgs/_2a0-ccache.pkg
+pkgs/2b1-clang.pkg: pkgs/_2a0-ccache.pkg
+pkgs/2b2-busybox.pkg: pkgs/_2a0-ccache.pkg
+pkgs/2b3-gnumake.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
