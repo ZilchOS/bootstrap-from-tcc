@@ -249,6 +249,12 @@ pkgs/3a-gnubash.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-gnubash.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-gnubash.pkg: downloads/bash-5.1.8.tar.gz
 
+pkgs/3a-sqlite.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-sqlite.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-sqlite.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-sqlite.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-sqlite.pkg: downloads/sqlite-autoconf-3360000.tar.gz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -308,6 +314,7 @@ all-pkgs: pkgs/2b2-busybox.pkg
 all-pkgs: pkgs/2b3-gnumake.pkg
 all-pkgs: pkgs/3a-patchelf.pkg
 all-pkgs: pkgs/3a-gnubash.pkg
+all-pkgs: pkgs/3a-sqlite.pkg
 
 ################################################################################
 
@@ -327,6 +334,7 @@ pkgs/2b2-busybox.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b3-gnumake.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-patchelf.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-gnubash.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-sqlite.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
