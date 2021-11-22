@@ -267,6 +267,15 @@ pkgs/3a-perl.pkg: pkgs/2b1-clang.pkg
 pkgs/3a-perl.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-perl.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-perl.pkg: downloads/perl-5.34.0.tar.gz
+
+pkgs/3a-openssl.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-openssl.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-openssl.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-openssl.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-openssl.pkg: pkgs/3a-perl.pkg
+pkgs/3a-openssl.pkg: pkgs/2a6-linux-headers.pkg
+pkgs/3a-openssl.pkg: downloads/openssl-3.0.0.tar.gz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -329,6 +338,7 @@ all-pkgs: pkgs/3a-gnubash.pkg
 all-pkgs: pkgs/3a-sqlite.pkg
 all-pkgs: pkgs/3a-boost.pkg
 all-pkgs: pkgs/3a-perl.pkg
+all-pkgs: pkgs/3a-openssl.pkg
 
 ################################################################################
 
