@@ -15,11 +15,28 @@ if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
 echo "### $0: unpacking Perl sources..."
 tar --strip-components=1 -xf /downloads/perl-5.34.0.tar.gz
 
-echo "### $0: building Perl..."
-sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' configure.gnu
+echo "### $0: fixing up Perl sources..."
+DATE_CALL='$date'
+DATE_FAKE='$echo Thu Jan  1 00:00:01 UTC 1970'
+sed -i "s|$DATE_CALL|$DATE_FAKE|" Configure
+UNAME_CALL='$uname -a'
+UNAME_FAKE='$echo Linux x86_64'
+sed -i "s|$UNAME_CALL|$UNAME_FAKE|" Configure
+UNAMER_CALL='$uname -r'
+UNAMER_FAKE='$echo 0.0.0'
+sed -i "s|$UNAMER_CALL|$UNAMER_FAKE|" Configure
+UNAMEN_CALL='$uname -n'
+UNAMEN_FAKE='$echo hostname'
+sed -i "s|$UNAMER_CALL|$UNAMER_FAKE|" Configure
+sed -i 's|start_time= time|start_time=0|' lib/unicore/mktables
+sed -i 's|PERL_BUILD_DATE)|"Thu Jan  1 00:00:01 UTC 1970")|' perl.c
+
 sed -i 's|/bin/pwd|/store/2b2-busybox/bin/pwd|' dist/PathTools/Cwd.pm
 
-ash configure.gnu --prefix=/store/3a-perl
+echo "### $0: configuring Perl..."
+ash Configure -des -Dprefix=/store/3a-perl -Duseshrplib
+
+echo "### $0: building Perl..."
 make -j $NPROC
 
 echo "### $0: installing Perl..."
