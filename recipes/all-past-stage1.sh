@@ -23,3 +23,4 @@ export SOURCE_DATE_EPOCH=0
 /recipes/3a-sqlite.sh
 /recipes/3a-perl.sh
 /recipes/3a-openssl.sh
+/recipes/3a-pkg-config.sh

@@ -276,6 +276,12 @@ pkgs/3a-openssl.pkg: pkgs/3a-perl.pkg
 pkgs/3a-openssl.pkg: pkgs/2a6-linux-headers.pkg
 pkgs/3a-openssl.pkg: downloads/openssl-3.0.0.tar.gz
 
+pkgs/3a-pkg-config.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-pkg-config.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-pkg-config.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-pkg-config.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-pkg-config.pkg: downloads/pkg-config-0.29.2.tar.gz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -339,6 +345,7 @@ all-pkgs: pkgs/3a-sqlite.pkg
 all-pkgs: pkgs/3a-boost.pkg
 all-pkgs: pkgs/3a-perl.pkg
 all-pkgs: pkgs/3a-openssl.pkg
+all-pkgs: pkgs/3a-pkg-config.pkg
 
 ################################################################################
 
@@ -362,6 +369,7 @@ pkgs/3a-sqlite.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-boost.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-perl.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-openssl.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-pkg-config.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
