@@ -361,6 +361,7 @@ pkgs/3a-gnubash.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-sqlite.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-boost.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-perl.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-openssl.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
