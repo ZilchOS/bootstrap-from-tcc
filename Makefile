@@ -255,6 +255,12 @@ pkgs/3a-sqlite.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-sqlite.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-sqlite.pkg: downloads/sqlite-autoconf-3360000.tar.gz
 
+pkgs/3a-boost.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-boost.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-boost.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-boost.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-boost.pkg: pkgs/2a6-linux-headers.pkg
+pkgs/3a-boost.pkg: downloads/boost_1_77_0.tar.bz2
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -315,6 +321,7 @@ all-pkgs: pkgs/2b3-gnumake.pkg
 all-pkgs: pkgs/3a-patchelf.pkg
 all-pkgs: pkgs/3a-gnubash.pkg
 all-pkgs: pkgs/3a-sqlite.pkg
+all-pkgs: pkgs/3a-boost.pkg
 
 ################################################################################
 
@@ -335,6 +342,7 @@ pkgs/2b3-gnumake.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-patchelf.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-gnubash.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-sqlite.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-boost.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
