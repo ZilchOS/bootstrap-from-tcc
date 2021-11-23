@@ -22,17 +22,9 @@ CFLAGS='-fPIC'
 CFLAGS="$CFLAGS -DBROTLICOMMON_SHARED_COMPILATION"
 CFLAGS="$CFLAGS -DBROTLI_SHARED_COMPILATION"
 make -j $NPROC lib CFLAGS="$CFLAGS"
-clang -fPIC -shared -Wl,-soname,libbrotlicommon.so \
-	bin/obj/c/common/*.o \
-	-o libbrotlicommon.so
-clang -fPIC -shared -Wl,-soname,libbrotlicommon.so \
-	bin/obj/c/enc/*.o \
-	libbrotlicommon.so \
-	-o libbrotlienc.so
-clang -fPIC -shared -Wl,-soname,libbrotlicommon.so \
-	bin/obj/c/dec/*.o \
-	libbrotlicommon.so \
-	-o libbrotlidec.so
+clang -shared bin/obj/c/common/*.o -o libbrotlicommon.so
+clang -shared bin/obj/c/enc/*.o libbrotlicommon.so -o libbrotlienc.so
+clang -shared bin/obj/c/dec/*.o libbrotlicommon.so -o libbrotlidec.so
 
 echo "### $0: installing brotli..."
 mkdir -p /store/3a-brotli/lib /store/3a-brotli/include
