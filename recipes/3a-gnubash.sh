@@ -18,7 +18,7 @@ tar --strip-components=1 -xf /downloads/bash-5.1.8.tar.gz
 echo "### $0: building GNU Bash..."
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' configure
 
-ash configure --prefix=/store/3a-gnubash
+ash configure --prefix=/store/3a-gnubash --without-bash-malloc
 make -j $NPROC
 
 echo "### $0: installing GNU Bash..."
