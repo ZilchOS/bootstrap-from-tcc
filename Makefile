@@ -314,6 +314,12 @@ pkgs/3a-brotli.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-brotli.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-brotli.pkg: downloads/brotli-1.0.9.tar.gz
 
+pkgs/3a-gnugperf.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-gnugperf.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-gnugperf.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-gnugperf.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-gnugperf.pkg: downloads/gperf-3.1.tar.gz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -383,6 +389,7 @@ all-pkgs: pkgs/3a-curl.pkg
 all-pkgs: pkgs/3a-editline.pkg
 all-pkgs: pkgs/3a-xz.pkg
 all-pkgs: pkgs/3a-brotli.pkg
+all-pkgs: pkgs/3a-gnugperf.pkg
 
 ################################################################################
 
@@ -412,6 +419,7 @@ pkgs/3a-curl.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-editline.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-xz.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-brotli.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-gnugperf.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
