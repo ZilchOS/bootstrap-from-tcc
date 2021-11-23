@@ -21,6 +21,15 @@ export SOURCE_DATE_EPOCH=0
 /recipes/3a-patchelf.sh
 /recipes/3a-gnubash.sh
 /recipes/3a-sqlite.sh
+/recipes/3a-boost.sh
 /recipes/3a-perl.sh
 /recipes/3a-openssl.sh
 /recipes/3a-pkg-config.sh
+/recipes/3a-bzip2.sh
+/recipes/3a-curl.sh
+/recipes/3a-editline.sh
+/recipes/3a-xz.sh
+/recipes/3a-brotli.sh
+/recipes/3a-gnugperf.sh
+/recipes/3a-seccomp.sh
+/recipes/3b-nix.sh
