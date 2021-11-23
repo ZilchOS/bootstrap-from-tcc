@@ -35,9 +35,9 @@ clang -fPIC -shared -Wl,-soname,libbrotlicommon.so \
 	-o libbrotlidec.so
 
 echo "### $0: installing brotli..."
-mkdir -p /store/3a-brotli/lib
+mkdir -p /store/3a-brotli/lib /store/3a-brotli/include
 cp libbrotlicommon.so libbrotlienc.so libbrotlidec.so /store/3a-brotli/lib/
-cp -r c/include/brotli /store/3a-brotli/lib/include
+cp -r c/include/brotli /store/3a-brotli/include/
 mkdir -p /store/3a-brotli/lib/pkgconfig
 for l in common enc dec; do
 	sed < scripts/libbrotli${l}.pc.in \
@@ -46,5 +46,6 @@ for l in common enc dec; do
 		-e 's|@exec_prefix@|/store/3a-brotli/bin|g' \
 		-e 's|@includedir@|/store/3a-brotli/include|g' \
 		-e 's|@libdir@|/store/3a-brotli/lib|g' \
+		-e 's|-R|-Wl,-rpath=|g' \
 		> /store/3a-brotli/lib/pkgconfig/libbrotli${l}.pc
 done
