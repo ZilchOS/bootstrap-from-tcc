@@ -16,18 +16,11 @@ echo "### $0: unpacking Perl sources..."
 tar --strip-components=1 -xf /downloads/perl-5.34.0.tar.gz
 
 echo "### $0: fixing up Perl sources..."
-DATE_CALL='$date'
-DATE_FAKE='$echo Thu Jan  1 00:00:01 UTC 1970'
-sed -i "s|$DATE_CALL|$DATE_FAKE|" Configure
-UNAME_CALL='$uname -a'
-UNAME_FAKE='$echo Linux x86_64'
-sed -i "s|$UNAME_CALL|$UNAME_FAKE|" Configure
-UNAMER_CALL='$uname -r'
-UNAMER_FAKE='$echo 0.0.0'
-sed -i "s|$UNAMER_CALL|$UNAMER_FAKE|" Configure
-UNAMEN_CALL='$uname -n'
-UNAMEN_FAKE='$echo hostname'
-sed -i "s|$UNAMER_CALL|$UNAMER_FAKE|" Configure
+sed -i 's|$date|$echo Thu Jan  1 00:00:01 UTC 1970|' Configure
+sed -i 's|$uname -a|$echo Linux x86_64|' Configure
+sed -i 's|$uname -r|$echo 0.0.0|' Configure
+sed -i 's|$uname -n|$echo hostname|' Configure
+sed -i 's|sh -c hostname|echo hostname|' Configure
 sed -i 's|start_time= time|start_time=0|' lib/unicore/mktables
 sed -i 's|PERL_BUILD_DATE)|"Thu Jan  1 00:00:01 UTC 1970")|' perl.c
 
