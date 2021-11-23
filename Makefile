@@ -302,6 +302,12 @@ pkgs/3a-editline.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-editline.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-editline.pkg: downloads/editline-1.17.1.tar.xz
 
+pkgs/3a-xz.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-xz.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-xz.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-xz.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-xz.pkg: downloads/xz-5.2.5.tar.xz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -369,6 +375,7 @@ all-pkgs: pkgs/3a-pkg-config.pkg
 all-pkgs: pkgs/3a-bzip2.pkg
 all-pkgs: pkgs/3a-curl.pkg
 all-pkgs: pkgs/3a-editline.pkg
+all-pkgs: pkgs/3a-xz.pkg
 
 ################################################################################
 
@@ -396,6 +403,7 @@ pkgs/3a-pkg-config.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-bzip2.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-curl.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-editline.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-xz.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
