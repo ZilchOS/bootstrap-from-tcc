@@ -328,6 +328,24 @@ pkgs/3a-seccomp.pkg: pkgs/3a-gnugperf.pkg
 pkgs/3a-seccomp.pkg: pkgs/2a6-linux-headers.pkg
 pkgs/3a-seccomp.pkg: downloads/libseccomp-2.5.3.tar.gz
 
+pkgs/3b-nix.pkg: pkgs/2b0-musl.pkg
+pkgs/3b-nix.pkg: pkgs/2b1-clang.pkg
+pkgs/3b-nix.pkg: pkgs/2b2-busybox.pkg
+pkgs/3b-nix.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3b-nix.pkg: pkgs/2a6-linux-headers.pkg
+pkgs/3b-nix.pkg: pkgs/3a-sqlite.pkg
+pkgs/3b-nix.pkg: pkgs/3a-gnubash.pkg
+pkgs/3b-nix.pkg: pkgs/3a-boost.pkg
+pkgs/3b-nix.pkg: pkgs/3a-openssl.pkg
+pkgs/3b-nix.pkg: pkgs/3a-pkg-config.pkg
+pkgs/3b-nix.pkg: pkgs/3a-bzip2.pkg
+pkgs/3b-nix.pkg: pkgs/3a-curl.pkg
+pkgs/3b-nix.pkg: pkgs/3a-editline.pkg
+pkgs/3b-nix.pkg: pkgs/3a-xz.pkg
+pkgs/3b-nix.pkg: pkgs/3a-brotli.pkg
+pkgs/3b-nix.pkg: pkgs/3a-seccomp.pkg
+pkgs/3b-nix.pkg: downloads/nix-2.3.13.tar.xz
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -399,6 +417,7 @@ all-pkgs: pkgs/3a-xz.pkg
 all-pkgs: pkgs/3a-brotli.pkg
 all-pkgs: pkgs/3a-gnugperf.pkg
 all-pkgs: pkgs/3a-seccomp.pkg
+all-pkgs: pkgs/3b-nix.pkg
 
 ################################################################################
 
@@ -430,6 +449,7 @@ pkgs/3a-xz.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-brotli.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-gnugperf.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-seccomp.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3b-nix.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
