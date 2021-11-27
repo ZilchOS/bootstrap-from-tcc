@@ -2,19 +2,20 @@
 
 ## What
 
-Bootstrap as much of an operating system as possible
+Bootstrap a modern toolchain
 starting from a random trusted statically linked seed tcc
 (+ trusted kernel on trusted hardware, of course).
 
-~320 KB binary + gigs of sources = a usable Linux userland to chroot into,
+~320 KB binary + gigs of sources = a modern Clang + musl toolchain,
 usable for building much more serious stuff.
 
-It's not a Linux distribution as it doesn't come with a kernel.
-Instead, I plan to beeline for bootstrapping Nix package manager
-and then building an real Linux distribution from that bootstrapped Nix later.
+My goal is to beeline for bootstrapping Nix package manager,
+and later buildan real Linux distribution using that bootstrapped Nix.
+But even if you don't care about Nix,
+this repo might interest minimal binary seed bootstrappers.
 
 Separate packages aren't just dumped into `/`, they're properly managed,
-each one residing
+each one residing in its own prefix under `/store`.
 
 `x86_64`-only for now, maybe forever.
 
@@ -67,9 +68,21 @@ input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 10 -> -> Clang
   * `gnumake`
 * stage 3 "dependencies of useful stuff" (`recipes/3a*.sh`): ???
   * `patchelf`
+  * `gnubash`
+  * `sqlite`
+  * `boost`
+  * `perl`
+  * `openssl`
+  * `pkg-config`
+  * `bzip2`
+  * `curl`
+  * `editline`
+  * `xz`
+  * `brotli`
+  * `gnugperf`
+  * `seccomp`
 * stage 3 "useful stuff" (`recipes/3b*.sh`): ???
-  * Nix?
-  * Linux?
+  * `nix`
 
 ### In more detail
 
@@ -138,13 +151,8 @@ At the end of stage 1 we have, all linked statically:
   * `busybox`, final
   * `gnumake`, final
 
-* What's next (undecided):
-  * `patchelf`
-  * build `clang`?
-  * `nix`
-  * non-GNU `make`?
-  * `linux`?
-  * switch over to building in VM or UML at some point?
+* Build a bunch of Nix dependencies
+* Build Nix
 
 ### Reproducibility
 
