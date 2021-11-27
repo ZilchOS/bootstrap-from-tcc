@@ -378,11 +378,28 @@ pkgs/_2b1.test.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/_2b1.test.pkg: pkgs/2b0-musl.pkg
 pkgs/_2b1.test.pkg: pkgs/2b1-clang.pkg
 
+pkgs/_3b.test.pkg: pkgs/2a0-static-gnumake.pkg
+pkgs/_3b.test.pkg: pkgs/2b0-musl.pkg
+pkgs/_3b.test.pkg: pkgs/2b1-clang.pkg
+pkgs/_3b.test.pkg: pkgs/2b2-busybox.pkg
+pkgs/_3b.test.pkg: pkgs/3a-boost.pkg
+pkgs/_3b.test.pkg: pkgs/3a-openssl.pkg
+pkgs/_3b.test.pkg: pkgs/3a-pkg-config.pkg
+pkgs/_3b.test.pkg: pkgs/3a-sqlite.pkg
+pkgs/_3b.test.pkg: pkgs/3a-bzip2.pkg
+pkgs/_3b.test.pkg: pkgs/3a-curl.pkg
+pkgs/_3b.test.pkg: pkgs/3a-editline.pkg
+pkgs/_3b.test.pkg: pkgs/3a-xz.pkg
+pkgs/_3b.test.pkg: pkgs/3a-brotli.pkg
+pkgs/_3b.test.pkg: pkgs/3a-seccomp.pkg
+pkgs/_3b.test.pkg: pkgs/3b-nix.pkg
+
 all-tests: pkgs/_2a3.test.pkg
 all-tests: pkgs/_2a4.test.pkg
 all-tests: pkgs/_2a5.test.pkg
 all-tests: pkgs/_2a9.test.pkg
 all-tests: pkgs/_2b1.test.pkg
+all-tests: pkgs/_3b.test.pkg
 
 ################################################################################
 
