@@ -1,0 +1,31 @@
+#!/store/2b2-busybox/bin/ash
+
+#> FETCH 6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1
+#>  FROM https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz
+
+
+set -uex
+
+export PATH='/store/2b2-busybox/bin'
+export PATH="$PATH:/store/2b1-clang/bin"
+export PATH="$PATH:/store/2b3-gnumake/bin"
+export PATH="$PATH:/store/3a-pkg-config/bin"
+export PKG_CONFIG_PATH='/store/3a-openssl/lib64/pkgconfig'
+
+mkdir -p /tmp/3a-libsodium; cd /tmp/3a-libsodium
+if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+
+echo "### $0: unpacking libsodium sources..."
+tar --strip-components=1 -xf /downloads/libsodium-1.0.18.tar.gz
+
+echo "### $0: fixing up libsodium sources..."
+sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' \
+	configure build-aux/install-sh
+
+echo "### $0: building libsodium..."
+ash configure --prefix=/store/3a-libsodium \
+	--disable-dependency-tracking
+make -j $NPROC
+
+echo "### $0: installing libsodium..."
+make -j $NPROC install-strip

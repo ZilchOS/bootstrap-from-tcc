@@ -262,19 +262,11 @@ pkgs/3a-boost.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-boost.pkg: pkgs/2a6-linux-headers.pkg
 pkgs/3a-boost.pkg: downloads/boost_1_77_0.tar.bz2
 
-pkgs/3a-perl.pkg: pkgs/2b0-musl.pkg
-pkgs/3a-perl.pkg: pkgs/2b1-clang.pkg
-pkgs/3a-perl.pkg: pkgs/2b2-busybox.pkg
-pkgs/3a-perl.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3a-perl.pkg: downloads/perl-5.34.0.tar.gz
-
-pkgs/3a-openssl.pkg: pkgs/2b0-musl.pkg
-pkgs/3a-openssl.pkg: pkgs/2b1-clang.pkg
-pkgs/3a-openssl.pkg: pkgs/2b2-busybox.pkg
-pkgs/3a-openssl.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3a-openssl.pkg: pkgs/3a-perl.pkg
-pkgs/3a-openssl.pkg: pkgs/2a6-linux-headers.pkg
-pkgs/3a-openssl.pkg: downloads/openssl-3.0.0.tar.gz
+pkgs/3a-mbedtls.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-mbedtls.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-mbedtls.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-mbedtls.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-mbedtls.pkg: downloads/mbedtls-3.0.0.tar.gz
 
 pkgs/3a-pkg-config.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-pkg-config.pkg: pkgs/2b1-clang.pkg
@@ -282,17 +274,11 @@ pkgs/3a-pkg-config.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-pkg-config.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-pkg-config.pkg: downloads/pkg-config-0.29.2.tar.gz
 
-pkgs/3a-bzip2.pkg: pkgs/2b0-musl.pkg
-pkgs/3a-bzip2.pkg: pkgs/2b1-clang.pkg
-pkgs/3a-bzip2.pkg: pkgs/2b2-busybox.pkg
-pkgs/3a-bzip2.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3a-bzip2.pkg: downloads/bzip2-1.0.6.0.2.tar.gz
-
 pkgs/3a-curl.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-curl.pkg: pkgs/2b1-clang.pkg
 pkgs/3a-curl.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-curl.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3a-curl.pkg: pkgs/3a-openssl.pkg
+pkgs/3a-curl.pkg: pkgs/3a-mbedtls.pkg
 pkgs/3a-curl.pkg: pkgs/3a-pkg-config.pkg
 pkgs/3a-curl.pkg: downloads/curl-7.80.0.tar.xz
 
@@ -301,12 +287,6 @@ pkgs/3a-editline.pkg: pkgs/2b1-clang.pkg
 pkgs/3a-editline.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-editline.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-editline.pkg: downloads/editline-1.17.1.tar.xz
-
-pkgs/3a-xz.pkg: pkgs/2b0-musl.pkg
-pkgs/3a-xz.pkg: pkgs/2b1-clang.pkg
-pkgs/3a-xz.pkg: pkgs/2b2-busybox.pkg
-pkgs/3a-xz.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3a-xz.pkg: downloads/xz-5.2.5.tar.xz
 
 pkgs/3a-brotli.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-brotli.pkg: pkgs/2b1-clang.pkg
@@ -328,6 +308,26 @@ pkgs/3a-seccomp.pkg: pkgs/3a-gnugperf.pkg
 pkgs/3a-seccomp.pkg: pkgs/2a6-linux-headers.pkg
 pkgs/3a-seccomp.pkg: downloads/libseccomp-2.5.3.tar.gz
 
+pkgs/3a-libarchive.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-libarchive.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-libarchive.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-libarchive.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-libarchive.pkg: pkgs/3a-pkg-config.pkg
+pkgs/3a-libarchive.pkg: downloads/libarchive-3.5.2.tar.xz
+
+pkgs/3a-libsodium.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-libsodium.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-libsodium.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-libsodium.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-libsodium.pkg: pkgs/3a-pkg-config.pkg
+pkgs/3a-libsodium.pkg: downloads/libsodium-1.0.18.tar.gz
+
+pkgs/3a-lowdown.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-lowdown.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-lowdown.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-lowdown.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-lowdown.pkg: downloads/lowdown-0.10.0.tar.gz
+
 pkgs/3b-nix.pkg: pkgs/2b0-musl.pkg
 pkgs/3b-nix.pkg: pkgs/2b1-clang.pkg
 pkgs/3b-nix.pkg: pkgs/2b2-busybox.pkg
@@ -336,15 +336,16 @@ pkgs/3b-nix.pkg: pkgs/2a6-linux-headers.pkg
 pkgs/3b-nix.pkg: pkgs/3a-sqlite.pkg
 pkgs/3b-nix.pkg: pkgs/3a-gnubash.pkg
 pkgs/3b-nix.pkg: pkgs/3a-boost.pkg
-pkgs/3b-nix.pkg: pkgs/3a-openssl.pkg
 pkgs/3b-nix.pkg: pkgs/3a-pkg-config.pkg
-pkgs/3b-nix.pkg: pkgs/3a-bzip2.pkg
 pkgs/3b-nix.pkg: pkgs/3a-curl.pkg
 pkgs/3b-nix.pkg: pkgs/3a-editline.pkg
-pkgs/3b-nix.pkg: pkgs/3a-xz.pkg
 pkgs/3b-nix.pkg: pkgs/3a-brotli.pkg
 pkgs/3b-nix.pkg: pkgs/3a-seccomp.pkg
-pkgs/3b-nix.pkg: downloads/nix-2.3.13.tar.xz
+pkgs/3b-nix.pkg: pkgs/3a-libarchive.pkg
+pkgs/3b-nix.pkg: pkgs/3a-libsodium.pkg
+pkgs/3b-nix.pkg: pkgs/3a-lowdown.pkg
+pkgs/3b-nix.pkg: downloads/queue.h
+pkgs/3b-nix.pkg: downloads/nix-2.5-pre20211129_48104dd-zilched.tar.xz
 
 ################################################################################
 
@@ -383,15 +384,15 @@ pkgs/_3b.test.pkg: pkgs/2b0-musl.pkg
 pkgs/_3b.test.pkg: pkgs/2b1-clang.pkg
 pkgs/_3b.test.pkg: pkgs/2b2-busybox.pkg
 pkgs/_3b.test.pkg: pkgs/3a-boost.pkg
-pkgs/_3b.test.pkg: pkgs/3a-openssl.pkg
 pkgs/_3b.test.pkg: pkgs/3a-pkg-config.pkg
 pkgs/_3b.test.pkg: pkgs/3a-sqlite.pkg
-pkgs/_3b.test.pkg: pkgs/3a-bzip2.pkg
 pkgs/_3b.test.pkg: pkgs/3a-curl.pkg
 pkgs/_3b.test.pkg: pkgs/3a-editline.pkg
-pkgs/_3b.test.pkg: pkgs/3a-xz.pkg
 pkgs/_3b.test.pkg: pkgs/3a-brotli.pkg
 pkgs/_3b.test.pkg: pkgs/3a-seccomp.pkg
+pkgs/_3b.test.pkg: pkgs/3a-libarchive.pkg
+pkgs/_3b.test.pkg: pkgs/3a-libsodium.pkg
+pkgs/_3b.test.pkg: pkgs/3a-lowdown.pkg
 pkgs/_3b.test.pkg: pkgs/3b-nix.pkg
 
 all-tests: pkgs/_2a3.test.pkg
@@ -424,16 +425,16 @@ all-pkgs: pkgs/3a-patchelf.pkg
 all-pkgs: pkgs/3a-gnubash.pkg
 all-pkgs: pkgs/3a-sqlite.pkg
 all-pkgs: pkgs/3a-boost.pkg
-all-pkgs: pkgs/3a-perl.pkg
-all-pkgs: pkgs/3a-openssl.pkg
+all-pkgs: pkgs/3a-mbedtls.pkg
 all-pkgs: pkgs/3a-pkg-config.pkg
-all-pkgs: pkgs/3a-bzip2.pkg
 all-pkgs: pkgs/3a-curl.pkg
 all-pkgs: pkgs/3a-editline.pkg
-all-pkgs: pkgs/3a-xz.pkg
 all-pkgs: pkgs/3a-brotli.pkg
 all-pkgs: pkgs/3a-gnugperf.pkg
 all-pkgs: pkgs/3a-seccomp.pkg
+all-pkgs: pkgs/3a-libarchive.pkg
+all-pkgs: pkgs/3a-libsodium.pkg
+all-pkgs: pkgs/3a-lowdown.pkg
 all-pkgs: pkgs/3b-nix.pkg
 
 ################################################################################
@@ -456,16 +457,16 @@ pkgs/3a-patchelf.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-gnubash.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-sqlite.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-boost.pkg: pkgs/_2a0-ccache.pkg
-pkgs/3a-perl.pkg: pkgs/_2a0-ccache.pkg
-pkgs/3a-openssl.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-mbedtls.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-pkg-config.pkg: pkgs/_2a0-ccache.pkg
-pkgs/3a-bzip2.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-curl.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-editline.pkg: pkgs/_2a0-ccache.pkg
-pkgs/3a-xz.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-brotli.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-gnugperf.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-seccomp.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-libarchive.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-libsodium.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3a-lowdown.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3b-nix.pkg: pkgs/_2a0-ccache.pkg
 endif
 

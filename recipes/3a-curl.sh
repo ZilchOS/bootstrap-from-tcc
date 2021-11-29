@@ -9,7 +9,6 @@ export PATH='/store/2b2-busybox/bin'
 export PATH="$PATH:/store/2b1-clang/bin"
 export PATH="$PATH:/store/2b3-gnumake/bin"
 export PATH="$PATH:/store/3a-pkg-config/bin"
-export PKG_CONFIG_PATH='/store/3a-openssl/lib64/pkgconfig'
 
 mkdir -p /tmp/3a-curl; cd /tmp/3a-curl
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
@@ -21,7 +20,7 @@ echo "### $0: building curl..."
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' configure install-sh
 
 ash configure --prefix=/store/3a-curl \
-	--with-openssl=/store/3a-openssl \
+	--with-mbedtls=/store/3a-mbedtls \
 	--disable-dependency-tracking
 make -j $NPROC
 

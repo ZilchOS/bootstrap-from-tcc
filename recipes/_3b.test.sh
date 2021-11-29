@@ -8,21 +8,28 @@ export PATH="$PATH:/store/3b-nix/bin"
 
 export SHELL='/store/2b2-busybox/bin/ash'
 
-export PKG_CONFIG_PATH='/store/3a-openssl/lib64/pkgconfig'
-export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-bzip2/lib/pkgconfig"
+export PKG_CONFIG_PATH=''
+#export PKG_CONFIG_PATH='/store/3a-openssl/lib64/pkgconfig'
+#export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-bzip2/lib/pkgconfig"
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-sqlite/lib/pkgconfig"
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-curl/lib/pkgconfig"
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-editline/lib/pkgconfig"
-export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-xz/lib/pkgconfig"
+#export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-xz/lib/pkgconfig"
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-seccomp/lib/pkgconfig"
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-libarchive/lib/pkgconfig"
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-libsodium/lib/pkgconfig"
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-lowdown/lib/pkgconfig"
 LIBDIRS=''
-LIBDIRS="$(pkg-config --variable=libdir openssl)"
-LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir bzip2)"
+#LIBDIRS="$(pkg-config --variable=libdir openssl)"
+#LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir bzip2)"
 LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir sqlite3)"
 LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir libcurl)"
 LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir libeditline)"
-LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir liblzma)"
+#LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir liblzma)"
 LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir libseccomp)"
+LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir libarchive)"
+LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir libsodium)"
+LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir lowdown)"
 LIBDIRS="$LIBDIRS:/store/3a-boost/lib"
 LIBDIRS="$LIBDIRS:/store/2b1-clang/lib"
 export LD_LIBRARY_PATH=$LIBDIRS

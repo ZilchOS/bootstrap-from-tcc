@@ -71,16 +71,16 @@ input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 10 -> -> Clang
   * `gnubash`
   * `sqlite`
   * `boost`
-  * `perl`
-  * `openssl`
+  * `mbedtls`
   * `pkg-config`
-  * `bzip2`
   * `curl`
   * `editline`
-  * `xz`
   * `brotli`
   * `gnugperf`
   * `seccomp`
+  * `libarchive`
+  * `libsodium`
+  * `lowdown`
 * stage 3 "useful stuff" (`recipes/3b*.sh`): ???
   * `nix`
 
