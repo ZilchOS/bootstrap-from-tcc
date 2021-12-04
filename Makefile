@@ -345,7 +345,7 @@ pkgs/3b-nix.pkg: pkgs/3a-libarchive.pkg
 pkgs/3b-nix.pkg: pkgs/3a-libsodium.pkg
 pkgs/3b-nix.pkg: pkgs/3a-lowdown.pkg
 pkgs/3b-nix.pkg: downloads/queue.h
-pkgs/3b-nix.pkg: downloads/nix-2.5-pre20211129_48104dd-zilched.tar.xz
+pkgs/3b-nix.pkg: downloads/nix-2.5-pre20211204_a8a9ba7-zilched.tar.xz
 
 ################################################################################
 
