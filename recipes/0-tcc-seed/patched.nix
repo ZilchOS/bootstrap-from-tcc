@@ -1,8 +1,8 @@
 let
   nixpkgs = import (builtins.fetchTarball {
     name = "pinned-nixpkgs";
-    url = "https://github.com/nixos/nixpkgs/archive/8eeae5320e741d55ec1b891853fa48419e3a5a26.tar.gz";
-    sha256 = "sha256:18pprm729a1w1sn2rlfx7n4vc7cwwx9lcji928pdkq1k9mbz2fnf";
+    url = "https://github.com/nixos/nixpkgs/archive/a898a9d1f0503d3b2c66a5bbf8ac459003d3c843.tar.gz";
+    sha256 = "sha256:0m70w5rw5adz3riwh4m4x0vh5z8w0w8nlr1ajwi43ridma30vs8f";
   }) {};
 in
   nixpkgs.pkgsStatic.tinycc.overrideAttrs(oa: {

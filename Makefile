@@ -37,7 +37,7 @@ downloads/%:
 
 ################################################################################
 
-TCC_CHECKSUM=46c35b3fbc8e0f432596349a48d4c8f5485902db73d0afbafef2a7bc1c2d3f39
+TCC_CHECKSUM=089ea66f63dd41d911b70967677eccded03c2db9d6f8bdb0f148edcf177becb4
 tcc-seed: recipes/0-tcc-seed/patched.nix
 	@echo '### Makefile: you are supposed to supply a trusted tcc-seed'
 	@echo '### Makefile: since you have not, building one from nixpkgs...'
