@@ -1,7 +1,7 @@
 #!/store/2b2-busybox/bin/ash
 
 #> FETCH 6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1
-#>  FROM https://download.libsodium.org/libsodium/releases/libsodium-1.0.18.tar.gz
+#>  FROM https://github.com/jedisct1/libsodium/releases/download/1.0.18-RELEASE/libsodium-1.0.18.tar.gz
 
 
 set -uex
