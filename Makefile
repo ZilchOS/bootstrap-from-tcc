@@ -21,7 +21,7 @@ SHELL := bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 .PHONY: all all-at-once all-with-make clean-stage clean deepclean
-NPROC ?= -j1 # for inner make invocations, one can pass -j# this way
+NPROC ?= 1 # for inner make invocations, one can pass -j# this way
 USE_CCACHE ?= 0  # for faster iterative debugging only
 
 SOURCE_DATE_EPOCH ?= $(shell date '--date=01 Jan 1970 00:00:00 UTC' +%s)
