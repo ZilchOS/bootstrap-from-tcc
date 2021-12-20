@@ -1,7 +1,7 @@
 #!/store/2b2-busybox/bin/ash
 
-#> FETCH ae118b9468e4e18d3df7be83ccd77e8585a86d37014eaa35c19b063fc233fddf
-#>  FROM https://github.com/ZilchOS/nix/releases/download/nix-2.5pre20211204_a8a9ba7-zilched/nix-2.5-pre20211204_a8a9ba7-zilched.tar.xz
+#> FETCH bb2e48c487e736916583233ab63fde898117161c0107a2aa3008387a53b40101
+#>  FROM https://github.com/ZilchOS/nix/releases/download/nix-2.5.1-zilched/nix-2.5.1-zilched.tar.xz
 
 #> FETCH 3659cd137c320991a78413dd370a92fd18e0a8bc36d017d554f08677a37d7d5a
 #>  FROM https://raw.githubusercontent.com/somasis/musl-compat/c12ea3af4e6ee53158a175d992049c2148db5ff6/include/sys/queue.h
@@ -49,7 +49,7 @@ if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
 
 echo "### $0: unpacking Nix sources..."
 tar --strip-components=1 \
-	-xf /downloads/nix-2.5-pre20211204_a8a9ba7-zilched.tar.xz
+	-xf /downloads/nix-2.5.1-zilched.tar.xz
 
 echo "### $0: copying queue.h..."
 mkdir -p compat-includes/sys
