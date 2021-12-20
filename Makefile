@@ -328,6 +328,12 @@ pkgs/3a-lowdown.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-lowdown.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-lowdown.pkg: downloads/lowdown-0.10.0.tar.gz
 
+pkgs/3b-tinycc-static.pkg: pkgs/2b0-musl.pkg
+pkgs/3b-tinycc-static.pkg: pkgs/2b1-clang.pkg
+pkgs/3b-tinycc-static.pkg: pkgs/2b2-busybox.pkg
+pkgs/3b-tinycc-static.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3b-tinycc-static.pkg: downloads/tinycc-da11cf6.tgz
+
 pkgs/3b-nix.pkg: pkgs/2b0-musl.pkg
 pkgs/3b-nix.pkg: pkgs/2b1-clang.pkg
 pkgs/3b-nix.pkg: pkgs/2b2-busybox.pkg
@@ -435,6 +441,7 @@ all-pkgs: pkgs/3a-seccomp.pkg
 all-pkgs: pkgs/3a-libarchive.pkg
 all-pkgs: pkgs/3a-libsodium.pkg
 all-pkgs: pkgs/3a-lowdown.pkg
+all-pkgs: pkgs/3b-tinycc-static.pkg
 all-pkgs: pkgs/3b-nix.pkg
 
 ################################################################################
@@ -467,6 +474,7 @@ pkgs/3a-seccomp.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-libarchive.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-libsodium.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-lowdown.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3b-tinycc-static.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3b-nix.pkg: pkgs/_2a0-ccache.pkg
 endif
 
