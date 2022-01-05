@@ -39,6 +39,8 @@ echo "### $0: patching up protomusl stage 1 sources..."
 cp recipes/1-stage1/syscall.h \
 	"$DESTDIR/protosrc/protomusl/arch/x86_64/syscall_arch.h"
 pushd "$DESTDIR/protosrc/protomusl/" >/dev/null
+	# eliminiate a source path reference
+	sed -i 's/__FILE__/"__FILE__"/' include/assert.h
 	# two files have to be generated with host sed
 	mkdir -p host-generated/{sed1,sed2}/bits
 	sed -f ./tools/mkalltypes.sed \
@@ -65,13 +67,20 @@ popd >/dev/null
 echo "### $0: patching up tinycc stage 1 sources..."
 pushd "$DESTDIR/protosrc/tinycc" >/dev/null
 	:> config.h
-	sed -i 's/abort();//' lib/va_list.c  # break a circular dependency
+	# eliminiate a source path reference
+	sed -i 's/__FILE__/"__FILE__"/' tcc.h
+	# don't hardcode paths when compiling asm files
+	sed -i 's/SHN_ABS, file->filename);/SHN_ABS, "FILE stub");/' tccgen.c
+	# break a circular dependency
+	sed -i 's/abort();//' lib/va_list.c
 popd >/dev/null
 
 echo "### $0: patching up protobusybox stage 1 sources..."
 pushd "$DESTDIR/protosrc/protobusybox" >/dev/null
 	:> include/NUM_APPLETS.h
 	:> include/common_bufsiz.h
+	# eliminiate a source path reference
+	sed -i 's/__FILE__/"__FILE__"/' miscutils/fbsplash.c include/libbb.h
 	# already fixed in an unreleased version
 	sed -i 's/extern struct test_statics \*const test_ptr_to_statics/extern struct test_statics *BB_GLOBAL_CONST test_ptr_to_statics/' coreutils/test.c
 popd >/dev/null

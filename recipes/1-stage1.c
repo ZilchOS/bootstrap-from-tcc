@@ -527,7 +527,8 @@ void compile_libtcc1(const char* cc) {
 			"libtcc1.c", "alloca.S",
 			"dsohandle.c", "stdatomic.c", "va_list.c",
 			// now we can compile more
-			"tcov.c", "bcheck.c", "alloca-bt.S",
+			"tcov.c", "alloca-bt.S",
+			// bcheck.c is excluded, as it references __FILE__
 		0},
 		TMP_STAGE1"/tinycc/libtcc1",
 		STORE_STAGE1"/tinycc/lib/libtcc1.a");
