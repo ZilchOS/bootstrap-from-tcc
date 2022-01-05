@@ -77,13 +77,9 @@ pkgs/1-stage1.pkg: downloads/busybox-1.34.1.tar.bz2
 	@echo "### Makefile: seeding special stage 1 (and patching sources)..."
 	DESTDIR=tmp/build/1-stage1 recipes/1-stage1/seed.host-executed.sh
 	@echo "### Makefile: special stage 1: executing stage1.c with tcc-seed"
-	set +e; \
-		env -i unshare -nr chroot ./tmp/build/1-stage1 \
-			/store/0-tcc-seed -nostdinc -nostdlib -Werror \
-				-run recipes/1-stage1.c; \
-		EXIT_CODE=$$?; \
-	set -e; [[ $${EXIT_CODE} == 99 ]] \
-	### expecting 99, which means "all OK except for exec into next stage"
+	env -i unshare -nr chroot ./tmp/build/1-stage1 \
+		/store/0-tcc-seed -nostdinc -nostdlib -Werror \
+			-run recipes/1-stage1.c; \
 	$(TAR_REPR) -Izstd -cf pkgs/1-stage1.pkg -C tmp/build/1-stage1 \
 		store/1-stage1
 	rm -rf tmp/build/1-stage1

@@ -45,6 +45,7 @@ exec env -i "NPROC=$NPROC" unshare -nrm bash -uexs <<EOF
 
 	exec $CHROOT stage \
 		/store/0-tcc-seed -nostdinc -nostdlib -Werror -run \
+			-DCHAINLOAD="/recipes/all-past-stage1.sh" \
 			/recipes/1-stage1.c
 EOF
 
