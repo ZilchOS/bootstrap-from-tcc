@@ -7,9 +7,11 @@
 #include "1-stage1/syscall.h"
 #define TCC_SEED "/store/0-tcc-seed"
 #define PROTOSRC "/protosrc"
-#define STORE_STAGE1 "/store/1-stage1"
 #define RECIPES_STAGE1 "/recipes/1-stage1"
 #define TMP_STAGE1 "/tmp/1-stage1"
+#define STORE_PROTOBUSYBOX "/store/1-stage1/protobusybox"
+#define STORE_PROTOMUSL "/store/1-stage1/protomusl"
+#define STORE_TINYCC "/store/1-stage1/tinycc"
 #define EXTRA_HELLO_ARGS
 #else
 #include "syscall.h"
@@ -408,7 +410,7 @@ void compile_libtcc1_1st_time_nostd(const char* cc) {
 			"dsohandle.c", "stdatomic.c", "va_list.c",
 		0},
 		TMP_STAGE1"/tinycc/libtcc1",
-		STORE_STAGE1"/tinycc/lib/libtcc1.a");
+		STORE_TINYCC"/lib/libtcc1.a");
 }  // see also compile_libtcc1 far below
 
 
@@ -427,11 +429,11 @@ void compile_libtcc1_1st_time_nostd(const char* cc) {
 		"-I" PROTOSRC"/protomusl/include"
 #define PROTOMUSL_NOSTD_LDFLAGS_PRE \
 		"-static", \
-		STORE_STAGE1"/protomusl/lib/crt1.o", \
-		STORE_STAGE1"/protomusl/lib/crti.o"
+		STORE_PROTOMUSL"/lib/crt1.o", \
+		STORE_PROTOMUSL"/lib/crti.o"
 #define PROTOMUSL_NOSTD_LDFLAGS_POST \
-		STORE_STAGE1"/protomusl/lib/libc.a", \
-		STORE_STAGE1"/protomusl/lib/crtn.o"
+		STORE_PROTOMUSL"/lib/libc.a", \
+		STORE_PROTOMUSL"/lib/crtn.o"
 #define PROTOMUSL_INCLUDES \
 		"-I" PROTOSRC"/protomusl/include", \
 		"-I" PROTOSRC"/protomusl/arch/x86_64", \
@@ -490,18 +492,18 @@ void compile_protomusl(const char* cc) {
 		0},
 		PROTOSRC"/protomusl/src", &aa,
 		TMP_STAGE1"/protomusl",
-		STORE_STAGE1"/protomusl/lib/libc.a");
+		STORE_PROTOMUSL"/lib/libc.a");
 
 	log("compiling crt bits of protomusl...");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INTERNAL_INCLUDES, "-DCRT",
 		"-c", PROTOSRC"/protomusl/crt/crt1.c",
-		"-o", STORE_STAGE1"/protomusl/lib/crt1.o");
+		"-o", STORE_PROTOMUSL"/lib/crt1.o");
 	run0(cc, TCC_ARGS_NOSTD, "-DCRT",
 		"-c", PROTOSRC"/protomusl/crt/crti.c",
-		"-o", STORE_STAGE1"/protomusl/lib/crti.o");
+		"-o", STORE_PROTOMUSL"/lib/crti.o");
 	run0(cc, TCC_ARGS_NOSTD, "-DCRT",
 		"-c", PROTOSRC"/protomusl/crt/crtn.c",
-		"-o", STORE_STAGE1"/protomusl/lib/crtn.o");
+		"-o", STORE_PROTOMUSL"/lib/crtn.o");
 }
 
 void test_example_1st_time_nostd(const char* cc) {
@@ -510,7 +512,7 @@ void test_example_1st_time_nostd(const char* cc) {
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
 		RECIPES_STAGE1"/hello.c", EXTRA_HELLO_ARGS
 		PROTOMUSL_NOSTD_LDFLAGS_POST,
-		STORE_STAGE1"/tinycc/lib/libtcc1.a",
+		STORE_TINYCC"/lib/libtcc1.a",
 		"-o", TMP_STAGE1"/protomusl-hello");
 
 	log("executing an example...");
@@ -531,7 +533,7 @@ void compile_libtcc1(const char* cc) {
 			// bcheck.c is excluded, as it references __FILE__
 		0},
 		TMP_STAGE1"/tinycc/libtcc1",
-		STORE_STAGE1"/tinycc/lib/libtcc1.a");
+		STORE_TINYCC"/lib/libtcc1.a");
 }
 
 #define TCC_CFLAGS \
@@ -543,23 +545,23 @@ void compile_libtcc1(const char* cc) {
 		"-DTCC_TARGET_X86_64", \
 		"-DTCC_MUSL", \
 		"-DONE_SOURCE=0", \
-		"-DCONFIG_TCCDIR=\""STORE_STAGE1"/tinycc/lib\"", \
+		"-DCONFIG_TCCDIR=\""STORE_TINYCC"/lib\"", \
 		"-DCONFIG_TCC_SYSINCLUDEPATHS="\
-		        "\""STORE_STAGE1"/protomusl/include\"", \
-		"-DCONFIG_TCC_LIBPATHS=\""STORE_STAGE1"/protomusl/lib\"", \
-		"-DCONFIG_TCC_CRTPREFIX=\""STORE_STAGE1"/protomusl/lib\"", \
+		        "\""STORE_PROTOMUSL"/include\"", \
+		"-DCONFIG_TCC_LIBPATHS=\""STORE_PROTOMUSL"/lib\"", \
+		"-DCONFIG_TCC_CRTPREFIX=\""STORE_PROTOMUSL"/lib\"", \
 		"-DCONFIG_TCC_ELFINTERP=\"/sorry/not/yet\"", \
 		"-DCONFIG_TCC_PREDEFS=1"
 
 void compile_tcc_1st_time_nostd(const char* cc) {
 	log("compiling tcc's conftest...");
 	mkdirs_at(TMP_STAGE1"/tinycc", "gen", "lib", "bin");
-	mkdirs_at(STORE_STAGE1"/tinycc", "lib", "bin");
+	mkdirs_at(STORE_TINYCC"", "lib", "bin");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES,
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
 		"-DC2STR", PROTOSRC"/tinycc/conftest.c",
 		PROTOMUSL_NOSTD_LDFLAGS_POST,
-		STORE_STAGE1"/tinycc/lib/libtcc1.a",
+		STORE_TINYCC"/lib/libtcc1.a",
 		"-o", TMP_STAGE1"/tinycc/conftest"
 		);
 	log("generating tccdefs_.h with conftest...");
@@ -579,15 +581,15 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 			"x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
 		0},
 		TMP_STAGE1"/tinycc/libtcc",
-		STORE_STAGE1"/tinycc/lib/libtcc.a");
+		STORE_TINYCC"/lib/libtcc.a");
 	run0(cc, TCC_ARGS_NOSTD, PROTOMUSL_INCLUDES, TCC_CFLAGS,
 		PROTOMUSL_NOSTD_LDFLAGS_PRE,
 		PROTOSRC"/tinycc/tcc.c",
-		STORE_STAGE1"/tinycc/lib/libtcc.a",
+		STORE_TINYCC"/lib/libtcc.a",
 		PROTOMUSL_NOSTD_LDFLAGS_POST,
-		STORE_STAGE1"/tinycc/lib/libtcc1.a",
-		"-o", STORE_STAGE1"/tinycc/bin/tcc");
-	run0(STORE_STAGE1"/tinycc/bin/tcc", "-print-search-dirs");
+		STORE_TINYCC"/lib/libtcc1.a",
+		"-o", STORE_TINYCC"/bin/tcc");
+	run0(STORE_TINYCC"/bin/tcc", "-print-search-dirs");
 }
 
 
@@ -600,11 +602,11 @@ void compile_tcc(const char* cc) {
 			"x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
 		0},
 		TMP_STAGE1"/tinycc/libtcc",
-		STORE_STAGE1"/tinycc/lib/libtcc.a");
+		STORE_TINYCC"/lib/libtcc.a");
 	run0(cc, PROTOMUSL_INCLUDES, TCC_CFLAGS, "-static",
 		PROTOSRC"/tinycc/tcc.c",
-		STORE_STAGE1"/tinycc/lib/libtcc.a",
-		"-o", STORE_STAGE1"/tinycc/bin/tcc");
+		STORE_TINYCC"/lib/libtcc.a",
+		"-o", STORE_TINYCC"/bin/tcc");
 }
 
 void test_example_intermediate(const char* cc) {
@@ -706,7 +708,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 
 
 	log("compiling standalone protobusybox applets...");
-	mkreqdirs(STORE_STAGE1"/protobusybox/bin/");
+	mkreqdirs(STORE_PROTOBUSYBOX"/bin/");
 	#define compile_applet(applet_name, files...) \
 		run0(cc, PROTOMUSL_INCLUDES, \
 			"-D__GNUC__=2", "-D__GNUC_MINOR__=7", \
@@ -717,9 +719,9 @@ void compile_standalone_busybox_applets(const char* cc) {
 			RECIPES_STAGE1"/protobusybox.c", \
 			## files, \
 			TMP_STAGE1"/protobusybox/libbb.a", \
-			"-o", STORE_STAGE1"/protobusybox/bin/" applet_name);
+			"-o", STORE_PROTOBUSYBOX"/bin/" applet_name);
 	compile_applet("echo", PROTOSRC"/protobusybox/coreutils/echo.c")
-	run0(STORE_STAGE1"/protobusybox/bin/echo",
+	run0(STORE_PROTOBUSYBOX"/bin/echo",
 		"Hello from protobusybox!");
 
 	compile_applet("ash",
@@ -730,7 +732,7 @@ void compile_standalone_busybox_applets(const char* cc) {
 		PROTOSRC"/protobusybox/coreutils/test_ptr_hack.c",
 		PROTOSRC"/protobusybox/coreutils/test.c",
 		PROTOSRC"/protobusybox/shell/ash.c")
-	run(42, STORE_STAGE1"/protobusybox/bin/ash", "-c",
+	run(42, STORE_PROTOBUSYBOX"/bin/ash", "-c",
 		"printf 'Hello from ash!\n'; exit 42");
 
 	compile_applet("basename",
@@ -804,49 +806,49 @@ void compile_standalone_busybox_applets(const char* cc) {
 // Little things we'll do now when we have a shell /////////////////////////////
 
 void verify_tcc_stability(void) {
-	run0(STORE_STAGE1"/protobusybox/bin/cp",
-		STORE_STAGE1"/tinycc/bin/tcc", TMP_STAGE1"/tcc-bak");
-	compile_tcc(STORE_STAGE1"/tinycc/bin/tcc");
-	run0(STORE_STAGE1"/protobusybox/bin/diff",
-		STORE_STAGE1"/tinycc/bin/tcc", TMP_STAGE1"/tcc-bak");
+	run0(STORE_PROTOBUSYBOX"/bin/cp",
+		STORE_TINYCC"/bin/tcc", TMP_STAGE1"/tcc-bak");
+	compile_tcc(STORE_TINYCC"/bin/tcc");
+	run0(STORE_PROTOBUSYBOX"/bin/diff",
+		STORE_TINYCC"/bin/tcc", TMP_STAGE1"/tcc-bak");
 }
 
 void tweak_output_in_store(void) {
-	run0(STORE_STAGE1"/protobusybox/bin/ash", "-uexvc", "
+	run0(STORE_PROTOBUSYBOX"/bin/ash", "-uexvc", "
 		:> "TMP_STAGE1"/empty.c
-		"STORE_STAGE1"/tinycc/bin/tcc -c "TMP_STAGE1"/empty.c \
+		"STORE_TINYCC"/bin/tcc -c "TMP_STAGE1"/empty.c \
 			-o "TMP_STAGE1"/empty.o
-		"STORE_STAGE1"/tinycc/bin/tcc -ar "TMP_STAGE1"/empty.a \
+		"STORE_TINYCC"/bin/tcc -ar "TMP_STAGE1"/empty.a \
 			"TMP_STAGE1"/empty.o
-		"STORE_STAGE1"/protobusybox/bin/cp "TMP_STAGE1"/empty.a \
-			"STORE_STAGE1"/protomusl/lib/libm.a
-		"STORE_STAGE1"/protobusybox/bin/cp "TMP_STAGE1"/empty.a \
-			"STORE_STAGE1"/protomusl/lib/libpthread.a
+		"STORE_PROTOBUSYBOX"/bin/cp "TMP_STAGE1"/empty.a \
+			"STORE_PROTOMUSL"/lib/libm.a
+		"STORE_PROTOBUSYBOX"/bin/cp "TMP_STAGE1"/empty.a \
+			"STORE_PROTOMUSL"/lib/libpthread.a
 
-		"STORE_STAGE1"/protobusybox/bin/rm -rf \
-			"STORE_STAGE1"/protomusl/include
-		"STORE_STAGE1"/protobusybox/bin/mkdir -p \
-			"STORE_STAGE1"/protomusl/include/bits
-		"STORE_STAGE1"/protobusybox/bin/cp -rf \
+		"STORE_PROTOBUSYBOX"/bin/rm -rf \
+			"STORE_PROTOMUSL"/include
+		"STORE_PROTOBUSYBOX"/bin/mkdir -p \
+			"STORE_PROTOMUSL"/include/bits
+		"STORE_PROTOBUSYBOX"/bin/cp -rf \
 			"PROTOSRC"/protomusl/host-generated/sed1/bits \
 			"PROTOSRC"/protomusl/host-generated/sed2/bits \
 			"PROTOSRC"/protomusl/arch/generic/* \
 			"PROTOSRC"/protomusl/arch/x86_64/* \
 			"PROTOSRC"/protomusl/include/* \
-			"STORE_STAGE1"/protomusl/include/
+			"STORE_PROTOMUSL"/include/
 	");
 }
 
 
 void wrap_tcc_tools(void) {
-	#define EXECTCC "#!"STORE_STAGE1"/protobusybox/bin/ash\n" \
-			"exec "STORE_STAGE1"/tinycc/bin/tcc"
+	#define EXECTCC "#!"STORE_PROTOBUSYBOX"/bin/ash\n" \
+			"exec "STORE_TINYCC"/bin/tcc"
 	#define PASSTHROUGH "\\\"\\$@\\\"" //  i.e., \"\$@\", i.e, "$@"
-	run0(STORE_STAGE1"/protobusybox/bin/ash", "-uexvc", "
-		PATH="STORE_STAGE1"/protobusybox/bin
-		mkdir -p "STORE_STAGE1"/tinycc/wrappers
-		cd "STORE_STAGE1"/tinycc/wrappers
-		_CPP_ARGS=\"-I"STORE_STAGE1"/protomusl/include\"
+	run0(STORE_PROTOBUSYBOX"/bin/ash", "-uexvc", "
+		PATH="STORE_PROTOBUSYBOX"/bin
+		mkdir -p "STORE_TINYCC"/wrappers
+		cd "STORE_TINYCC"/wrappers
+		_CPP_ARGS=\"-I"STORE_PROTOMUSL"/include\"
 		_LD_ARGS='-static'
 		echo -e \"" EXECTCC " $_LD_ARGS " PASSTHROUGH"\" > cc
 		echo -e \"" EXECTCC " -E $_CPP_ARGS " PASSTHROUGH"\" > cpp
@@ -870,11 +872,14 @@ int _start() {
 	log("PROTOSRC=" PROTOSRC);
 	log("RECIPES_STAGE1=" RECIPES_STAGE1);
 	log("TMP_STAGE1=" TMP_STAGE1);
-	log("STORE_STAGE1=" STORE_STAGE1);
+	log("STORE_PROTOBUSYBOX=" STORE_PROTOBUSYBOX);
+	log("STORE_PROTOMUSL=" STORE_PROTOMUSL);
+	log("STORE_TINYCC=" STORE_TINYCC);
 #endif
 
 	log("creating directories...");
-	mkdirs_at("/", STORE_STAGE1"", TMP_STAGE1);
+	mkdirs_at("/",
+		TMP_STAGE1, STORE_PROTOBUSYBOX, STORE_PROTOMUSL, STORE_TINYCC);
 
 	sanity_test();
 
@@ -885,25 +890,25 @@ int _start() {
 
 	// build the first TCC that comes from our sources
 	compile_tcc_1st_time_nostd(TCC_SEED);
-	test_example_intermediate(STORE_STAGE1"/tinycc/bin/tcc");
+	test_example_intermediate(STORE_TINYCC"/bin/tcc");
 	// rebuild everything with it
-	compile_libtcc1(STORE_STAGE1"/tinycc/bin/tcc");
-	compile_protomusl(STORE_STAGE1"/tinycc/bin/tcc");
-	test_example_intermediate(STORE_STAGE1"/tinycc/bin/tcc");
+	compile_libtcc1(STORE_TINYCC"/bin/tcc");
+	compile_protomusl(STORE_TINYCC"/bin/tcc");
+	test_example_intermediate(STORE_TINYCC"/bin/tcc");
 
 	// this is the final tcc we'll build, should not be worth repeating
-	compile_tcc(STORE_STAGE1"/tinycc/bin/tcc");
+	compile_tcc(STORE_TINYCC"/bin/tcc");
 	// recompile everything else with the final tcc (could be an overkill)
-	compile_libtcc1(STORE_STAGE1"/tinycc/bin/tcc");
-	compile_protomusl(STORE_STAGE1"/tinycc/bin/tcc");
-	test_example_intermediate(STORE_STAGE1"/tinycc/bin/tcc");
+	compile_libtcc1(STORE_TINYCC"/bin/tcc");
+	compile_protomusl(STORE_TINYCC"/bin/tcc");
+	test_example_intermediate(STORE_TINYCC"/bin/tcc");
 
-	compile_standalone_busybox_applets(STORE_STAGE1"/tinycc/bin/tcc");
+	compile_standalone_busybox_applets(STORE_TINYCC"/bin/tcc");
 
 	verify_tcc_stability();
 	tweak_output_in_store();
 	wrap_tcc_tools();
-	test_example_final(STORE_STAGE1"/tinycc/wrappers/cc");
+	test_example_final(STORE_TINYCC"/wrappers/cc");
 
 	log("done");
 
