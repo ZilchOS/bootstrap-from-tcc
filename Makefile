@@ -88,7 +88,12 @@ pkgs/1-stage1.pkg: downloads/busybox-1.34.1.tar.bz2
 # Consequent stages split up into packages have it simpler:
 pkgs/%.pkg: recipes/%.sh
 	@echo "### Makefile: creating a temporary build area tmp/build/$*..."
-	rm -rf "tmp/build/$*"; mkdir -p "tmp/build/$*"
+	if ! rm -rf "tmp/build/$*" 2>/dev/null; then \
+		chmod -R +w "tmp/build/$*"; \
+		rm -rf "tmp/build/$*"; \
+	fi
+	[ ! -e "tmp/build/$*" ]
+	mkdir -p "tmp/build/$*"
 	helpers/inject "tmp/build/$*" $^
 ifeq ($(USE_CCACHE), 1)
 	@echo "### Makefile: unpacking ccache from previous builds $*..."
@@ -114,7 +119,11 @@ ifeq ($(USE_CCACHE), 1)
 	fi
 endif
 	@echo "### Makefile: cleaning up after $*"
-	rm -rf "tmp/build/$*"
+	if ! rm -rf "tmp/build/$*" 2>/dev/null; then \
+		chmod -R +w "tmp/build/$*"; \
+		rm -rf "tmp/build/$*"; \
+	fi
+	[ ! -e "tmp/build/$*" ]
 	@echo "### Makefile: $* has been built as pkgs/$*.pkg"
 
 # Dependency graph:
@@ -324,6 +333,13 @@ pkgs/3a-lowdown.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-lowdown.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-lowdown.pkg: downloads/lowdown-0.10.0.tar.gz
 
+pkgs/3b-busybox-static.pkg: pkgs/2b0-musl.pkg
+pkgs/3b-busybox-static.pkg: pkgs/2b1-clang.pkg
+pkgs/3b-busybox-static.pkg: pkgs/2b2-busybox.pkg
+pkgs/3b-busybox-static.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3b-busybox-static.pkg: pkgs/2a6-linux-headers.pkg
+pkgs/3b-busybox-static.pkg: downloads/busybox-1.34.1.tar.bz2
+
 pkgs/3b-tinycc-static.pkg: pkgs/2b0-musl.pkg
 pkgs/3b-tinycc-static.pkg: pkgs/2b1-clang.pkg
 pkgs/3b-tinycc-static.pkg: pkgs/2b2-busybox.pkg
@@ -346,8 +362,44 @@ pkgs/3b-nix.pkg: pkgs/3a-seccomp.pkg
 pkgs/3b-nix.pkg: pkgs/3a-libarchive.pkg
 pkgs/3b-nix.pkg: pkgs/3a-libsodium.pkg
 pkgs/3b-nix.pkg: pkgs/3a-lowdown.pkg
+pkgs/3b-nix.pkg: pkgs/3b-busybox-static.pkg
 pkgs/3b-nix.pkg: downloads/queue.h
 pkgs/3b-nix.pkg: downloads/nix-2.5.1-zilched.tar.xz
+
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/2b0-musl.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/2b1-clang.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/2b2-busybox.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-boost.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-pkg-config.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-sqlite.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-curl.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-editline.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-brotli.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-seccomp.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-libarchive.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-libsodium.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-lowdown.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3b-busybox-static.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3b-nix.pkg
+###
+pkgs/4-rebootstrap-using-nix.pkg: tcc-seed
+###
+pkgs/4-rebootstrap-using-nix.pkg: stage/protosrc
+###
+pkgs/4-rebootstrap-using-nix.pkg: recipes/1-stage1.c
+pkgs/4-rebootstrap-using-nix.pkg: recipes/1-stage1/seed.host-executed.sh
+pkgs/4-rebootstrap-using-nix.pkg: recipes/1-stage1/syscall.h
+pkgs/4-rebootstrap-using-nix.pkg: recipes/1-stage1/protobusybox.c
+pkgs/4-rebootstrap-using-nix.pkg: recipes/1-stage1/protobusybox.h
+pkgs/4-rebootstrap-using-nix.pkg: recipes/1-stage1/hello.c
+###
+pkgs/4-rebootstrap-using-nix.pkg: default.nix
+pkgs/4-rebootstrap-using-nix.pkg: using-nix/1-stage1.nix
+pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a0-static-gnumake.nix
+pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a1-static-binutils.nix
+###
+pkgs/4-rebootstrap-using-nix.pkg: downloads/make-4.3.tar.gz
+pkgs/4-rebootstrap-using-nix.pkg: downloads/binutils-2.37.tar.xz
 
 ################################################################################
 
@@ -381,7 +433,6 @@ pkgs/_2b1.test.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/_2b1.test.pkg: pkgs/2b0-musl.pkg
 pkgs/_2b1.test.pkg: pkgs/2b1-clang.pkg
 
-pkgs/_3b.test.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/_3b.test.pkg: pkgs/2b0-musl.pkg
 pkgs/_3b.test.pkg: pkgs/2b1-clang.pkg
 pkgs/_3b.test.pkg: pkgs/2b2-busybox.pkg
@@ -437,8 +488,10 @@ all-pkgs: pkgs/3a-seccomp.pkg
 all-pkgs: pkgs/3a-libarchive.pkg
 all-pkgs: pkgs/3a-libsodium.pkg
 all-pkgs: pkgs/3a-lowdown.pkg
+all-pkgs: pkgs/3b-busybox-static.pkg
 all-pkgs: pkgs/3b-tinycc-static.pkg
 all-pkgs: pkgs/3b-nix.pkg
+all-pkgs: pkgs/4-rebootstrap-using-nix.pkg
 
 ################################################################################
 
@@ -470,6 +523,7 @@ pkgs/3a-seccomp.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-libarchive.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-libsodium.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-lowdown.pkg: pkgs/_2a0-ccache.pkg
+pkgs/3b-busybox-static.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3b-tinycc-static.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3b-nix.pkg: pkgs/_2a0-ccache.pkg
 endif

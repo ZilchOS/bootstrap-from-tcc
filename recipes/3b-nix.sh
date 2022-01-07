@@ -74,7 +74,8 @@ bash configure --prefix=/store/3b-nix \
 	--disable-doc-gen \
 	--disable-gc \
 	--disable-cpuid \
-	--disable-gtest
+	--disable-gtest \
+	--with-sandbox-shell=/store/3b-busybox-static/bin/busybox
 make -j $NPROC V=1
 
 echo "### $0: installing Nix..."
