@@ -52,4 +52,9 @@ rec {
   static-gnugcc4-c = (import using-nix/2a2-static-gnugcc4-c.nix) {
     inherit mkDerivationStage2 stage1 static-gnumake static-binutils;
   };
+
+  intermediate-musl = (import using-nix/2a3-intermediate-musl.nix) {
+    inherit mkDerivationStage2;
+    inherit stage1 static-gnumake static-binutils static-gnugcc4-c;
+  };
 }
