@@ -399,6 +399,7 @@ pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a0-static-gnumake.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a1-static-binutils.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a2-static-gnugcc4-c.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a3-intermediate-musl.nix
+pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a4-gnugcc4-cpp.nix
 ###
 pkgs/4-rebootstrap-using-nix.pkg: downloads/make-4.3.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/binutils-2.37.tar.xz

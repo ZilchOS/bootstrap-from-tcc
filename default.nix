@@ -57,4 +57,10 @@ rec {
     inherit mkDerivationStage2;
     inherit stage1 static-gnumake static-binutils static-gnugcc4-c;
   };
+
+  gnugcc4-cpp = (import using-nix/2a4-gnugcc4-cpp.nix) {
+    inherit mkDerivationStage2;
+    inherit stage1 static-gnumake static-binutils static-gnugcc4-c;
+    inherit intermediate-musl;
+  };
 }
