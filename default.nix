@@ -10,7 +10,13 @@ rec {
 
   # stage 2
 
-  mkDerivationStage2 = {name, script, buildInputPaths}: derivation {
+  mkCaDerivation = args: derivation (args // {
+    system = builtins.currentSystem;
+    __contentAddressed = true;
+    outputHashAlgo = "sha256"; outputHashMode = "recursive";
+  });
+
+  mkDerivationStage2 = {name, script, buildInputPaths}: mkCaDerivation {
     inherit name;
     builder = "${stage1.protobusybox}/bin/ash";
     args = [ "-uexc" (
@@ -29,9 +35,6 @@ rec {
                           # or adding your user to trusted-users. weird, right
       '' + script
     ) ];
-    system = builtins.currentSystem;
-    __contentAddressed = true;
-    outputHashAlgo = "sha256"; outputHashMode = "recursive";
   };
 
   source-tarball-gnumake = builtins.fetchurl {
