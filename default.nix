@@ -48,4 +48,8 @@ rec {
   static-binutils = (import using-nix/2a1-static-binutils.nix) {
     inherit mkDerivationStage2 stage1 static-gnumake;
   };
+
+  static-gnugcc4-c = (import using-nix/2a2-static-gnugcc4-c.nix) {
+    inherit mkDerivationStage2 stage1 static-gnumake static-binutils;
+  };
 }
