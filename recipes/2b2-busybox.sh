@@ -13,16 +13,12 @@ export PATH="$PATH:/store/2b2-patchelf/bin"
 mkdir -p /tmp/2b2-busybox; cd /tmp/2b2-busybox
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
 
-echo "### $0: unpacking busybox sources..."
-tar --strip-components=1 -xf /downloads/busybox-1.34.1.tar.bz2
-
-# TODO: better, outer-level solution for /usr/bin/env and popen specifically
-# just patch musl to search in $PATH?
-echo "### $0: providing /usr/bin/env and sh in PATH for popen..."
-mkdir /usr; mkdir /usr/bin
-ln -s /store/1-stage1/protobusybox/bin/env /usr/bin/env
+echo "### $0: aliasing ash to sh..."
 mkdir aliases; ln -s /store/1-stage1/protobusybox/bin/ash aliases/sh
 export PATH="/tmp/2b2-busybox/aliases:$PATH"
+
+echo "### $0: unpacking busybox sources..."
+tar --strip-components=1 -xf /downloads/busybox-1.34.1.tar.bz2
 
 echo "### $0: configuring busybox..."
 BUSYBOX_FLAGS='CONFIG_SHELL=/store/1-stage1/protobusybox/bin/ash'
@@ -45,5 +41,3 @@ sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
 
 echo "### $0: installing busybox..."
 make -j $NPROC $BUSYBOX_FLAGS install CONFIG_PREFIX=/store/2b2-busybox
-
-rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

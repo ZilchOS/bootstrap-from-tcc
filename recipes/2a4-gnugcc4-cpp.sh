@@ -23,11 +23,7 @@ export PATH="$PATH:/store/2a2-static-gnugcc4-c/bin"
 mkdir -p /tmp/2a4-gnugcc4-cpp; cd /tmp/2a4-gnugcc4-cpp
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
 
-# TODO: better, outer-level solution for /usr/bin/env and popen specifically
-# just patch musl to search in $PATH?
-echo "### $0: providing /usr/bin/env and sh in PATH for popen..."
-mkdir /usr; mkdir /usr/bin
-ln -s /store/1-stage1/protobusybox/bin/env /usr/bin/env
+echo "### $0: aliasing ash to sh..."
 mkdir aliases; ln -s /store/1-stage1/protobusybox/bin/ash aliases/sh
 export PATH="/tmp/2a4-gnugcc4-cpp/aliases:$PATH"
 
@@ -93,5 +89,3 @@ ash configure \
 make -j $NPROC
 echo "### $0: installing GNU GCC 4 (dynamically linked, with C++ support)"
 make -j $NPROC install-strip
-
-rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

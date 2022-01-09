@@ -13,11 +13,7 @@ export LD_LIBRARY_PATH=/store/2b1-clang/lib
 mkdir -p /tmp/3a-boost; cd /tmp/3a-boost
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
 
-# TODO: better, outer-level solution for /usr/bin/env and popen specifically
-# just patch musl to search in $PATH?
-echo "### $0: providing /usr/bin/env and sh in PATH for popen..."
-mkdir /usr; mkdir /usr/bin
-ln -s /store/2b2-busybox/bin/env /usr/bin/env
+echo "### $0: aliasing ash to sh..."
 mkdir aliases; ln -s /store/2b2-busybox/bin/ash aliases/sh
 export PATH="/tmp/3a-boost/aliases:$PATH"
 
@@ -45,5 +41,3 @@ ash bootstrap.sh
 
 echo "### $0: installing Boost..."
 ./b2 install --prefix=/store/3a-boost
-
-rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

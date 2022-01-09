@@ -21,11 +21,7 @@ export PATH="$PATH:/store/2a0-static-gnumake/bin"
 mkdir -p /tmp/2a2-static-gnugcc4-c; cd /tmp/2a2-static-gnugcc4-c
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
 
-# TODO: better, outer-level solution for /usr/bin/env and popen specifically
-# just patch musl to search in $PATH?
-echo "### $0: HACK providing /usr/bin/env and sh in PATH for popen..."
-mkdir /usr; mkdir /usr/bin
-ln -s /store/1-stage1/protobusybox/bin/env /usr/bin/env
+echo "### $0: aliasing ash to sh..."
 mkdir aliases; ln -s /store/1-stage1/protobusybox/bin/ash aliases/sh
 export PATH="/tmp/2a2-static-gnugcc4-c/aliases:$PATH"
 
@@ -67,5 +63,3 @@ make -j $NPROC
 
 echo "### $0: installing static GNU GCC 4 (statically linked, C only)"
 make -j $NPROC install
-
-rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

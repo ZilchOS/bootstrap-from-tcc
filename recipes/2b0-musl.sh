@@ -19,12 +19,8 @@ tar --strip-components=1 -xf /downloads/musl-1.2.2.tar.gz
 echo "### $0: building musl..."
 sed -i 's|/bin/sh|/store/1-stage1/protobusybox/bin/ash|' \
 	tools/*.sh \
-# Hardcode /usr/bin/env sh instead of /bin/sh for popen and system calls.
-# At least one hardcode less and env is dumber than sh =(
-# TODO: build and bundle an env with musl at this step?
-# TODO: or make it search $PATH already?
-sed -i 's|/bin/sh|/usr/bin/env|' src/stdio/popen.c src/process/system.c
-sed -i 's|"sh", "-c"|"/usr/bin/env", "sh", "-c"|' \
+# patch popen/system to search in PATH instead of hardcoding /bin/sh
+sed -i 's|posix_spawn(&pid, "/bin/sh",|posix_spawnp(\&pid, "sh",|' \
 	src/stdio/popen.c src/process/system.c
 ash ./configure --prefix=/store/2b0-musl CFLAGS='-O2'
 make -j $NPROC

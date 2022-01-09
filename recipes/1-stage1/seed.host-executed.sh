@@ -59,9 +59,10 @@ pushd "$DESTDIR/protosrc/protomusl/" >/dev/null
 	rm -f src/thread/__unmapself.c  # double-define
 	rm -f src/math/sqrtl.c  # tcc-incompatible
 	rm -f src/math/{acoshl,acosl,asinhl,asinl,hypotl}.c  # sqrtl dep
-	sed -i -e 's|/bin/sh|/usr/bin/env|' \
-		-e 's|"sh", "-c"|"/usr/bin/env", "sh", "-c"|' \
+	sed -i 's|posix_spawn(&pid, "/bin/sh",|posix_spawnp(\&pid, "sh",|' \
 		src/stdio/popen.c src/process/system.c
+	sed -i 's|execl("/bin/sh", "sh", "-c",|execlp("sh", "-c",|'\
+		src/misc/wordexp.c
 popd >/dev/null
 
 echo "### $0: patching up tinycc stage 1 sources..."

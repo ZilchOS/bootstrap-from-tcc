@@ -12,16 +12,12 @@ export PATH="$PATH:/store/2b3-gnumake/wrappers"
 mkdir -p /tmp/3b-busybox-static; cd /tmp/3b-busybox-static
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
 
-echo "### $0: unpacking busybox sources..."
-tar --strip-components=1 -xf /downloads/busybox-1.34.1.tar.bz2
-
-# TODO: better, outer-level solution for /usr/bin/env and popen specifically
-# just patch musl to search in $PATH?
-echo "### $0: providing /usr/bin/env and sh in PATH for popen..."
-mkdir /usr; mkdir /usr/bin
-ln -s /store/2b2-busybox/bin/env /usr/bin/env
+echo "### $0: aliasing ash to sh..."
 mkdir aliases; ln -s /store/2b2-busybox/bin/ash aliases/sh
 export PATH="/tmp/3b-busybox-static/aliases:$PATH"
+
+echo "### $0: unpacking busybox sources..."
+tar --strip-components=1 -xf /downloads/busybox-1.34.1.tar.bz2
 
 echo "### $0: configuring busybox..."
 BUSYBOX_FLAGS='CONFIG_SHELL=/store/2b2-busybox/bin/ash'
@@ -47,5 +43,3 @@ sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
 
 echo "### $0: installing busybox..."
 make -j $NPROC $BUSYBOX_FLAGS install CONFIG_PREFIX=/store/3b-busybox-static
-
-rm /usr/bin/env && rmdir /usr/bin && rmdir /usr

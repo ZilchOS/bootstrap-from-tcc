@@ -15,11 +15,7 @@ export SHELL=/store/1-stage1/protobusybox/bin/ash
 mkdir -p /tmp/2a8-python; cd /tmp/2a8-python
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
 
-# TODO: better, outer-level solution for /usr/bin/env and popen specifically
-# just patch musl to search in $PATH?
-echo "### $0: providing /usr/bin/env and sh in PATH for popen..."
-mkdir /usr; mkdir /usr/bin
-ln -s /store/1-stage1/protobusybox/bin/env /usr/bin/env
+echo "### $0: aliasing ash to sh..."
 mkdir aliases; ln -s /store/1-stage1/protobusybox/bin/ash aliases/sh
 export PATH="/tmp/2a8-python/aliases:$PATH"
 
@@ -47,5 +43,3 @@ echo "### $0: installing CPython..."
 make -j $NPROC install
 # restore compileall just in case
 cat Lib/compileall.py.bak > /store/2a8-python/lib/python3.10/compileall.py
-
-rm /usr/bin/env && rmdir /usr/bin && rmdir /usr
