@@ -45,9 +45,8 @@ echo "### $0: fixing up paths to shell"
 sed -i 's|/bin/sh|/store/3b-busybox-static/bin/ash|' /using-nix/1-stage1.nix
 
 echo "### $0: pointing to local downloads"
-sed -i 's|url =|#remote_url =|' /default.nix
-sed -i 's|# local = \(.*\);|url = "file://\1";|' /default.nix
-grep make /default.nix
+sed -i 's|url =|#remote_url =|' /using-nix/*.nix
+sed -i 's|# local = \(.*\);|url = "file://\1";|' /using-nix/*.nix
 
 echo "### $0: rebuilding everything using nix"
 nix-build \
