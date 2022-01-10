@@ -540,6 +540,7 @@ pkgs/3a-lowdown.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3b-busybox-static.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3b-tinycc-static.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3b-nix.pkg: pkgs/_2a0-ccache.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################

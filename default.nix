@@ -26,7 +26,13 @@ rec {
     args = [ "-uexc" (
       ''
         export PATH=${builtins.concatStringsSep ":" buildInputPaths}
+
+        if [ -e /store/_2a0-ccache ]; then
+          . /store/_2a0-ccache/wrap-available
+        fi
+
         unpack() (tar --strip-components=1 -xf "$@")
+
         if [ -n "$NIX_BUILD_CORES" ] && [ "$NIX_BUILD_CORES" != 0 ]; then
             NPROC=$NIX_BUILD_CORES
         elif [ "$NIX_BUILD_CORES" == 0 ] && [ -r /proc/cpuinfo ]; then
