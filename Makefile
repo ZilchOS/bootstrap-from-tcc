@@ -23,6 +23,7 @@ MAKEFLAGS += --no-builtin-rules
 .PHONY: all all-at-once all-with-make clean-stage clean deepclean
 NPROC ?= 1 # for inner make invocations, one can pass -j# this way
 USE_CCACHE ?= 0  # for faster iterative debugging only
+USE_NIX_CACHE ?= 0  # for faster iterative debugging only
 
 SOURCE_DATE_EPOCH ?= $(shell date '--date=01 Jan 1970 00:00:00 UTC' +%s)
 TAR := tar
@@ -100,6 +101,11 @@ ifeq ($(USE_CCACHE), 1)
 	mkdir -p "tmp/build/$*/ccache"
 	[[ ! -e "tmp/ccache/$*.tar.zstd" ]] || \
 		tar -Izstd -xf "tmp/ccache/$*.tar.zstd" -C "tmp/build/$*/ccache"
+endif
+ifeq ($(USE_NIX_CACHE), 1)
+	if [[ $* =~ .*-using-nix ]] && [[ -e "pkgs/$*.pkg" ]]; then \
+		tar -xf "pkgs/$*.pkg" -C "tmp/build/$*"; \
+	fi
 endif
 	@echo "### Makefile: building $*"
 	env \

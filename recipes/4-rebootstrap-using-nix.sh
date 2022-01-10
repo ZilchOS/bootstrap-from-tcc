@@ -4,6 +4,7 @@ set -uex
 
 export PATH='/store/2b2-busybox/bin'
 export PATH="$PATH:/store/3a-pkg-config/bin"
+export PATH="$PATH:/store/3a-sqlite/bin"
 export PATH="$PATH:/store/3b-nix/bin"
 
 export SHELL='/store/2b2-busybox/bin/ash'
@@ -48,6 +49,13 @@ echo "### $0: pointing to local downloads"
 sed -i 's|url =|#remote_url =|' /using-nix/*.nix
 sed -i 's|# local = \(.*\);|url = "file://\1";|' /using-nix/*.nix
 
+if [[ -e /store/4-rebootstrap-using-nix/nix ]]; then
+	echo "### $0: importing previous /nix"
+	mv //store/4-rebootstrap-using-nix/nix /
+	sqlite3 /nix/var/nix/db/db.sqlite < /nix/var/nix/db/db.sqlite.dump
+	rm /nix/var/nix/db/db.sqlite.dump
+fi
+
 echo "### $0: rebuilding everything using nix"
 nix-build \
 	--extra-experimental-features ca-derivations \
@@ -55,8 +63,13 @@ nix-build \
 	--option sandbox false \
 	--option compress-build-log false \
 	--no-substitute -vvv /default.nix
-
-ls /nix/store
-
 rm -f /dev/urandom
-# touch /store/4-rebootstrap-using-nix  # indicator of successful completion
+
+# this one is special wrt how the results are saved, see Makefile/USE_NIX_CACHE
+echo "### $0: exporting resulting /nix closures"
+sqlite3 /nix/var/nix/db/db.sqlite 'UPDATE ValidPaths SET registrationTime = 1;'
+sqlite3 /nix/var/nix/db/db.sqlite .dump > /nix/var/nix/db/db.sqlite.dump
+mkdir -p /store/4-rebootstrap-using-nix/nix/var/nix
+cp -a --reflink=auto /nix/store /store/4-rebootstrap-using-nix/nix/
+cp -a --reflink=auto /nix/var/nix/db /store/4-rebootstrap-using-nix/nix/var/nix/
+rm /store/4-rebootstrap-using-nix/nix/var/nix/db/db.sqlite
