@@ -103,19 +103,31 @@ ifeq ($(USE_CCACHE), 1)
 		tar -Izstd -xf "tmp/ccache/$*.tar.zstd" -C "tmp/build/$*/ccache"
 endif
 ifeq ($(USE_NIX_CACHE), 1)
-	if [[ $* =~ .*-using-nix ]] && [[ -e "pkgs/$*.pkg" ]]; then \
-		tar -xf "pkgs/$*.pkg" -C "tmp/build/$*"; \
+	@echo "### Makefile: unpacking nix store and db from previous build..."
+	if [[ $* =~ .*-using-nix ]] && [[ -e tmp/prev-nix-db.tar ]] \
+			&& [[ -e "pkgs/$*.pkg" ]]; then \
+		mkdir "tmp/build/$*/prev/"; \
+		tar --strip-components=2 \
+			-xf "pkgs/$*.pkg" -C "tmp/build/$*/prev/"; \
+		cp --reflink=auto tmp/prev-nix-db.tar \
+			"tmp/build/$*/prev/nix-db.tar"; \
 	fi
 endif
-	@echo "### Makefile: building $*"
+	@echo "### Makefile: building $* ..."
 	env \
 		DESTDIR="./tmp/build/$*" \
 		NPROC="$(NPROC)" \
 		SOURCE_DATE_EPOCH="$(SOURCE_DATE_EPOCH)" \
 		./helpers/chroot "/recipes/$*.sh"
-	@echo "### Makefile: packing up $*"
+	if [[ $* =~ .*-using-nix ]] && \
+			[[ -e "tmp/build/$*/store/$*/nix-db.tar" ]]; then \
+		echo "### Makefile: extracting/excluding nix db cache..."; \
+		mv "tmp/build/$*/store/$*/nix-db.tar" tmp/prev-nix-db.tar; \
+	fi
+	@echo "### Makefile: packing up $* ..."
 	$(TAR_REPR) -Izstd -cf "pkgs/$*.pkg" -C "tmp/build/$*" "store/$*"
 ifeq ($(USE_CCACHE), 1)
+	@echo "### Makefile: packing up $* ccache cache..."
 	if ! rmdir "tmp/build/$*/ccache" 2>/dev/null; then \
 		mkdir -p tmp/ccache; \
 		unshare -nr chroot "tmp/build/$*" \
