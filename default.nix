@@ -1,13 +1,17 @@
 rec {
-  # protosrc  # TODO!
+  # stage 0
 
-  protosrcPath = ./stage/protosrc;
+  # these two use nixpkgs, but are fixed-output derivations with no dependencies
+  tcc-seed = (import ./using-nix/0.nix).tinycc;
+  protosrc = (import ./using-nix/0.nix).protosrc;
+  # in bootstrapping builds,
+  # 0.nix is different and they're not coming from nixpkgs,
+  # see recipes/4-rebootstrap-using-nix.sh
 
   # stage 1
 
   stage1 = (import ./using-nix/1-stage1.nix) {
-    inherit protosrcPath;
-    tcc-seed = ./tcc-seed;
+    inherit tcc-seed protosrc;
     recipesStage1ExtrasPath = ./recipes/1-stage1;
     stage1cPath = ./recipes/1-stage1.c;
   };  # multioutput, offers .protobusybox, .protomusl and .tinycc

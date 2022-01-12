@@ -58,6 +58,10 @@ if [[ -e /prev/nix/store ]] && [ -e /prev/nix-db.tar ]; then
 	rm /nix/var/nix/db/db.sqlite.dump
 fi
 
+echo "### $0: writing a 0.nix that simply injects what we've built..."
+echo '{ tinycc = ../tcc-seed; protosrc = ../stage/protosrc; }' \
+	> /using-nix/0.nix
+
 echo "### $0: rebuilding everything using nix..."
 nix-build \
 	--extra-experimental-features ca-derivations \

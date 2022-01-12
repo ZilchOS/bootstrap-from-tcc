@@ -1,4 +1,4 @@
-{ tcc-seed, protosrcPath, recipesStage1ExtrasPath, stage1cPath }:
+{ tcc-seed, protosrc, recipesStage1ExtrasPath, stage1cPath }:
 
 derivation {
   name = "bootstrap-1-stage1";
@@ -8,7 +8,7 @@ derivation {
       -nostdinc -nostdlib -Werror \
       -I${recipesStage1ExtrasPath} \
       -DINSIDE_NIX \
-      -DPROTOSRC='"'${protosrcPath}'"' \
+      -DPROTOSRC='"'${protosrc}'"' \
       -DTCC_SEED='"'${tcc-seed}'"' \
       -DRECIPES_STAGE1='"'${recipesStage1ExtrasPath}'"' \
       -DTMP_STAGE1='"'$TMPDIR/tmp'"' \

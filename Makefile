@@ -38,6 +38,12 @@ downloads/%:
 
 ################################################################################
 
+stage/protosrc: seed.sh
+stage/protosrc: downloads/musl-1.2.2.tar.gz
+stage/protosrc: downloads/busybox-1.34.1.tar.bz2
+stage/protosrc: downloads/tinycc-mob-gitda11cf6.tar.gz
+	env DESTDIR=stage recipes/1-stage1/seed.host-executed.sh
+
 TCC_CHECKSUM=089ea66f63dd41d911b70967677eccded03c2db9d6f8bdb0f148edcf177becb4
 tcc-seed: recipes/0-tcc-seed/patched.nix
 	@echo '### Makefile: you are supposed to supply a trusted tcc-seed'
