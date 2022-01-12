@@ -1,4 +1,4 @@
-rec {
+let
   # stage 0
 
   # these two use nixpkgs, but are fixed-output derivations with no dependencies
@@ -73,4 +73,11 @@ rec {
     inherit stage1 static-gnumake static-binutils static-gnugcc4-c;
     inherit intermediate-musl;
   };
-}
+
+in
+  {
+    inherit protosrc tcc-seed;
+    inherit stage1;
+    inherit static-gnumake static-binutils static-gnugcc4-c;
+    inherit intermediate-musl gnugcc4-cpp;
+  }
