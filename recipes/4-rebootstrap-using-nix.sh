@@ -68,7 +68,11 @@ nix-build \
 	--option build-users-group '' \
 	--option sandbox false \
 	--option compress-build-log false \
-	--no-substitute -vvv /default.nix
+	--no-substitute \
+	--cores $NPROC \
+	--keep-failed \
+	-vvv \
+	/default.nix
 rm -f /dev/urandom
 
 # this one is special wrt how the results are saved, see Makefile/USE_NIX_CACHE
