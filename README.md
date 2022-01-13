@@ -67,7 +67,6 @@ input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 10 -> -> Clang
   * `busybox`
   * `gnumake`
 * stage 3 "dependencies of useful stuff" (`recipes/3a*.sh`): ???
-  * `patchelf`
   * `gnubash`
   * `sqlite`
   * `boost`

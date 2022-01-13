@@ -8,7 +8,6 @@ set -uex
 export PATH='/store/1-stage1/protobusybox/bin'
 export PATH="$PATH:/store/2a0-static-gnumake/bin"
 export PATH="$PATH:/store/2b1-clang/bin"
-export PATH="$PATH:/store/2b2-patchelf/bin"
 
 mkdir -p /tmp/2b2-busybox; cd /tmp/2b2-busybox
 if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi

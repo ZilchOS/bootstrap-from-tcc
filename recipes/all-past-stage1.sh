@@ -18,7 +18,6 @@ export SOURCE_DATE_EPOCH=0
 /recipes/2b1-clang.sh
 /recipes/2b2-busybox.sh
 /recipes/2b3-gnumake.sh
-/recipes/3a-patchelf.sh
 /recipes/3a-gnubash.sh
 /recipes/3a-sqlite.sh
 /recipes/3a-boost.sh
