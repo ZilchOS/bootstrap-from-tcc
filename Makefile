@@ -419,6 +419,7 @@ pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a2-static-gnugcc4-c.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a3-intermediate-musl.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a4-gnugcc4-cpp.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a5-gnugcc10.nix
+pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a6-linux-headers.nix
 ###
 pkgs/4-rebootstrap-using-nix.pkg: downloads/make-4.3.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/binutils-2.37.tar.xz
@@ -432,6 +433,7 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/gmp-6.1.0.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpfr-3.1.4.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpc-1.0.3.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/isl-0.18.tar.bz2
+pkgs/4-rebootstrap-using-nix.pkg: downloads/linux-5.15.tar.xz
 
 ################################################################################
 
