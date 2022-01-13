@@ -19,7 +19,7 @@ let
   # stage 2
 
   mkCaDerivation = args: derivation (args // {
-    system = builtins.currentSystem;
+    system = "x86_64-linux";
     __contentAddressed = true;
     outputHashAlgo = "sha256"; outputHashMode = "recursive";
   });

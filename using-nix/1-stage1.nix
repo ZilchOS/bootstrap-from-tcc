@@ -20,7 +20,7 @@ derivation {
   outputs = [ "protobusybox" "protomusl" "tinycc" ];
   allowedReferences = [ "protobusybox" "protomusl" "tinycc" ];
   allowedRequisites = [ "protobusybox" "protomusl" "tinycc" ];
-  system = builtins.currentSystem;
+  system = "x86_64-linux";
   __contentAddressed = true;
   outputHashAlgo = "sha256"; outputHashMode = "recursive";
 }
