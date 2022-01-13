@@ -10,14 +10,14 @@ starting from a random trusted statically linked seed tcc
 usable for building much more serious stuff.
 
 My goal is to beeline for bootstrapping Nix package manager,
-and later buildan real Linux distribution using that bootstrapped Nix.
+then bootstrap Nix again using Nix.
 But even if you don't care about Nix,
-this repo might interest minimal binary seed bootstrappers.
+this repo might be of some interest for minimal binary seed bootstrappers.
 
 Separate packages aren't just dumped into `/`, they're properly managed,
 each one residing in its own prefix under `/store`.
 
-`x86_64`-only for now, maybe forever.
+`x86_64`-only for now, possibly forever.
 
 ## Why
 
@@ -33,13 +33,18 @@ but I'm not as hardcore as them, so, let's start small.
 
 ### In brief
 
-Compiler chain so far:
+Compiler chain so far (`recipes`):
 input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 10 -> -> Clang
 
-### Outlined
+`recipes/1-stage1.c` is the most fun, since we don't have libc yet.
+
+Then I build Nix and start the entire bootstrapping chain all over again,
+but now using that Nix I've built (`using-nix`).
+
+### Outlined bootstrap order
 
 * stage 0: seeded binary `tcc`
-* stage 1 (`recipes/1-stage1.c` using no libc):
+* stage 1 (`recipes/1-stage1.c` / `using-nix/1-stage1.nix`, no libc):
   * `libtcc1`
   * `protomusl`
   * `tcc`
@@ -50,7 +55,7 @@ input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 10 -> -> Clang
   * `protomusl`
   * `tcc` that we build just to prove the finality of the previous one
   * `protobusybox`
-* stage 2 "compiler ascension" part (`recipes/2a*.sh`):
+* stage 2 "compiler ascension" part (`recipes/2a*.sh` / `using-nix/2a*.nix`):
   * `gnumake`
   * `binutils`
   * `gnugcc4`
@@ -81,7 +86,11 @@ input TinyCC -> stable TinyCC -> GNU GCC 4 -> GNU GCC 10 -> -> Clang
   * `libsodium`
   * `lowdown`
 * stage 3 "useful stuff" (`recipes/3b*.sh`): ???
+  * `busybox-static`
+  * `tinycc-static` (1st time only)
   * `nix`
+
+Then the same thing all over again, but under Nix.
 
 ### In more detail
 
@@ -153,6 +162,30 @@ At the end of stage 1 we have, all linked statically:
 * Build a bunch of Nix dependencies
 * Build Nix
 
+* Start over
+
+### Building options
+
+There are three major ways to build it.
+
+If you have Nix and want to skip the first half that bootstraps Nix,
+you can just `nix build`, but what's the fun in taking shortcuts =).
+You'll need `experimental-features = nix-command flakes ca-derivations`.
+
+If you want to do a full bootstrap with all imaginable speedups enabled,
+try something to the tune of
+`make all-pkgs all-tests verify-all-checksums -j2 NPROC=$(nproc) USE_CCACHE=1 USE_NIX_CACHE=1`.
+Dependencies: host GNU Make, host zstd, basic host stuff like sed and bash,
+a target TinyCC you supply or Nix to build you one.
+This is the recommended way, especially shining when you
+iteratively debug reproducibility-unrelated build problems.
+Consider mounting `tmp/build` as tmpfs with 8G size.
+
+Finally, the least-dependency way is `NPROC=$(nproc) ./build.sh`.
+This one doesn't even need GNU Make or zstd,
+but there are zero intermediate checkpoints, you always start all over.
+Very impractical, this is for increased portability only.
+
 ### Reproducibility
 
 Reproducibility is deeply cared about, but only lightly tested at this point.
@@ -167,3 +200,4 @@ TinyCC was built from mob branch, da11cf6 commit.
 
 Something like a year change or a kernel version change still might break it,
 more rigorous testing and stricter isolation wouldn't hurt.
+
