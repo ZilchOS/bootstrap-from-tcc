@@ -89,11 +89,16 @@ let
     inherit stage1 static-gnumake static-binutils gnugcc10 linux-headers;
   };
 
+  python = (import using-nix/2a8-python.nix) {
+    inherit mkDerivationStage2;
+    inherit stage1 static-gnumake static-binutils gnugcc10;
+  };
+
 in
   {
     inherit protosrc tcc-seed;
     inherit stage1;
     inherit static-gnumake static-binutils static-gnugcc4-c;
     inherit intermediate-musl gnugcc4-cpp gnugcc10;
-    inherit linux-headers cmake;
+    inherit linux-headers cmake python;
   }
