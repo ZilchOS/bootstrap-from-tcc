@@ -84,11 +84,16 @@ let
     inherit stage1 static-gnumake static-binutils gnugcc10;
   };
 
+  cmake = (import using-nix/2a7-cmake.nix) {
+    inherit mkDerivationStage2;
+    inherit stage1 static-gnumake static-binutils gnugcc10 linux-headers;
+  };
+
 in
   {
     inherit protosrc tcc-seed;
     inherit stage1;
     inherit static-gnumake static-binutils static-gnugcc4-c;
     inherit intermediate-musl gnugcc4-cpp gnugcc10;
-    inherit linux-headers;
+    inherit linux-headers cmake;
   }
