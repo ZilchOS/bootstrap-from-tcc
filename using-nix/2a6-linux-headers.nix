@@ -30,6 +30,7 @@ in
                 headers
       # install:
         find usr/include -name '.*' | xargs rm
+        mkdir -p $out
         cp -rv usr/include $out/
     '';
   }
