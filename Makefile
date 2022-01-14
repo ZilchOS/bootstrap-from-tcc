@@ -39,6 +39,8 @@ downloads/%:
 ################################################################################
 
 stage/protosrc: seed.sh
+stage/protosrc: recipes/1-stage1/syscall.h
+stage/protosrc: recipes/1-stage1/seed.host-executed.sh
 stage/protosrc: downloads/musl-1.2.2.tar.gz
 stage/protosrc: downloads/busybox-1.34.1.tar.bz2
 stage/protosrc: downloads/tinycc-mob-gitda11cf6.tar.gz
