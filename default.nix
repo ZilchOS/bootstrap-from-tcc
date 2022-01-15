@@ -94,11 +94,17 @@ let
     inherit stage1 static-gnumake static-binutils gnugcc10;
   };
 
+  intermediate-clang = (import using-nix/2a9-intermediate-clang.nix) {
+    inherit mkDerivationStage2;
+    inherit stage1 static-gnumake static-binutils intermediate-musl gnugcc10;
+    inherit linux-headers cmake python;
+  };
+
 in
   {
     inherit protosrc tcc-seed;
     inherit stage1;
     inherit static-gnumake static-binutils static-gnugcc4-c;
     inherit intermediate-musl gnugcc4-cpp gnugcc10;
-    inherit linux-headers cmake python;
+    inherit linux-headers cmake python intermediate-clang;
   }

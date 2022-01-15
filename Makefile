@@ -424,6 +424,7 @@ pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a5-gnugcc10.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a6-linux-headers.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a7-cmake.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a8-python.nix
+pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a9-intermediate-clang.nix
 ###
 pkgs/4-rebootstrap-using-nix.pkg: downloads/make-4.3.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/binutils-2.37.tar.xz
@@ -440,6 +441,7 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/isl-0.18.tar.bz2
 pkgs/4-rebootstrap-using-nix.pkg: downloads/linux-5.15.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/cmake-3.21.4.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/Python-3.10.0.tar.xz
+pkgs/4-rebootstrap-using-nix.pkg: downloads/llvm-project-13.0.0.src.tar.xz
 
 ################################################################################
 
