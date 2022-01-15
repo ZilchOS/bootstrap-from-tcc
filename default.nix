@@ -100,6 +100,11 @@ let
     inherit linux-headers cmake python;
   };
 
+  musl = (import using-nix/2b0-musl.nix) {
+    inherit mkDerivationStage2;
+    inherit stage1 static-gnumake intermediate-clang;
+  };
+
 in
   {
     inherit protosrc tcc-seed;
@@ -107,4 +112,5 @@ in
     inherit static-gnumake static-binutils static-gnugcc4-c;
     inherit intermediate-musl gnugcc4-cpp gnugcc10;
     inherit linux-headers cmake python intermediate-clang;
+    inherit musl;
   }

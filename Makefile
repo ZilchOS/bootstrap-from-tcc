@@ -425,6 +425,7 @@ pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a6-linux-headers.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a7-cmake.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a8-python.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a9-intermediate-clang.nix
+pkgs/4-rebootstrap-using-nix.pkg: using-nix/2b0-musl.nix
 ###
 pkgs/4-rebootstrap-using-nix.pkg: downloads/make-4.3.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/binutils-2.37.tar.xz
