@@ -8,7 +8,7 @@ let
   };
 in
   mkDerivationStage2 {
-    name = "bootstrap-2a7-cmake";
+    name = "bootstrap-2a8-python";
     buildInputPaths = [
       "${stage1.protobusybox}/bin"
       "${static-gnumake}/wrappers"
