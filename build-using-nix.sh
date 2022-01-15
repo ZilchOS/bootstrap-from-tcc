@@ -9,7 +9,9 @@
 set -uex
 
 # stage1 needs /bin/sh for silliest reasons ever: passing args
-nix-build default.nix -A stage1 "$@"
+nix-build default.nix -A stage1.protomusl "$@"
+nix-build default.nix -A stage1.protobusybox "$@"
+nix-build default.nix -A stage1.tinycc "$@"
 
 # rest should be buildable without /bin/sh as well, this ensures it
 sudo env "NIX_CONFIG=sandbox-paths =" nix-build default.nix "$@"
