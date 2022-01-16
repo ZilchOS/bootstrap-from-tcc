@@ -17,5 +17,6 @@ sed -i "s|\$NPROC|$NPROC|" stage/recipes/*.sh
 
 DESTDIR=stage recipes/0-tcc-seed/seed.host-executed.sh  # copy tcc-seed
 DESTDIR=stage recipes/1-stage1/seed.host-executed.sh    # unpack stage1 sources
-# That's all, folks,
-# everything past stage1 will unpack sources from downloads/ all by itself.
+# Everything past stage1 will unpack sources from downloads/ all by itself
+# all the way until
+cp -r using-nix stage/
