@@ -122,6 +122,7 @@ in
         ln -s $out/bin/clang $out/bin/cc
         ln -s $out/bin/clang++ $out/bin/c++
         ln -s $out/bin/clang-cpp $out/bin/cpp
+        ln -s $out/bin/lld $out/bin/ld
         # mixing new stuff into sysroot
         ln -s $out/lib/* $out/sysroot/lib/
     '';
