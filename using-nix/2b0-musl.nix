@@ -35,4 +35,5 @@ in
         mkdir $out/bin
         ln -s $out/lib/libc.so $out/bin/ldd
     '';
+    extra.allowedRequisites = [ "out" ];
   }

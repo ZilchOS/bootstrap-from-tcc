@@ -24,32 +24,33 @@ let
     outputHashAlgo = "sha256"; outputHashMode = "recursive";
   });
 
-  mkDerivationStage2 = {name, script, buildInputPaths}: mkCaDerivation {
-    inherit name;
-    builder = "${stage1.protobusybox}/bin/ash";
-    args = [ "-uexc" (
-      ''
-        export PATH=${builtins.concatStringsSep ":" buildInputPaths}
+  mkDerivationStage2 =
+    {name, script, buildInputPaths, extra ? {}}: mkCaDerivation {
+      inherit name;
+      builder = "${stage1.protobusybox}/bin/ash";
+      args = [ "-uexc" (
+        ''
+          export PATH=${builtins.concatStringsSep ":" buildInputPaths}
 
-        if [ -e /store/_2a0-ccache ]; then
-          . /store/_2a0-ccache/wrap-available
-        fi
+          if [ -e /store/_2a0-ccache ]; then
+            . /store/_2a0-ccache/wrap-available
+          fi
 
-        unpack() (tar --strip-components=1 -xf "$@")
+          unpack() (tar --strip-components=1 -xf "$@")
 
-        if [ -n "$NIX_BUILD_CORES" ] && [ "$NIX_BUILD_CORES" != 0 ]; then
-            NPROC=$NIX_BUILD_CORES
-        elif [ "$NIX_BUILD_CORES" == 0 ] && [ -r /proc/cpuinfo ]; then
-            NPROC=$(grep -c processor /proc/cpuinfo)
-        else
-            NPROC=1
-        fi
-        [ ! -e /bin/sh ]  # assert it's not present
-                          # requires `sudo env "NIX_CONFIG=sandbox-paths ="`
-                          # or adding your user to trusted-users. weird, right
-      '' + script
-    ) ];
-  };
+          if [ -n "$NIX_BUILD_CORES" ] && [ "$NIX_BUILD_CORES" != 0 ]; then
+              NPROC=$NIX_BUILD_CORES
+          elif [ "$NIX_BUILD_CORES" == 0 ] && [ -r /proc/cpuinfo ]; then
+              NPROC=$(grep -c processor /proc/cpuinfo)
+          else
+              NPROC=1
+          fi
+          [ ! -e /bin/sh ]  # assert it's not present
+                            # requires `sudo env "NIX_CONFIG=sandbox-paths ="`
+                            # or adding your user to trusted-users. weird, right
+        '' + script
+      ) ];
+    } // extra;
 
   static-gnumake = (import using-nix/2a0-static-gnumake.nix) {
     inherit mkDerivationStage2 stage1;
@@ -113,7 +114,7 @@ let
 
   busybox = (import using-nix/2b2-busybox.nix) {
     inherit mkDerivationStage2;
-    inherit stage1 static-gnumake clang linux-headers;
+    inherit stage1 static-gnumake musl clang linux-headers;
   };
 
 in

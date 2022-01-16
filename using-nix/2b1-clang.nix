@@ -125,4 +125,5 @@ in
         # mixing new stuff into sysroot
         ln -s $out/lib/* $out/sysroot/lib/
     '';
+    extra.allowedRequisites = [ "out" musl ];
   }

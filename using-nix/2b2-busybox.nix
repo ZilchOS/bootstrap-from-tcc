@@ -1,4 +1,4 @@
-{ mkDerivationStage2, stage1, static-gnumake, clang, linux-headers }:
+{ mkDerivationStage2, stage1, static-gnumake, musl, clang, linux-headers }:
 
 let
   source-tarball-busybox = builtins.fetchurl {
@@ -42,4 +42,5 @@ in
       # install:
         make -j $NPROC $BUSYBOX_FLAGS install CONFIG_PREFIX=$out
     '';
+    extra.allowedRequisites = [ "out" musl clang ];
   }
