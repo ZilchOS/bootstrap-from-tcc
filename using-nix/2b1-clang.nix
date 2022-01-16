@@ -126,4 +126,5 @@ in
         ln -s $out/lib/* $out/sysroot/lib/
     '';
     extra.allowedRequisites = [ "out" musl ];
+    extra.allowedReferences = [ "out" musl ];
   }

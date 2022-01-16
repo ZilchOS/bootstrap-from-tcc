@@ -43,4 +43,5 @@ in
         make -j $NPROC $BUSYBOX_FLAGS install CONFIG_PREFIX=$out
     '';
     extra.allowedRequisites = [ "out" musl clang ];
+    extra.allowedReferences = [ "out" musl clang ];
   }

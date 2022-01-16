@@ -36,4 +36,5 @@ in
         ln -s $out/lib/libc.so $out/bin/ldd
     '';
     extra.allowedRequisites = [ "out" ];
+    extra.allowedReferences = [ "out" ];
   }
