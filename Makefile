@@ -427,6 +427,7 @@ pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a8-python.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2a9-intermediate-clang.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2b0-musl.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2b1-clang.nix
+pkgs/4-rebootstrap-using-nix.pkg: using-nix/2b2-busybox.nix
 ###
 pkgs/4-rebootstrap-using-nix.pkg: downloads/make-4.3.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/binutils-2.37.tar.xz
@@ -444,6 +445,7 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/linux-5.15.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/cmake-3.21.4.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/Python-3.10.0.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/llvm-project-13.0.0.src.tar.xz
+pkgs/4-rebootstrap-using-nix.pkg: downloads/busybox-1.34.1.tar.bz2
 
 ################################################################################
 

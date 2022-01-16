@@ -111,12 +111,23 @@ let
     inherit linux-headers cmake python;
   };
 
+  busybox = (import using-nix/2b2-busybox.nix) {
+    inherit mkDerivationStage2;
+    inherit stage1 static-gnumake clang linux-headers;
+  };
+
 in
   {
+    # exposed just because; don't rely on these
     inherit protosrc tcc-seed;
     inherit stage1;
     inherit static-gnumake static-binutils static-gnugcc4-c;
     inherit intermediate-musl gnugcc4-cpp gnugcc10;
     inherit linux-headers cmake python intermediate-clang;
     inherit musl clang;
+
+    # public interface:
+    libc = musl;        # some libc that TODO: doesn't depend on anything else
+    toolchain = clang;  # some modern C/C++ compiler targeting this libc
+    busybox = busybox;  # a freebie busybox TODO: depending on just libc
   }

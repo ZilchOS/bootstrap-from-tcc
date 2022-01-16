@@ -10,7 +10,7 @@ starting from a random trusted statically linked seed tcc
 usable for building much more serious stuff.
 
 My goal is to beeline for bootstrapping Nix package manager,
-then bootstrap Nix again using Nix.
+then bootstrap a usable toolchain using Nix.
 But even if you don't care about Nix,
 this repo might be of some interest for minimal binary seed bootstrappers.
 
@@ -90,7 +90,9 @@ but now using that Nix I've built (`using-nix`).
   * `tinycc-static` (1st time only)
   * `nix`
 
-Then the same thing all over again, but under Nix.
+Then repeat stage 1 and most of stage 2 all over again, but under Nix.
+The final exports of this flake are musl, clang toolchain and a busybox
+that ZilchOS Core later bootstraps from.
 
 ### In more detail
 
