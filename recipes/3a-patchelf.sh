@@ -10,7 +10,7 @@ export PATH="$PATH:/store/2b1-clang/bin"
 export PATH="$PATH:/store/2b3-gnumake/bin"
 
 mkdir -p /tmp/3a-patchelf; cd /tmp/3a-patchelf
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking patchelf sources..."
 tar --strip-components=1 -xf /downloads/patchelf-0.13.tar.bz2

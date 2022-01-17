@@ -10,7 +10,7 @@ export PATH="$PATH:/store/2b1-clang/bin"
 export PATH="$PATH:/store/2b3-gnumake/bin"
 
 mkdir -p /tmp/3a-sqlite; cd /tmp/3a-sqlite
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking SQLite archive..."
 tar --strip-components=1 -xf /downloads/sqlite-autoconf-3360000.tar.gz

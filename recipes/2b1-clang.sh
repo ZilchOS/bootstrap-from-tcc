@@ -17,8 +17,8 @@ PREV_CLANG=/store/2a9-intermediate-clang
 
 mkdir -p /tmp/2b1-clang; cd /tmp/2b1-clang
 # clang's cmake configuration should pick up ccache automatically from PATH
-#if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
-export PATH="$PATH:/store/_2a0-ccache/bin"
+#if [ -e /ccache/setup ]; then . /ccache/setup; fi
+export PATH="$PATH:/ccache/bin"
 command -v ccache && USE_CCACHE=YES || USE_CCACHE=NO
 
 echo "### $0: preparing future sysroot..."

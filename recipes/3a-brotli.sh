@@ -11,7 +11,7 @@ export PATH="$PATH:/store/2b1-clang/bin"
 export PATH="$PATH:/store/2b3-gnumake/bin"
 
 mkdir -p /tmp/3a-brotli; cd /tmp/3a-brotli
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking brotli sources..."
 tar --strip-components=1 -xf /downloads/brotli-1.0.9.tar.gz

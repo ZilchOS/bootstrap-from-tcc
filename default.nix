@@ -32,9 +32,7 @@ let
         ''
           export PATH=${builtins.concatStringsSep ":" buildInputPaths}
 
-          if [ -e /store/_2a0-ccache ]; then
-            . /store/_2a0-ccache/wrap-available
-          fi
+          if [ -e /ccache/setup ]; then /ccache/setup; fi
 
           unpack() (tar --strip-components=1 -xf "$@")
 

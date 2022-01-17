@@ -10,7 +10,7 @@ export PATH="$PATH:/store/2a0-static-gnumake/bin"
 export PATH="$PATH:/store/2b1-clang/bin"
 
 mkdir -p /tmp/2b3-gnumake; cd /tmp/2b3-gnumake
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking GNU Make sources..."
 tar --strip-components=1 -xf /downloads/make-4.3.tar.gz

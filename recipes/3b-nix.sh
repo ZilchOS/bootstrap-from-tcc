@@ -45,7 +45,7 @@ export LD_LIBRARY_PATH=$LIBDIRS
 export BOOST_ROOT=/store/3a-boost/include
 
 mkdir -p /tmp/3b-nix; cd /tmp/3b-nix
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking Nix sources..."
 tar --strip-components=1 \

@@ -13,7 +13,7 @@ export PATH="$PATH:/store/2a5-gnugcc10/bin"
 export SHELL=/store/1-stage1/protobusybox/bin/ash
 
 mkdir -p /tmp/2a8-python; cd /tmp/2a8-python
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: aliasing ash to sh..."
 mkdir aliases; ln -s /store/1-stage1/protobusybox/bin/ash aliases/sh

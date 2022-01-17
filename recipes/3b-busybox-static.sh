@@ -10,7 +10,7 @@ export PATH="$PATH:/store/2b1-clang/bin"
 export PATH="$PATH:/store/2b3-gnumake/wrappers"
 
 mkdir -p /tmp/3b-busybox-static; cd /tmp/3b-busybox-static
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: aliasing ash to sh..."
 mkdir aliases; ln -s /store/2b2-busybox/bin/ash aliases/sh

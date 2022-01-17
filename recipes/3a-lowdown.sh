@@ -14,7 +14,7 @@ export PKG_CONFIG_PATH='/store/3a-openssl/lib64/pkgconfig'
 export SHELL='/store/2b2-busybox/bin/ash'
 
 mkdir -p /tmp/3a-lowdown; cd /tmp/3a-lowdown
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking lowdown sources..."
 tar --strip-components=1 -xf /downloads/lowdown-0.10.0.tar.gz

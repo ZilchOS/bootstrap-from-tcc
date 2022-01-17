@@ -109,6 +109,8 @@ ifeq ($(USE_CCACHE), 1)
 	mkdir -p "tmp/build/$*/ccache"
 	[[ ! -e "tmp/ccache/$*.tar.zstd" ]] || \
 		tar -Izstd -xf "tmp/ccache/$*.tar.zstd" -C "tmp/build/$*/ccache"
+	ln -sf /store/_2a0-ccache/wrap-available "tmp/build/$*/ccache/setup"
+	ln -sf /store/_2a0-ccache/bin "tmp/build/$*/ccache/bin"
 endif
 ifeq ($(USE_NIX_CACHE), 1)
 	@echo "### Makefile: unpacking nix store and db from previous build..."
@@ -136,7 +138,7 @@ endif
 	$(TAR_REPR) -Izstd -cf "pkgs/$*.pkg" -C "tmp/build/$*" "store/$*"
 ifeq ($(USE_CCACHE), 1)
 	@echo "### Makefile: packing up $* ccache cache..."
-	if ! rmdir "tmp/build/$*/ccache" 2>/dev/null; then \
+	if [[ -e "tmp/build/$*/store/_2a0-ccache/bin/ccache" ]]; then \
 		mkdir -p tmp/ccache; \
 		unshare -nr chroot "tmp/build/$*" \
 			/store/_2a0-ccache/bin/ccache -sz; \

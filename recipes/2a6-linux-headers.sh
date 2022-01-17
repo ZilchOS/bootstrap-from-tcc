@@ -11,7 +11,7 @@ export PATH="$PATH:/store/2a1-static-binutils/bin"
 export PATH="$PATH:/store/2a5-gnugcc10/bin"
 
 mkdir -p /tmp/2a6-linux-headers; cd /tmp/2a6-linux-headers
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking Linux sources..."
 tar --strip-components=1 -xf /downloads/linux-5.15.tar.xz \

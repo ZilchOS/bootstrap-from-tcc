@@ -18,8 +18,8 @@ GCC_PATH=/store/2a5-gnugcc10
 
 mkdir -p /tmp/2a9-intermediate-clang; cd /tmp/2a9-intermediate-clang
 # clang's cmake configuration should pick up ccache automatically from PATH
-#if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
-export PATH="$PATH:/store/_2a0-ccache/bin"
+#if [ -e /ccache/setup ]; then . /ccache/setup; fi
+export PATH="$PATH:/ccache/bin"
 command -v ccache && USE_CCACHE=YES || USE_CCACHE=NO
 
 echo "### $0: preparing future sysroot..."

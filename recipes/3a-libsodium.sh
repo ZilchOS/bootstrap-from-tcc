@@ -13,7 +13,7 @@ export PATH="$PATH:/store/3a-pkg-config/bin"
 export PKG_CONFIG_PATH='/store/3a-openssl/lib64/pkgconfig'
 
 mkdir -p /tmp/3a-libsodium; cd /tmp/3a-libsodium
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking libsodium sources..."
 tar --strip-components=1 -xf /downloads/libsodium-1.0.18.tar.gz

@@ -21,7 +21,7 @@ export PATH="$PATH:/store/2a1-static-binutils/bin"
 export PATH="$PATH:/store/2a2-static-gnugcc4-c/bin"
 
 mkdir -p /tmp/2a4-gnugcc4-cpp; cd /tmp/2a4-gnugcc4-cpp
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: aliasing ash to sh..."
 mkdir aliases; ln -s /store/1-stage1/protobusybox/bin/ash aliases/sh

@@ -11,7 +11,7 @@ export PATH="$PATH:/store/2a1-static-binutils/bin"
 export PATH="$PATH:/store/2a2-static-gnugcc4-c/bin"
 
 mkdir -p /tmp/2a3-intermediate-musl; cd /tmp/2a3-intermediate-musl
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking musl sources..."
 tar --strip-components=1 -xf /downloads/musl-1.2.2.tar.gz

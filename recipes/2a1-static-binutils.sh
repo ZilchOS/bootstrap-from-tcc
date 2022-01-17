@@ -10,7 +10,7 @@ export PATH="$PATH:/store/1-stage1/tinycc/wrappers"
 export PATH="$PATH:/store/2a0-static-gnumake/bin"
 
 mkdir -p /tmp/2a1-static-binutils; cd /tmp/2a1-static-binutils
-if [ -e /store/_2a0-ccache ]; then . /store/_2a0-ccache/wrap-available; fi
+if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking binutils sources..."
 tar --strip-components=1 -xf /downloads/binutils-2.37.tar.xz
