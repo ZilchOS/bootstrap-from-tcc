@@ -32,7 +32,9 @@ let
         ''
           export PATH=${builtins.concatStringsSep ":" buildInputPaths}
 
-          if [ -e /ccache/setup ]; then /ccache/setup; fi
+          if [ -e /ccache/setup ]; then
+            . /ccache/setup bootstrap-from-tcc/${name}
+          fi
 
           unpack() (tar --strip-components=1 -xf "$@")
 
