@@ -57,6 +57,7 @@ in
           libgcc/Makefile.in
         sed -i "s|/lib/ld-musl-x86_64.so.1|$SYSROOT/lib/libc.so|" \
           gcc/config/i386/linux64.h
+        sed -i 's|m64=../lib64|m64=../lib|' gcc/config/i386/t-linux64
         sed -i 's|"os/gnu-linux"|"os/generic"|' libstdc++-v3/configure.host
         # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
         sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh */ltmain.sh
