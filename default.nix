@@ -49,68 +49,81 @@ let
       ) ];
     } // extra;
 
+  fetchurl = { url, sha256 }: derivation {
+    name = builtins.baseNameOf url;
+    inherit url;
+    urls = [ url ];
+    unpack = false;
+
+    builder = "builtin:fetchurl";
+    system = "builtin";
+    outputHashMode = "flat"; outputHashAlgo = "sha256";
+    preferLocalBuild = true;
+    outputHash = sha256;
+  };
+
   static-gnumake = (import using-nix/2a0-static-gnumake.nix) {
-    inherit mkDerivationStage2 stage1;
+    inherit fetchurl mkDerivationStage2 stage1;
   };
 
   static-binutils = (import using-nix/2a1-static-binutils.nix) {
-    inherit mkDerivationStage2 stage1 static-gnumake;
+    inherit fetchurl mkDerivationStage2 stage1 static-gnumake;
   };
 
   static-gnugcc4-c = (import using-nix/2a2-static-gnugcc4-c.nix) {
-    inherit mkDerivationStage2 stage1 static-gnumake static-binutils;
+    inherit fetchurl mkDerivationStage2 stage1 static-gnumake static-binutils;
   };
 
   intermediate-musl = (import using-nix/2a3-intermediate-musl.nix) {
-    inherit mkDerivationStage2;
+    inherit fetchurl mkDerivationStage2;
     inherit stage1 static-gnumake static-binutils static-gnugcc4-c;
   };
 
   gnugcc4-cpp = (import using-nix/2a4-gnugcc4-cpp.nix) {
-    inherit mkDerivationStage2;
+    inherit fetchurl mkDerivationStage2;
     inherit stage1 static-gnumake static-binutils static-gnugcc4-c;
     inherit intermediate-musl;
   };
 
   gnugcc10 = (import using-nix/2a5-gnugcc10.nix) {
-    inherit mkDerivationStage2;
+    inherit fetchurl mkDerivationStage2;
     inherit stage1 static-gnumake static-binutils gnugcc4-cpp intermediate-musl;
   };
 
   linux-headers = (import using-nix/2a6-linux-headers.nix) {
-    inherit mkDerivationStage2;
+    inherit fetchurl mkDerivationStage2;
     inherit stage1 static-gnumake static-binutils gnugcc10;
   };
 
   cmake = (import using-nix/2a7-cmake.nix) {
-    inherit mkDerivationStage2;
+    inherit fetchurl mkDerivationStage2;
     inherit stage1 static-gnumake static-binutils gnugcc10 linux-headers;
   };
 
   python = (import using-nix/2a8-python.nix) {
-    inherit mkDerivationStage2;
+    inherit fetchurl mkDerivationStage2;
     inherit stage1 static-gnumake static-binutils gnugcc10;
   };
 
   intermediate-clang = (import using-nix/2a9-intermediate-clang.nix) {
-    inherit mkDerivationStage2;
+    inherit fetchurl mkDerivationStage2;
     inherit stage1 static-gnumake static-binutils intermediate-musl gnugcc10;
     inherit linux-headers cmake python;
   };
 
   musl = (import using-nix/2b0-musl.nix) {
-    inherit mkDerivationStage2;
+    inherit fetchurl mkDerivationStage2;
     inherit stage1 static-gnumake intermediate-clang;
   };
 
   clang = (import using-nix/2b1-clang.nix) {
-    inherit mkDerivationStage2;
+    inherit fetchurl mkDerivationStage2;
     inherit stage1 static-gnumake musl intermediate-clang;
     inherit linux-headers cmake python;
   };
 
   busybox = (import using-nix/2b2-busybox.nix) {
-    inherit mkDerivationStage2;
+    inherit fetchurl mkDerivationStage2;
     inherit stage1 static-gnumake musl clang linux-headers;
   };
 

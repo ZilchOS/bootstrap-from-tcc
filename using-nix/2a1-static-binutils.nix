@@ -1,7 +1,7 @@
-{ mkDerivationStage2, stage1, static-gnumake }:
+{ fetchurl, mkDerivationStage2, stage1, static-gnumake }:
 
 let
-  source-tarball-binutils = builtins.fetchurl {
+  source-tarball-binutils = fetchurl {
     # local = /downloads/binutils-2.37.tar.xz;
     url = "https://ftp.gnu.org/gnu/binutils/binutils-2.37.tar.xz";
     sha256 = "820d9724f020a3e69cb337893a0b63c2db161dadcb0e06fc11dc29eb1e84a32c";

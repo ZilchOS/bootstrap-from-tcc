@@ -1,7 +1,8 @@
-{ mkDerivationStage2, stage1, static-gnumake, musl, clang, linux-headers }:
+{ fetchurl, mkDerivationStage2
+, stage1, static-gnumake, musl, clang, linux-headers }:
 
 let
-  source-tarball-busybox = builtins.fetchurl {
+  source-tarball-busybox = fetchurl {
     # local = /downloads/busybox-1.34.1.tar.bz2;
     url = "https://busybox.net/downloads/busybox-1.34.1.tar.bz2";
     sha256 = "415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549";

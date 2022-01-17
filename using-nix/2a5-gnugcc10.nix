@@ -1,29 +1,28 @@
-
-{ mkDerivationStage2
+{ fetchurl, mkDerivationStage2
 , stage1, static-gnumake, static-binutils, intermediate-musl, gnugcc4-cpp }:
 
 let
-  source-tarball-gcc = builtins.fetchurl {
+  source-tarball-gcc = fetchurl {
     # local = /downloads/gcc-10.3.0.tar.xz;
     url = "https://ftp.gnu.org/gnu/gcc/gcc-10.3.0/gcc-10.3.0.tar.xz";
     sha256 = "64f404c1a650f27fc33da242e1f2df54952e3963a49e06e73f6940f3223ac344";
   };
-  source-tarball-gmp = builtins.fetchurl {
+  source-tarball-gmp = fetchurl {
     # local = /downloads/gmp-6.1.0.tar.xz;
     url = "https://gmplib.org/download/gmp/gmp-6.1.0.tar.xz";
     sha256 = "68dadacce515b0f8a54f510edf07c1b636492bcdb8e8d54c56eb216225d16989";
   };
-  source-tarball-mpfr = builtins.fetchurl {
+  source-tarball-mpfr = fetchurl {
     # local = /downloads/mpfr-3.1.4.tar.xz;
     url = "https://www.mpfr.org/mpfr-3.1.4/mpfr-3.1.4.tar.xz";
     sha256 = "761413b16d749c53e2bfd2b1dfaa3b027b0e793e404b90b5fbaeef60af6517f5";
   };
-  source-tarball-mpc = builtins.fetchurl {
+  source-tarball-mpc = fetchurl {
     # local = /downloads/mpc-1.0.3.tar.gz;
     url = "http://www.multiprecision.org/downloads/mpc-1.0.3.tar.gz";
     sha256 = "617decc6ea09889fb08ede330917a00b16809b8db88c29c31bfbb49cbf88ecc3";
   };
-  source-tarball-isl = builtins.fetchurl {
+  source-tarball-isl = fetchurl {
     # local = /downloads/isl-0.18.tar.bz2;
     url = "http://gcc.gnu.org/pub/gcc/infrastructure/isl-0.18.tar.bz2";
     sha256 = "6b8b0fd7f81d0a957beb3679c81bbb34ccc7568d5682844d8924424a0dadcb1b";
