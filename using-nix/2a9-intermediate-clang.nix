@@ -22,7 +22,7 @@ in
     script = ''
         export SHELL=${stage1.protobusybox}/bin/ash
         # llvm cmake configuration should pick up ccache automatically from PATH
-        export PATH="$PATH:/store/_2a0-ccache/bin"
+        export PATH="$PATH:/ccache/bin"
         command -v ccache && USE_CCACHE=YES || USE_CCACHE=NO
       # prepare future sysroot:
         SYSROOT=$out/sysroot
