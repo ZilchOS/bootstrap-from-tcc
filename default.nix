@@ -37,11 +37,11 @@ let
           unpack() (tar --strip-components=1 -xf "$@")
 
           if [ -n "$NIX_BUILD_CORES" ] && [ "$NIX_BUILD_CORES" != 0 ]; then
-              NPROC=$NIX_BUILD_CORES
+            NPROC=$NIX_BUILD_CORES
           elif [ "$NIX_BUILD_CORES" == 0 ] && [ -r /proc/cpuinfo ]; then
-              NPROC=$(grep -c processor /proc/cpuinfo)
+            NPROC=$(grep -c processor /proc/cpuinfo)
           else
-              NPROC=1
+            NPROC=1
           fi
         '' + script
       ) ];
