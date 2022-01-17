@@ -43,9 +43,6 @@ let
           else
               NPROC=1
           fi
-          [ ! -e /bin/sh ]  # assert it's not present
-                            # requires `sudo env "NIX_CONFIG=sandbox-paths ="`
-                            # or adding your user to trusted-users. weird, right
         '' + script
       ) ];
     } // extra;
