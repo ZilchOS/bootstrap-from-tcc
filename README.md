@@ -2,7 +2,7 @@
 
 ## What
 
-Bootstrap a modern toolchain
+Bootstrap a modern toolchain for [ZilchOS Core](https://github.com/ZilchOS/core)
 starting from a random trusted statically linked seed tcc
 (+ trusted kernel on trusted hardware, of course).
 
