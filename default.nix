@@ -2,8 +2,8 @@ let
   # stage 0
 
   # these two use nixpkgs, but are fixed-output derivations with no dependencies
-  tcc-seed = (import ./using-nix/0.nix).tinycc;
-  protosrc = (import ./using-nix/0.nix).protosrc;
+  tcc-seed = (import ./using-nix/0-prebuilt.nix).tinycc;
+  protosrc = (import ./using-nix/0-prebuilt.nix).protosrc;
   # in bootstrapping builds,
   # 0.nix is different and they're not coming from nixpkgs,
   # see recipes/4-rebootstrap-using-nix.sh
