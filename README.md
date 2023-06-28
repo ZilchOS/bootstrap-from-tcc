@@ -176,7 +176,7 @@ You'll need `experimental-features = nix-command flakes ca-derivations`.
 
 If you want to do a full bootstrap with all imaginable speedups enabled,
 try something to the tune of
-`make all-pkgs all-tests verify-all-checksums -j2 NPROC=$(nproc) USE_CCACHE=1 USE_NIX_CACHE=1`.
+`make all-pkgs all-tests verify-all-pkgs-checksums -j2 NPROC=$(nproc) USE_CCACHE=1 USE_NIX_CACHE=1`.
 Dependencies: host GNU Make, host zstd, basic host stuff like sed and bash,
 a target TinyCC you supply or Nix to build you one.
 This is the recommended way, especially shining when you

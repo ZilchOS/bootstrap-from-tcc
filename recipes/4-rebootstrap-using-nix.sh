@@ -59,7 +59,9 @@ if [[ -e /prev/nix/store ]] && [ -e /prev/nix-db.tar ]; then
 fi
 
 echo "### $0: writing a 0.nix that simply injects what we've built..."
-echo '{ tinycc = ../tcc-seed; protosrc = ../stage/protosrc; }' \
+# Makefile bootstrap injects it as /stage/protosrc, regular --- as /protosrc
+[[ -e /protosrc ]] && PROTOSRC="../protosrc" || PROTOSRC=/stage/protosrc
+echo "{ tinycc = ../store/3b-tinycc-static/bin/tcc; protosrc = $PROTOSRC; }" \
 	> /using-nix/0.nix
 
 echo "### $0: rebuilding everything using nix..."

@@ -10,7 +10,7 @@ fi
 
 rm -rf stage
 mkdir -p stage/store
-cp -raL --reflink=auto downloads recipes stage/
+cp -raL --reflink=auto downloads recipes default.nix stage/
 
 # I'm too lazy to pass it through stage1
 sed -i "s|\$NPROC|$NPROC|" stage/recipes/*.sh

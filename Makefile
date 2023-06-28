@@ -401,10 +401,9 @@ pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-seccomp.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-libarchive.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-libsodium.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-lowdown.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3b-tinycc-static.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3b-busybox-static.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3b-nix.pkg
-###
-pkgs/4-rebootstrap-using-nix.pkg: tcc-seed
 ###
 pkgs/4-rebootstrap-using-nix.pkg: stage/protosrc
 ###
