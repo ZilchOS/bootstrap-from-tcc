@@ -814,29 +814,29 @@ void verify_tcc_stability(void) {
 }
 
 void tweak_output_in_store(void) {
-	run0(STORE_PROTOBUSYBOX"/bin/ash", "-uexvc", "
-		:> "TMP_STAGE1"/empty.c
-		"STORE_TINYCC"/bin/tcc -c "TMP_STAGE1"/empty.c \
-			-o "TMP_STAGE1"/empty.o
-		"STORE_TINYCC"/bin/tcc -ar "TMP_STAGE1"/empty.a \
-			"TMP_STAGE1"/empty.o
-		"STORE_PROTOBUSYBOX"/bin/cp "TMP_STAGE1"/empty.a \
-			"STORE_PROTOMUSL"/lib/libm.a
-		"STORE_PROTOBUSYBOX"/bin/cp "TMP_STAGE1"/empty.a \
-			"STORE_PROTOMUSL"/lib/libpthread.a
+	run0(STORE_PROTOBUSYBOX"/bin/ash", "-uexvc",
+		":> "TMP_STAGE1"/empty.c\n"
+		STORE_TINYCC"/bin/tcc -c "TMP_STAGE1"/empty.c "
+			"-o "TMP_STAGE1"/empty.o\n"
+		STORE_TINYCC"/bin/tcc -ar "TMP_STAGE1"/empty.a "
+			TMP_STAGE1"/empty.o\n"
+		STORE_PROTOBUSYBOX"/bin/cp "TMP_STAGE1"/empty.a "
+			STORE_PROTOMUSL"/lib/libm.a\n"
+		STORE_PROTOBUSYBOX"/bin/cp "TMP_STAGE1"/empty.a "
+			STORE_PROTOMUSL"/lib/libpthread.a\n"
 
-		"STORE_PROTOBUSYBOX"/bin/rm -rf \
-			"STORE_PROTOMUSL"/include
-		"STORE_PROTOBUSYBOX"/bin/mkdir -p \
-			"STORE_PROTOMUSL"/include/bits
-		"STORE_PROTOBUSYBOX"/bin/cp -rf \
-			"PROTOSRC"/protomusl/host-generated/sed1/bits \
-			"PROTOSRC"/protomusl/host-generated/sed2/bits \
-			"PROTOSRC"/protomusl/arch/generic/* \
-			"PROTOSRC"/protomusl/arch/x86_64/* \
-			"PROTOSRC"/protomusl/include/* \
-			"STORE_PROTOMUSL"/include/
-	");
+		STORE_PROTOBUSYBOX"/bin/rm -rf "
+			STORE_PROTOMUSL"/include\n"
+		STORE_PROTOBUSYBOX"/bin/mkdir -p "
+			STORE_PROTOMUSL"/include/bits\n"
+		STORE_PROTOBUSYBOX"/bin/cp -rf "
+			PROTOSRC"/protomusl/host-generated/sed1/bits "
+			PROTOSRC"/protomusl/host-generated/sed2/bits "
+			PROTOSRC"/protomusl/arch/generic/* "
+			PROTOSRC"/protomusl/arch/x86_64/* "
+			PROTOSRC"/protomusl/include/* "
+			STORE_PROTOMUSL"/include/\n"
+	);
 }
 
 
@@ -844,18 +844,18 @@ void wrap_tcc_tools(void) {
 	#define EXECTCC "#!"STORE_PROTOBUSYBOX"/bin/ash\n" \
 			"exec "STORE_TINYCC"/bin/tcc"
 	#define PASSTHROUGH "\\\"\\$@\\\"" //  i.e., \"\$@\", i.e, "$@"
-	run0(STORE_PROTOBUSYBOX"/bin/ash", "-uexvc", "
-		PATH="STORE_PROTOBUSYBOX"/bin
-		mkdir -p "STORE_TINYCC"/wrappers
-		cd "STORE_TINYCC"/wrappers
-		_CPP_ARGS=\"-I"STORE_PROTOMUSL"/include\"
-		_LD_ARGS='-static'
-		echo -e \"" EXECTCC " $_LD_ARGS " PASSTHROUGH"\" > cc
-		echo -e \"" EXECTCC " -E $_CPP_ARGS " PASSTHROUGH"\" > cpp
-		echo -e \"" EXECTCC " $_LD_ARGS " PASSTHROUGH"\" > ld
-		echo -e \"" EXECTCC " -ar " PASSTHROUGH "\" > ar
-		chmod +x cc cpp ld ar
-	");
+	run0(STORE_PROTOBUSYBOX"/bin/ash", "-uexvc",
+		"PATH="STORE_PROTOBUSYBOX"/bin\n"
+		"mkdir -p "STORE_TINYCC"/wrappers\n"
+		"cd "STORE_TINYCC"/wrappers\n"
+		"_CPP_ARGS=\"-I"STORE_PROTOMUSL"/include\"\n"
+		"_LD_ARGS='-static'\n"
+		"echo -e \"" EXECTCC " $_LD_ARGS " PASSTHROUGH"\" > cc\n"
+		"echo -e \"" EXECTCC " -E $_CPP_ARGS " PASSTHROUGH"\" > cpp\n"
+		"echo -e \"" EXECTCC " $_LD_ARGS " PASSTHROUGH"\" > ld\n"
+		"echo -e \"" EXECTCC " -ar " PASSTHROUGH "\" > ar\n"
+		"chmod +x cc cpp ld ar\n"
+	);
 }
 
 
