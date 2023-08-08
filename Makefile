@@ -43,15 +43,16 @@ stage/protosrc: recipes/1-stage1/syscall.h
 stage/protosrc: recipes/1-stage1/seed.host-executed.sh
 stage/protosrc: downloads/musl-1.2.2.tar.gz
 stage/protosrc: downloads/busybox-1.34.1.tar.bz2
-stage/protosrc: downloads/tinycc-mob-gitda11cf6.tar.gz
+stage/protosrc: downloads/tinycc-mob-af1abf1.tar.gz
 	env DESTDIR=stage recipes/1-stage1/seed.host-executed.sh
 
-TCC_CHECKSUM=089ea66f63dd41d911b70967677eccded03c2db9d6f8bdb0f148edcf177becb4
-tcc-seed: recipes/0-tcc-seed/patched.nix
+NIXPKGS_HASH=21f524672f25f8c3e7a0b5775e6505fee8fe43ce
+TCC_CHECKSUM=05aad934985939e9997127e93d63d6a94c88739313c496f10a90176688cc9167
+tcc-seed:
 	@echo '### Makefile: you are supposed to supply a trusted tcc-seed'
 	@echo '### Makefile: since you have not, building one from nixpkgs...'
-	cat $$(nix-build --no-out-link recipes/0-tcc-seed/patched.nix)/bin/tcc \
-		> tcc-seed
+	cat $$(nix build "nixpkgs/${NIXPKGS_HASH}#pkgsStatic.tinycc.out" \
+                   --no-link --print-out-paths)/bin/tcc > tcc-seed
 	chmod +x tcc-seed
 	sha256sum -c <<<"$(TCC_CHECKSUM) tcc-seed"
 	@echo '### Makefile: using tcc-seed built with nix'
@@ -77,7 +78,7 @@ pkgs/1-stage1.pkg: recipes/1-stage1/protobusybox.c
 pkgs/1-stage1.pkg: recipes/1-stage1/protobusybox.h
 pkgs/1-stage1.pkg: recipes/1-stage1/hello.c
 pkgs/1-stage1.pkg: downloads/musl-1.2.2.tar.gz
-pkgs/1-stage1.pkg: downloads/tinycc-mob-gitda11cf6.tar.gz
+pkgs/1-stage1.pkg: downloads/tinycc-mob-af1abf1.tar.gz
 pkgs/1-stage1.pkg: downloads/busybox-1.34.1.tar.bz2
 	@echo "### Makefile: creating a temporary build area tmp/build/1..."
 	rm -rf tmp/build/1-stage1; mkdir -p tmp/build/1-stage1
@@ -366,7 +367,7 @@ pkgs/3b-tinycc-static.pkg: pkgs/2b0-musl.pkg
 pkgs/3b-tinycc-static.pkg: pkgs/2b1-clang.pkg
 pkgs/3b-tinycc-static.pkg: pkgs/2b2-busybox.pkg
 pkgs/3b-tinycc-static.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3b-tinycc-static.pkg: downloads/tinycc-da11cf6.tgz
+pkgs/3b-tinycc-static.pkg: downloads/tinycc-mob-af1abf1.tar.gz
 
 pkgs/3b-nix.pkg: pkgs/2b0-musl.pkg
 pkgs/3b-nix.pkg: pkgs/2b1-clang.pkg
@@ -452,6 +453,8 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/busybox-1.34.1.tar.bz2
 
 # Separate one for tests to help readability of the above
 
+pkgs/_1.test.pkg: pkgs/1-stage1.pkg
+
 pkgs/_2a3.test.pkg: pkgs/1-stage1.pkg
 pkgs/_2a3.test.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/_2a3.test.pkg: pkgs/2a1-static-binutils.pkg
@@ -495,6 +498,7 @@ pkgs/_3b.test.pkg: pkgs/3a-libsodium.pkg
 pkgs/_3b.test.pkg: pkgs/3a-lowdown.pkg
 pkgs/_3b.test.pkg: pkgs/3b-nix.pkg
 
+all-tests: pkgs/_1.test.pkg
 all-tests: pkgs/_2a3.test.pkg
 all-tests: pkgs/_2a4.test.pkg
 all-tests: pkgs/_2a5.test.pkg

@@ -9,9 +9,9 @@
 #> FETCH 9b969322012d796dc23dda27a35866034fa67d8fb67e0e2c45c913c3d43219dd
 #>  FROM http://musl.libc.org/releases/musl-1.2.2.tar.gz
 
-#> FETCH c6b244e58677c4c486dbf80e35ee01b192e133876942afa07454159ba118b44e
-#>  FROM https://github.com/TinyCC/tinycc/archive/da11cf651576f94486dbd043dbfcde469e497574.tar.gz
-#>    AS tinycc-mob-gitda11cf6.tar.gz
+#> FETCH f5a71d05664340ae46cda9579c6079a0f2fa809d24386d284f0d091e4d576a4e
+#>  FROM https://github.com/TinyCC/tinycc/archive/af1abf1f45d45b34f0b02437f559f4dfdba7d23c.tar.gz
+#>    AS tinycc-mob-af1abf1.tar.gz
 
 #> FETCH 415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549
 #>  FROM https://busybox.net/downloads/busybox-1.34.1.tar.bz2
@@ -26,7 +26,7 @@ tar --strip-components=1 -xzf downloads/musl-1.2.2.tar.gz \
 
 echo "### $0: unpacking tinycc sources..."
 mkdir -p "$DESTDIR/protosrc/tinycc"
-tar --strip-components=1 -xzf downloads/tinycc-mob-gitda11cf6.tar.gz \
+tar --strip-components=1 -xzf downloads/tinycc-mob-af1abf1.tar.gz \
 	-C $DESTDIR/protosrc/tinycc
 
 echo "### $0: unpacking protobusybox sources..."
@@ -70,8 +70,8 @@ pushd "$DESTDIR/protosrc/tinycc" >/dev/null
 	:> config.h
 	# eliminiate a source path reference
 	sed -i 's/__FILE__/"__FILE__"/' tcc.h
-	# don't hardcode paths when compiling asm files
-	sed -i 's/SHN_ABS, file->filename);/SHN_ABS, "FILE stub");/' tccgen.c
+	# don't hardcode paths
+	sed -i 's/SHN_ABS, filename);/SHN_ABS, "FILE stub");/' tccdbg.c
 	# break a circular dependency
 	sed -i 's/abort();//' lib/va_list.c
 popd >/dev/null

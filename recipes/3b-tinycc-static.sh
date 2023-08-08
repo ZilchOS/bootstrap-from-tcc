@@ -1,8 +1,8 @@
 #!/store/2b2-busybox/bin/ash
 
-#> FETCH c6b244e58677c4c486dbf80e35ee01b192e133876942afa07454159ba118b44e
-#>  FROM https://github.com/TinyCC/tinycc/archive/da11cf651576f94486dbd043dbfcde469e497574.tar.gz
-#>    AS tinycc-da11cf6.tgz
+#> FETCH f5a71d05664340ae46cda9579c6079a0f2fa809d24386d284f0d091e4d576a4e
+#>  FROM https://github.com/TinyCC/tinycc/archive/af1abf1f45d45b34f0b02437f559f4dfdba7d23c.tar.gz
+#>    AS tinycc-mob-af1abf1.tar.gz
 
 set -uex
 
@@ -15,11 +15,11 @@ mkdir -p /tmp/3b-tinycc-static; cd /tmp/3b-tinycc-static
 if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking TinyCC sources..."
-tar --strip-components=1 -xf /downloads/tinycc-da11cf6.tgz
+tar --strip-components=1 -xf /downloads/tinycc-mob-af1abf1.tar.gz
 
 #echo "### $0: fixing up TinyCC sources..."
-sed -i "s|^VERSION = .*|VERSION = tcc-mob-gitda11cf6|" configure
-sed -i "s|^GITHASH := .*|GITHASH = mob:da11cf6|" configure
+sed -i "s|^VERSION = .*|VERSION = mob-af1abf1|" configure
+sed -i "s|^GITHASH := .*|GITHASH = mob:af1abf1|" configure
 
 echo "### $0: configuring TinyCC..."
 $SHELL configure \

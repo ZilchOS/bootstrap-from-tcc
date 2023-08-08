@@ -23,13 +23,13 @@
 
 let
   and = builtins.all (x: x);
-  syscall_h_ours = ../recipes/1-stage1/syscall.h;
-  syscall_h_reference = "/nix/store/gh596yjx16c7p4l7djwl34aljsn0a21w-syscall.h";
+  syscall_h_ours = "${../recipes/1-stage1/syscall.h}";
+  syscall_h_reference = "/nix/store/678g5j997qzp0srprfg4gqqxcp8mr3g9-syscall.h";
   syscall_h_is_unmodified = (syscall_h_ours == syscall_h_reference);
-  stage1_seeder_ours = ../recipes/1-stage1/seed.host-executed.sh;
-  stage1_seeder_reference = "/nix/store/8y505dqkkn80mvpg3pxz2gqmfardbg8h-seed.host-executed.sh";
+  stage1_seeder_ours = "${../recipes/1-stage1/seed.host-executed.sh}";
+  stage1_seeder_reference = "/nix/store/b1gh7di7w3jkk4gga36yd3h5qx2i67ll-seed.host-executed.sh";
   stage1_seeder_is_unmodified = (stage1_seeder_ours == stage1_seeder_reference);
 in
   if (and [ syscall_h_is_unmodified stage1_seeder_is_unmodified ])
-  then import ./0-from-nixpkgs.nix
-  else import ./0-prebuilt.nix
+  then import ./0-prebuilt.nix
+  else import ./0-from-nixpkgs.nix

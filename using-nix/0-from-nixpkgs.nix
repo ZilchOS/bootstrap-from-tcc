@@ -3,19 +3,11 @@
 let
   nixpkgs = import (builtins.fetchTarball {
     name = "pinned-nixpkgs";
-    url = "https://github.com/nixos/nixpkgs/archive/a898a9d1f0503d3b2c66a5bbf8ac459003d3c843.tar.gz";
-    sha256 = "sha256:0m70w5rw5adz3riwh4m4x0vh5z8w0w8nlr1ajwi43ridma30vs8f";
+    url = "https://github.com/nixos/nixpkgs/archive/21f524672f25f8c3e7a0b5775e6505fee8fe43ce.tar.gz";
+    sha256 = "sha256:00pwazjld0bj2sp33gwiz1h8krkyf2nyid7injv5cqz5bz5jjw99";
   }) { system = "x86_64-linux"; };
 
-  tinycc-unliberated = nixpkgs.pkgsStatic.tinycc.overrideAttrs(oa: {
-    version = "unstable-2021-10-30";
-    src = nixpkgs.fetchFromRepoOrCz {
-      repo = "tinycc";
-      rev = "da11cf651576f94486dbd043dbfcde469e497574";
-      sha256 = "sha256-LWdM/1fjx88eCj+Bz4YN9zLEWhSjlX4ULZiPx82nocA=";
-    };
-    configureFlags = nixpkgs.lib.remove "--enable-cross" oa.configureFlags;
-  });
+  tinycc-unliberated = nixpkgs.pkgsStatic.tinycc;
 
   tinycc-liberated = derivation {
     name = "tinycc-liberated";
@@ -33,7 +25,7 @@ let
     system = "x86_64-linux";
     __contentAddressed = true;
     outputHashAlgo = "sha256"; outputHashMode = "recursive";
-    outputHash = "sha256-ADunchN4nGrE7OJ9OxkuzwsIDOW8I9/GukeiQMwhNIs=";
+    outputHash = "sha256-oqeOU6SFYDwpdIj8MjcQ+bMuU63CHyoV9NYdyPLFxEQ=";
   };
 
   source-tarball-musl = builtins.fetchurl {
@@ -47,8 +39,8 @@ let
   };
 
   source-tarball-tinycc = builtins.fetchurl {
-    url = "https://github.com/TinyCC/tinycc/archive/da11cf651576f94486dbd043dbfcde469e497574.tar.gz";
-    sha256 = "c6b244e58677c4c486dbf80e35ee01b192e133876942afa07454159ba118b44e";
+    url = "https://github.com/TinyCC/tinycc/archive/af1abf1f45d45b34f0b02437f559f4dfdba7d23c.tar.gz";
+    sha256 = "sha256:0kkaax6iw28d9wl6sf14kn0gmwm0g5h9qmx9rm3awh23cq2iv9zm";
   };
 
   protosrc = derivation {
@@ -64,7 +56,7 @@ let
       mkdir downloads/
       cp ${source-tarball-musl} downloads/musl-1.2.2.tar.gz
       cp ${source-tarball-busybox} downloads/busybox-1.34.1.tar.bz2
-      cp ${source-tarball-tinycc} downloads/tinycc-mob-gitda11cf6.tar.gz
+      cp ${source-tarball-tinycc} downloads/tinycc-mob-af1abf1.tar.gz
       mkdir -p recipes
       cp -r ${../recipes/1-stage1} recipes/1-stage1
       DESTDIR=$out ${nixpkgs.bash}/bin/bash \
@@ -76,7 +68,7 @@ let
     system = "x86_64-linux";
     __contentAddressed = true;
     outputHashAlgo = "sha256"; outputHashMode = "recursive";
-    outputHash = "sha256-VPbQvwJOmtld+kTBXdzwrR346L6qT7KhhpUsKu6/IfM=";
+    outputHash = "sha256-4hwx3fKNasQQXwszNQiItrmuLQE537lBfPrniBAADPE=";
   };
 in
   {

@@ -540,8 +540,8 @@ void compile_libtcc1(const char* cc) {
 		"-I"PROTOSRC"/tinycc", \
 		"-I"PROTOSRC"/tinycc/include", \
 		"-I"TMP_STAGE1"/tinycc/gen", \
-		"-DTCC_VERSION=\"mob-gitda11cf6\"", \
-		"-DTCC_GITHASH=\"mob:da11cf6\"", \
+		"-DTCC_VERSION=\"mob-af1abf1\"", \
+		"-DTCC_GITHASH=\"mob:af1abf1\"", \
 		"-DTCC_TARGET_X86_64", \
 		"-DTCC_MUSL", \
 		"-DONE_SOURCE=0", \
@@ -577,7 +577,7 @@ void compile_tcc_1st_time_nostd(const char* cc) {
 		0},
 		PROTOSRC"/tinycc", (char*[]) {
 			"libtcc.c", "tccpp.c", "tccgen.c", "tccelf.c",
-			"tccasm.c", "tccrun.c",
+			"tccdbg.c", "tccasm.c", "tccrun.c",
 			"x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
 		0},
 		TMP_STAGE1"/tinycc/libtcc",
@@ -598,7 +598,7 @@ void compile_tcc(const char* cc) {
 	mass_compile(cc, (char*[]) { PROTOMUSL_INCLUDES, TCC_CFLAGS, 0},
 		PROTOSRC"/tinycc", (char*[]) {
 			"libtcc.c", "tccpp.c", "tccgen.c", "tccelf.c",
-			"tccasm.c", "tccrun.c",
+			"tccdbg.c", "tccasm.c", "tccrun.c",
 			"x86_64-gen.c", "x86_64-link.c", "i386-asm.c",
 		0},
 		TMP_STAGE1"/tinycc/libtcc",
