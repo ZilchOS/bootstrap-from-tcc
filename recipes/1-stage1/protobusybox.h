@@ -1,6 +1,6 @@
 #define NUM_APPLETS 1
 #define BB_GLOBAL_CONST
-#define BB_VER "1.34.1"
+#define BB_VER "1.36.1"
 #define AUTOCONF_TIMESTAMP
 #define _GNU_SOURCE
 
@@ -22,6 +22,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define ENABLE_ASH_JOB_CONTROL 0
 #define ENABLE_ASH_MAIL 0
 #define ENABLE_ASH_PRINTF 1
+#define ENABLE_ASH_SLEEP 0
 #define ENABLE_ASH_TEST 1
 #define ENABLE_BB_ARCH 1
 #define ENABLE_BUNZIP2 0
@@ -78,6 +79,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define ENABLE_FEATURE_VERBOSE 0
 #define ENABLE_FGREP 0
 #define ENABLE_FTPD 0
+#define ENABLE_HUSH_PRINTF 0
 #define ENABLE_HUSH_TEST 0
 #define ENABLE_KILLALL 0
 #define ENABLE_LOCALE_SUPPORT 1
@@ -104,7 +106,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define IF_BASENAME(...)
 #define IF_BUNZIP2(...)
 #define IF_BZCAT(...)
-#define IF_BZIP2(...)
+#define IF_BZIP2(...) __VA_ARGS__
 #define IF_CAT(...)
 #define IF_CHGRP(...)
 #define IF_CHMOD(...)
@@ -127,7 +129,11 @@ enum { COMMON_BUFSIZE = 1024 };
 #define IF_FEATURE_CATV(...)
 #define IF_FEATURE_CP_REFLINK(...)
 #define IF_FEATURE_CUT_REGEX(...)
+#define IF_FEATURE_FIND_AMIN(...)
+#define IF_FEATURE_FIND_ATIME(...)
+#define IF_FEATURE_FIND_CMIN(...)
 #define IF_FEATURE_FIND_CONTEXT(...)
+#define IF_FEATURE_FIND_CTIME(...)
 #define IF_FEATURE_FIND_DELETE(...)
 #define IF_FEATURE_FIND_DEPTH(...)
 #define IF_FEATURE_FIND_EMPTY(...)
@@ -149,6 +155,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define IF_FEATURE_FIND_PRUNE(...) __VA_ARGS__
 #define IF_FEATURE_FIND_QUIT(...)
 #define IF_FEATURE_FIND_REGEX(...)
+#define IF_FEATURE_FIND_SAMEFILE(...)
 #define IF_FEATURE_FIND_SIZE(...)
 #define IF_FEATURE_FIND_TYPE(...) __VA_ARGS__
 #define IF_FEATURE_FIND_USER(...)
@@ -201,6 +208,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define IF_LZMA(...)
 #define IF_LZOP(...)
 #define IF_LZOPCAT(...)
+#define IF_NOT_ASH_OPTIMIZE_FOR_SIZE(...) __VA_ARGS__
 #define IF_NOT_DESKTOP(...)
 #define IF_NOT_FEATURE_FIND_MAXDEPTH(...) __VA_ARGS__
 #define IF_NOT_FEATURE_TAR_CREATE(...)
@@ -219,6 +227,7 @@ enum { COMMON_BUFSIZE = 1024 };
 #define IF_SHELL_ASH(...) __VA_ARGS__
 #define IF_SHELL_HUSH(...)
 #define IF_SHOWKEY(...)
+#define IF_SLEEP(...)
 #define IF_TAR(...)
 #define IF_UNAME(...) __VA_ARGS__
 #define IF_UNCOMPRESS(...)

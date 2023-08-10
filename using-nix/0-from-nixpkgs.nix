@@ -34,8 +34,8 @@ let
   };
 
   source-tarball-busybox = builtins.fetchurl {
-    url = "https://busybox.net/downloads/busybox-1.34.1.tar.bz2";
-    sha256 = "415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549";
+    url = "https://busybox.net/downloads/busybox-1.36.1.tar.bz2";
+    sha256 = "b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314";
   };
 
   source-tarball-tinycc = builtins.fetchurl {
@@ -55,7 +55,7 @@ let
       export PATH
       mkdir downloads/
       cp ${source-tarball-musl} downloads/musl-1.2.4.tar.gz
-      cp ${source-tarball-busybox} downloads/busybox-1.34.1.tar.bz2
+      cp ${source-tarball-busybox} downloads/busybox-1.36.1.tar.bz2
       cp ${source-tarball-tinycc} downloads/tinycc-mob-af1abf1.tar.gz
       mkdir -p recipes
       cp -r ${../recipes/1-stage1} recipes/1-stage1
@@ -68,7 +68,7 @@ let
     system = "x86_64-linux";
     __contentAddressed = true;
     outputHashAlgo = "sha256"; outputHashMode = "recursive";
-    outputHash = "sha256-lNgU5EzxW0fDMiJaQTKGVlIqBZSH/Aj73EWt5ccSq/w=";
+    outputHash = "sha256-upUZTTumJgBY16waF6L8ZeWbflSuQL9TMmwLw0YEDqM=";
   };
 in
   {

@@ -23,4 +23,9 @@ cc -o va_test va_test.c
 ./va_test var
 [ "$(./va_test var)" == varargs ]
 
+echo "### $0: checking that we've got bzip2..."
+
+hello=$(echo hello | bzip2 -1 | bzip2 -d)
+[ "$hello" == hello ]
+
 touch /store/_1.test  # indicator of successful completion

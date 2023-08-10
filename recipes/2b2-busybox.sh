@@ -1,7 +1,7 @@
 #!/store/1-stage1/protobusybox/bin/ash
 
-#> FETCH 415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549
-#>  FROM https://busybox.net/downloads/busybox-1.34.1.tar.bz2
+#> FETCH b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314
+#>  FROM https://busybox.net/downloads/busybox-1.36.1.tar.bz2
 
 set -uex
 
@@ -17,7 +17,7 @@ mkdir aliases; ln -s /store/1-stage1/protobusybox/bin/ash aliases/sh
 export PATH="/tmp/2b2-busybox/aliases:$PATH"
 
 echo "### $0: unpacking busybox sources..."
-tar --strip-components=1 -xf /downloads/busybox-1.34.1.tar.bz2
+tar --strip-components=1 -xf /downloads/busybox-1.36.1.tar.bz2
 
 echo "### $0: configuring busybox..."
 BUSYBOX_FLAGS='CONFIG_SHELL=/store/1-stage1/protobusybox/bin/ash'

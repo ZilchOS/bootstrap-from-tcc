@@ -42,7 +42,7 @@ stage/protosrc: seed.sh
 stage/protosrc: recipes/1-stage1/syscall.h
 stage/protosrc: recipes/1-stage1/seed.host-executed.sh
 stage/protosrc: downloads/musl-1.2.4.tar.gz
-stage/protosrc: downloads/busybox-1.34.1.tar.bz2
+stage/protosrc: downloads/busybox-1.36.1.tar.bz2
 stage/protosrc: downloads/tinycc-mob-af1abf1.tar.gz
 	env DESTDIR=stage recipes/1-stage1/seed.host-executed.sh
 
@@ -79,7 +79,7 @@ pkgs/1-stage1.pkg: recipes/1-stage1/protobusybox.h
 pkgs/1-stage1.pkg: recipes/1-stage1/hello.c
 pkgs/1-stage1.pkg: downloads/musl-1.2.4.tar.gz
 pkgs/1-stage1.pkg: downloads/tinycc-mob-af1abf1.tar.gz
-pkgs/1-stage1.pkg: downloads/busybox-1.34.1.tar.bz2
+pkgs/1-stage1.pkg: downloads/busybox-1.36.1.tar.bz2
 	@echo "### Makefile: creating a temporary build area tmp/build/1..."
 	rm -rf tmp/build/1-stage1; mkdir -p tmp/build/1-stage1
 	@echo "### Makefile: injecting dependencies..."
@@ -263,7 +263,7 @@ pkgs/2b2-busybox.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/2b2-busybox.pkg: pkgs/2b0-musl.pkg
 pkgs/2b2-busybox.pkg: pkgs/2b1-clang.pkg
 pkgs/2b2-busybox.pkg: pkgs/2a6-linux-headers.pkg
-pkgs/2b2-busybox.pkg: downloads/busybox-1.34.1.tar.bz2
+pkgs/2b2-busybox.pkg: downloads/busybox-1.36.1.tar.bz2
 
 pkgs/2b3-gnumake.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/2b3-gnumake.pkg: pkgs/2b0-musl.pkg
@@ -361,7 +361,7 @@ pkgs/3b-busybox-static.pkg: pkgs/2b1-clang.pkg
 pkgs/3b-busybox-static.pkg: pkgs/2b2-busybox.pkg
 pkgs/3b-busybox-static.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3b-busybox-static.pkg: pkgs/2a6-linux-headers.pkg
-pkgs/3b-busybox-static.pkg: downloads/busybox-1.34.1.tar.bz2
+pkgs/3b-busybox-static.pkg: downloads/busybox-1.36.1.tar.bz2
 
 pkgs/3b-tinycc-static.pkg: pkgs/2b0-musl.pkg
 pkgs/3b-tinycc-static.pkg: pkgs/2b1-clang.pkg
@@ -447,7 +447,7 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/linux-5.15.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/cmake-3.21.4.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/Python-3.10.0.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/llvm-project-13.0.0.src.tar.xz
-pkgs/4-rebootstrap-using-nix.pkg: downloads/busybox-1.34.1.tar.bz2
+pkgs/4-rebootstrap-using-nix.pkg: downloads/busybox-1.36.1.tar.bz2
 
 ################################################################################
 

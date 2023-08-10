@@ -790,7 +790,16 @@ void compile_standalone_busybox_applets(const char* cc) {
 		LIBARCHIVE "/seek_by_read.c",
 		LIBARCHIVE "/unsafe_prefix.c",
 		LIBARCHIVE "/unsafe_symlink_target.c",
+		PROTOSRC"/protobusybox/archival/chksum_and_xwrite_tar_header.c",
 		PROTOSRC"/protobusybox/archival/tar.c");
+
+	compile_applet("bzip2", PROTOSRC"/protobusybox/archival/bzip2.c",
+		PROTOSRC"/protobusybox/archival/bbunzip.c",
+		LIBARCHIVE "/decompress_bunzip2.c",
+		LIBARCHIVE "/decompress_gunzip.c",
+		LIBARCHIVE "/decompress_unxz.c",
+		LIBARCHIVE "/open_transformer.c"
+		);
 
 	compile_applet("awk", PROTOSRC"/protobusybox/editors/awk.c");
 	compile_applet("cmp", PROTOSRC"/protobusybox/editors/cmp.c");
