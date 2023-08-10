@@ -109,13 +109,14 @@ cmake -S llvm -B build -G 'Unix Makefiles' \
 	-DLLVM_ENABLE_PROJECTS='clang;lld' \
 	-DLLVM_ENABLE_RUNTIMES='compiler-rt;libcxx;libcxxabi;libunwind' \
 	-DCMAKE_C_FLAGS="--sysroot=$SYSROOT" \
-	-DCMAKE_CXX_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL" \
+	-DCMAKE_CXX_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
 	-DCMAKE_C_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER" \
 	-DCMAKE_CXX_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER" \
 	-DLLVM_BUILD_LLVM_DYLIB=YES \
 	-DLLVM_LINK_LLVM_DYLIB=YES \
 	-DCLANG_LINK_LLVM_DYLIB=YES \
 	$OPTS
+        # TODO: remove _LARGEFILE64_SOURCE stopgap on update
 
 	#-DLLVM_ENABLE_LTO=Thin \
 

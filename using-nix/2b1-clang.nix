@@ -104,13 +104,14 @@ in
           -DLLVM_ENABLE_PROJECTS='clang;lld' \
           -DLLVM_ENABLE_RUNTIMES='compiler-rt;libcxx;libcxxabi;libunwind' \
           -DCMAKE_C_FLAGS="--sysroot=$SYSROOT" \
-          -DCMAKE_CXX_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL" \
+          -DCMAKE_CXX_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
           -DCMAKE_C_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER" \
           -DCMAKE_CXX_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER" \
           -DLLVM_BUILD_LLVM_DYLIB=YES \
           -DLLVM_LINK_LLVM_DYLIB=YES \
           -DCLANG_LINK_LLVM_DYLIB=YES \
           $OPTS
+          # TODO: remove _LARGEFILE64_SOURCE on update
       # build:
         make -C build -j $NPROC clang  # runs OK in parallel
         make -C build runtimes-configure  # sometimes explodes, serialize =(

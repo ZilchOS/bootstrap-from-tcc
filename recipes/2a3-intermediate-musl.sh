@@ -1,7 +1,7 @@
 #!/store/1-stage1/protobusybox/bin/ash
 
-#> FETCH 9b969322012d796dc23dda27a35866034fa67d8fb67e0e2c45c913c3d43219dd
-#>  FROM http://musl.libc.org/releases/musl-1.2.2.tar.gz
+#> FETCH 7a35eae33d5372a7c0da1188de798726f68825513b7ae3ebe97aaaa52114f039
+#>  FROM http://musl.libc.org/releases/musl-1.2.4.tar.gz
 
 set -uex
 
@@ -14,7 +14,7 @@ mkdir -p /tmp/2a3-intermediate-musl; cd /tmp/2a3-intermediate-musl
 if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking musl sources..."
-tar --strip-components=1 -xf /downloads/musl-1.2.2.tar.gz
+tar --strip-components=1 -xf /downloads/musl-1.2.4.tar.gz
 
 echo "### $0: building musl with GNU GCC..."
 sed -i 's|/bin/sh|/store/1-stage1/protobusybox/bin/ash|' \

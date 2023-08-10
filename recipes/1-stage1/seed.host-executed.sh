@@ -6,8 +6,8 @@
 # For stage 1, we pre-unpack sources on the host and then fix them up with
 # host's sed.
 
-#> FETCH 9b969322012d796dc23dda27a35866034fa67d8fb67e0e2c45c913c3d43219dd
-#>  FROM http://musl.libc.org/releases/musl-1.2.2.tar.gz
+#> FETCH 7a35eae33d5372a7c0da1188de798726f68825513b7ae3ebe97aaaa52114f039
+#>  FROM http://musl.libc.org/releases/musl-1.2.4.tar.gz
 
 #> FETCH f5a71d05664340ae46cda9579c6079a0f2fa809d24386d284f0d091e4d576a4e
 #>  FROM https://github.com/TinyCC/tinycc/archive/af1abf1f45d45b34f0b02437f559f4dfdba7d23c.tar.gz
@@ -21,7 +21,7 @@ TGT="$DESTDIR/tmp/1-stage1"
 
 echo "### $0: unpacking protomusl sources..."
 mkdir -p "$DESTDIR/protosrc/protomusl"
-tar --strip-components=1 -xzf downloads/musl-1.2.2.tar.gz \
+tar --strip-components=1 -xzf downloads/musl-1.2.4.tar.gz \
 	-C "$DESTDIR/protosrc/protomusl"
 
 echo "### $0: unpacking tinycc sources..."

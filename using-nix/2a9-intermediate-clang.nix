@@ -100,8 +100,10 @@ in
           -DLLVM_ENABLE_PROJECTS='clang;lld' \
           -DLLVM_ENABLE_RUNTIMES='compiler-rt;libcxx;libcxxabi;libunwind' \
           -DGCC_INSTALL_PREFIX=${gnugcc10} \
-          -DBOOTSTRAP_CMAKE_CXX_FLAGS=-I$EXTRA_INCL \
+          -DBOOTSTRAP_CMAKE_CXX_FLAGS="-I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
+          -DCMAKE_CXX_FLAGS="-D_LARGEFILE64_SOURCE" \
           -DCLANG_ENABLE_BOOTSTRAP=YES $BOTH_STAGES_OPTS
+          # TODO: remove _LARGEFILE64_SOURCE on update
       # build:
         make -C build -j $NPROC clang  # runs OK in parallel
         make -C build runtimes-configure  # sometimes explodes, serialize =(

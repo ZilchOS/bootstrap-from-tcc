@@ -41,7 +41,7 @@ downloads/%:
 stage/protosrc: seed.sh
 stage/protosrc: recipes/1-stage1/syscall.h
 stage/protosrc: recipes/1-stage1/seed.host-executed.sh
-stage/protosrc: downloads/musl-1.2.2.tar.gz
+stage/protosrc: downloads/musl-1.2.4.tar.gz
 stage/protosrc: downloads/busybox-1.34.1.tar.bz2
 stage/protosrc: downloads/tinycc-mob-af1abf1.tar.gz
 	env DESTDIR=stage recipes/1-stage1/seed.host-executed.sh
@@ -77,7 +77,7 @@ pkgs/1-stage1.pkg: recipes/1-stage1/syscall.h
 pkgs/1-stage1.pkg: recipes/1-stage1/protobusybox.c
 pkgs/1-stage1.pkg: recipes/1-stage1/protobusybox.h
 pkgs/1-stage1.pkg: recipes/1-stage1/hello.c
-pkgs/1-stage1.pkg: downloads/musl-1.2.2.tar.gz
+pkgs/1-stage1.pkg: downloads/musl-1.2.4.tar.gz
 pkgs/1-stage1.pkg: downloads/tinycc-mob-af1abf1.tar.gz
 pkgs/1-stage1.pkg: downloads/busybox-1.34.1.tar.bz2
 	@echo "### Makefile: creating a temporary build area tmp/build/1..."
@@ -186,7 +186,7 @@ pkgs/2a3-intermediate-musl.pkg: pkgs/1-stage1.pkg
 pkgs/2a3-intermediate-musl.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/2a3-intermediate-musl.pkg: pkgs/2a1-static-binutils.pkg
 pkgs/2a3-intermediate-musl.pkg: pkgs/2a2-static-gnugcc4-c.pkg
-pkgs/2a3-intermediate-musl.pkg: downloads/musl-1.2.2.tar.gz
+pkgs/2a3-intermediate-musl.pkg: downloads/musl-1.2.4.tar.gz
 
 pkgs/2a4-gnugcc4-cpp.pkg: pkgs/1-stage1.pkg
 pkgs/2a4-gnugcc4-cpp.pkg: pkgs/2a0-static-gnumake.pkg
@@ -246,7 +246,7 @@ pkgs/2b0-musl.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/2b0-musl.pkg: pkgs/2a1-static-binutils.pkg
 pkgs/2b0-musl.pkg: pkgs/2a3-intermediate-musl.pkg
 pkgs/2b0-musl.pkg: pkgs/2a9-intermediate-clang.pkg
-pkgs/2b0-musl.pkg: downloads/musl-1.2.2.tar.gz
+pkgs/2b0-musl.pkg: downloads/musl-1.2.4.tar.gz
 
 pkgs/2b1-clang.pkg: pkgs/1-stage1.pkg
 pkgs/2b1-clang.pkg: pkgs/2a0-static-gnumake.pkg
@@ -437,7 +437,7 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/gcc-4.7.4.tar.bz2
 pkgs/4-rebootstrap-using-nix.pkg: downloads/gmp-4.3.2.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpfr-2.4.2.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpc-0.8.1.tar.gz
-pkgs/4-rebootstrap-using-nix.pkg: downloads/musl-1.2.2.tar.gz
+pkgs/4-rebootstrap-using-nix.pkg: downloads/musl-1.2.4.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/gcc-10.3.0.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/gmp-6.1.0.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpfr-3.1.4.tar.xz

@@ -29,8 +29,8 @@ let
   };
 
   source-tarball-musl = builtins.fetchurl {
-    url = "http://musl.libc.org/releases/musl-1.2.2.tar.gz";
-    sha256 = "9b969322012d796dc23dda27a35866034fa67d8fb67e0e2c45c913c3d43219dd";
+    url = "http://musl.libc.org/releases/musl-1.2.4.tar.gz";
+    sha256 = "7a35eae33d5372a7c0da1188de798726f68825513b7ae3ebe97aaaa52114f039";
   };
 
   source-tarball-busybox = builtins.fetchurl {
@@ -54,7 +54,7 @@ let
       PATH=$PATH:${nixpkgs.bzip2}/bin
       export PATH
       mkdir downloads/
-      cp ${source-tarball-musl} downloads/musl-1.2.2.tar.gz
+      cp ${source-tarball-musl} downloads/musl-1.2.4.tar.gz
       cp ${source-tarball-busybox} downloads/busybox-1.34.1.tar.bz2
       cp ${source-tarball-tinycc} downloads/tinycc-mob-af1abf1.tar.gz
       mkdir -p recipes
@@ -68,7 +68,7 @@ let
     system = "x86_64-linux";
     __contentAddressed = true;
     outputHashAlgo = "sha256"; outputHashMode = "recursive";
-    outputHash = "sha256-4hwx3fKNasQQXwszNQiItrmuLQE537lBfPrniBAADPE=";
+    outputHash = "sha256-lNgU5EzxW0fDMiJaQTKGVlIqBZSH/Aj73EWt5ccSq/w=";
   };
 in
   {
