@@ -1,0 +1,61 @@
+#!/bin/sh
+set -uex
+
+# check that two extra files have not been modified
+
+seeder_path=$(nix eval --impure --expr '"${recipes/1-stage1/seed.host-executed.sh}"')
+grep "stage1_seeder_reference = $seeder_path;$" using-nix/0.nix
+syscall_h_path=$(nix eval --impure --expr '"${recipes/1-stage1/syscall.h}"')
+grep "syscall_h_reference = $syscall_h_path;$" using-nix/0.nix
+
+
+# check that both downloads in using-nix/0-prebuilt refer to the same tag
+
+lines=$(grep 'seeding-files-r[0-9]*' using-nix/0-prebuilt.nix \
+	| sed 's/.*r\([0-9][0-9][0-9]\).*/\1/')
+sort <<<"$lines"
+[[ $(wc -l <<<"$lines") == 2 ]]
+[[ $(sort <<<"$lines" | uniq | wc -l) == 1 ]]
+
+
+# build nars, calculate hashes, check both 0-from-nixpkgs and 0-prebuilt
+
+[[ ! -L result* ]]
+
+
+tinycc_=$(nix-build using-nix/0-from-nixpkgs.nix -A tinycc --no-out-link)
+tinycc=$(nix-build using-nix/0-from-nixpkgs.nix -A tinycc --no-out-link --check)
+[[ "$tinycc_" == "$tinycc" ]]
+nix store dump-path $tinycc > tinycc-liberated.nar
+tinycc_hash=$(nix hash file tinycc-liberated.nar)
+grep "outputHash = \"$tinycc_hash\";$" using-nix/0-from-nixpkgs.nix
+grep "sha256 = \"$tinycc_hash\";$" using-nix/0-prebuilt.nix
+
+protosrc_=$(nix-build using-nix/0-from-nixpkgs.nix -A protosrc --no-out-link)
+protosrc=$(nix-build using-nix/0-from-nixpkgs.nix -A protosrc --no-out-link \
+                     --check)
+[[ "$protosrc_" == "$protosrc" ]]
+nix store dump-path $protosrc > protosrc.nar
+protosrc_hash=$(nix hash file protosrc.nar)
+grep "outputHash = \"$protosrc_hash\";$" using-nix/0-from-nixpkgs.nix
+grep "sha256 = \"$protosrc_hash\";$" using-nix/0-prebuilt.nix
+
+
+[[ ! -L result* ]]
+
+
+# print release notes
+
+set +x
+
+cat <<\EOF
+protosrc (patched sources of stage1 tinycc/protomusl/protobusybox) has to come from somewhere, and there are three main options: build as part of bootstrap, build using nixpkgs or take them from here.
+
+You don't need these files neither when you do the whole bootstrap-Nix-included route using ./build.sh/make, nor when you can afford pulling nixpkgs to build them. But there's at least a case for building in Hydra under restricted-eval mode where you can neither inject stuff externally nor IFD. These allow kickstarting Hydra builds as long as recipes/1-stage1/seed.host-executed.sh and recipes/1-stage1/syscall.h weren't modified.
+
+See using-nix/0.nix for more explanations of all three seeding options, using-nix/0-from-nixpkgs for how these were built.
+
+EOF
+
+echo "$tinycc_hash" tinycc-liberated.nar
+echo "$protosrc_hash" protosrc.nar
