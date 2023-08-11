@@ -1,7 +1,7 @@
 #!/store/1-stage1/protobusybox/bin/ash
 
-#> FETCH e05fdde47c5f7ca45cb697e973894ff4f5d79e13b750ed57d7b66d8defc78e19
-#>  FROM http://ftp.gnu.org/gnu/make/make-4.3.tar.gz
+#> FETCH dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3
+#>  FROM http://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz
 
 set -uex
 
@@ -11,7 +11,7 @@ mkdir -p /store/2a0-static-gnumake /tmp/2a0-static-gnumake
 cd /tmp/2a0-static-gnumake
 
 echo "### $0: unpacking static GNU Make sources..."
-tar --strip-components=1 -xf /downloads/make-4.3.tar.gz
+tar --strip-components=1 -xf /downloads/make-4.4.1.tar.gz
 
 echo "### $0: fixing up static GNU Make sources..."
 sed -i 's|/bin/sh|/store/1-stage1/protobusybox/bin/ash|' \

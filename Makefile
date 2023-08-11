@@ -158,7 +158,7 @@ endif
 # Dependency graph:
 
 pkgs/2a0-static-gnumake.pkg: pkgs/1-stage1.pkg
-pkgs/2a0-static-gnumake.pkg: downloads/make-4.3.tar.gz
+pkgs/2a0-static-gnumake.pkg: downloads/make-4.4.1.tar.gz
 
 ifeq ($(USE_CCACHE), 1)
 pkgs/_2a0-ccache.pkg: pkgs/1-stage1.pkg
@@ -168,7 +168,7 @@ endif
 
 pkgs/2/01-gnumake.pkg: pkgs/1-stage1.pkg
 pkgs/2/01-gnumake.pkg: pkgs/2/00-intermediate-gnumake.pkg
-pkgs/2/01-gnumake.pkg: downloads/make-4.3.tar.gz
+pkgs/2/01-gnumake.pkg: downloads/make-4.4.1.tar.gz
 
 pkgs/2a1-static-binutils.pkg: pkgs/1-stage1.pkg
 pkgs/2a1-static-binutils.pkg: pkgs/2a0-static-gnumake.pkg
@@ -269,7 +269,7 @@ pkgs/2b3-gnumake.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/2b3-gnumake.pkg: pkgs/2b0-musl.pkg
 pkgs/2b3-gnumake.pkg: pkgs/2b1-clang.pkg
 pkgs/2b3-gnumake.pkg: pkgs/2b2-busybox.pkg
-pkgs/2b3-gnumake.pkg: downloads/make-4.3.tar.gz
+pkgs/2b3-gnumake.pkg: downloads/make-4.4.1.tar.gz
 
 pkgs/3a-gnubash.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-gnubash.pkg: pkgs/2b1-clang.pkg
@@ -431,7 +431,7 @@ pkgs/4-rebootstrap-using-nix.pkg: using-nix/2b0-musl.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2b1-clang.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2b2-busybox.nix
 ###
-pkgs/4-rebootstrap-using-nix.pkg: downloads/make-4.3.tar.gz
+pkgs/4-rebootstrap-using-nix.pkg: downloads/make-4.4.1.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/binutils-2.37.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/gcc-4.7.4.tar.bz2
 pkgs/4-rebootstrap-using-nix.pkg: downloads/gmp-4.3.2.tar.xz

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Receives files as arguments, scans them for lines like
-# #> FETCH e05fdde47c5f7ca45cb697e973894ff4f5d79e13b750ed57d7b66d8defc78e19
-# #>  FROM http://ftp.gnu.org/gnu/make/make-4.3.tar.gz
+# #> FETCH dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3
+# #>  FROM http://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz
 # downloads to ./downloads if file's not present there yet, verifies hash,
 # copies file over to $DESTDIR.
 
