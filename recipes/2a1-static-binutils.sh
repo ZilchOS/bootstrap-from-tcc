@@ -1,7 +1,7 @@
 #!/store/1-stage1/protobusybox/bin/ash
 
-#> FETCH 820d9724f020a3e69cb337893a0b63c2db161dadcb0e06fc11dc29eb1e84a32c
-#>  FROM https://ftp.gnu.org/gnu/binutils/binutils-2.37.tar.xz
+#> FETCH 645c25f563b8adc0a81dbd6a41cffbf4d37083a382e02d5d3df4f65c09516d00
+#>  FROM https://ftp.gnu.org/gnu/binutils/binutils-2.39.tar.xz
 
 set -uex
 
@@ -13,11 +13,14 @@ mkdir -p /tmp/2a1-static-binutils; cd /tmp/2a1-static-binutils
 if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking binutils sources..."
-tar --strip-components=1 -xf /downloads/binutils-2.37.tar.xz
+tar --strip-components=1 -xf /downloads/binutils-2.39.tar.xz
 
 echo "### $0: building static binutils..."
 sed -i 's|/bin/sh|/store/1-stage1/protobusybox/bin/ash|' \
 	missing install-sh mkinstalldirs
+mkdir aliases
+ln -s /store/1-stage1/protobusybox/bin/true aliases/makeinfo
+PATH="/tmp/2a1-static-binutils/aliases:$PATH"
 export lt_cv_sys_max_cmd_len=32768
 # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
 sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh
@@ -26,6 +29,8 @@ ash configure \
 	CONFIG_SHELL=/store/1-stage1/protobusybox/bin/ash \
 	SHELL=/store/1-stage1/protobusybox/bin/ash \
 	CFLAGS='-D__LITTLE_ENDIAN__=1' \
+	MAKEINFO=/store/1-stage1/protobusybox/bin/true \
+	--disable-gprofng \
 	--enable-deterministic-archives \
 	--host x86_64-linux --build x86_64-linux \
 	--prefix=/store/2a1-static-binutils

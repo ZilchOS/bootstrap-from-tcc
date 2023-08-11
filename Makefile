@@ -172,7 +172,7 @@ pkgs/2/01-gnumake.pkg: downloads/make-4.4.1.tar.gz
 
 pkgs/2a1-static-binutils.pkg: pkgs/1-stage1.pkg
 pkgs/2a1-static-binutils.pkg: pkgs/2a0-static-gnumake.pkg
-pkgs/2a1-static-binutils.pkg: downloads/binutils-2.37.tar.xz
+pkgs/2a1-static-binutils.pkg: downloads/binutils-2.39.tar.xz
 
 pkgs/2a2-static-gnugcc4-c.pkg: pkgs/1-stage1.pkg
 pkgs/2a2-static-gnugcc4-c.pkg: pkgs/2a0-static-gnumake.pkg
@@ -432,7 +432,7 @@ pkgs/4-rebootstrap-using-nix.pkg: using-nix/2b1-clang.nix
 pkgs/4-rebootstrap-using-nix.pkg: using-nix/2b2-busybox.nix
 ###
 pkgs/4-rebootstrap-using-nix.pkg: downloads/make-4.4.1.tar.gz
-pkgs/4-rebootstrap-using-nix.pkg: downloads/binutils-2.37.tar.xz
+pkgs/4-rebootstrap-using-nix.pkg: downloads/binutils-2.39.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/gcc-4.7.4.tar.bz2
 pkgs/4-rebootstrap-using-nix.pkg: downloads/gmp-4.3.2.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpfr-2.4.2.tar.xz

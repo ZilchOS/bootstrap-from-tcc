@@ -2,9 +2,9 @@
 
 let
   source-tarball-binutils = fetchurl {
-    # local = /downloads/binutils-2.37.tar.xz;
-    url = "https://ftp.gnu.org/gnu/binutils/binutils-2.37.tar.xz";
-    sha256 = "820d9724f020a3e69cb337893a0b63c2db161dadcb0e06fc11dc29eb1e84a32c";
+    # local = /downloads/binutils-2.39.tar.xz;
+    url = "https://ftp.gnu.org/gnu/binutils/binutils-2.39.tar.xz";
+    sha256 = "645c25f563b8adc0a81dbd6a41cffbf4d37083a382e02d5d3df4f65c09516d00";
   };
 in
   mkDerivationStage2 {
@@ -22,6 +22,10 @@ in
                 missing install-sh mkinstalldirs
         # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
         sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh
+      # alias makeinfo to true
+        mkdir aliases
+        ln -s ${stage1.protobusybox}/bin/true aliases/makeinfo
+        PATH="$(pwd)/aliases/:$PATH"
       # configure:
         export lt_cv_sys_max_cmd_len=32768
         ash ./configure \
@@ -29,6 +33,7 @@ in
                 SHELL='${stage1.protobusybox}/bin/ash' \
                 CFLAGS='-D__LITTLE_ENDIAN__=1' \
                 --enable-deterministic-archives \
+                --disable-gprofng \
                 --host x86_64-linux --build x86_64-linux \
                 --prefix=$out
       # build:
