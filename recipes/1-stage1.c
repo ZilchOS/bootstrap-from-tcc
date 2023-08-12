@@ -305,7 +305,8 @@ void aa_extend_from_dir(struct args_accumulator* aa_out,
 			break;
 		while ((char*) d - d_buf < r) {
 			d_type = *((char*) d + d->d_reclen - 1);
-			if (d_type == DT_REG && is_compileable(d->d_name)) {
+			if ((d_type == DT_REG || !d_type)
+					&& is_compileable(d->d_name)) {
 				out_subpath = strcpy(buf, prefix);
 				out_subpath = strcpy(out_subpath, "/");
 				out_subpath = strcpy(out_subpath, d->d_name);

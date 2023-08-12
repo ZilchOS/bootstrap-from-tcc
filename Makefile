@@ -24,6 +24,7 @@ MAKEFLAGS += --no-builtin-rules
 NPROC ?= 1 # for inner make invocations, one can pass -j# this way
 USE_CCACHE ?= 0  # for faster iterative debugging only
 USE_NIX_CACHE ?= 0  # for faster iterative debugging only
+USE_DISORDERFS ?= 0  # for more thorough reproducibility testing
 
 SOURCE_DATE_EPOCH ?= $(shell date '--date=01 Jan 1970 00:00:00 UTC' +%s)
 TAR := tar
@@ -80,19 +81,24 @@ pkgs/1-stage1.pkg: recipes/1-stage1/hello.c
 pkgs/1-stage1.pkg: downloads/musl-1.2.4.tar.gz
 pkgs/1-stage1.pkg: downloads/tinycc-mob-af1abf1.tar.gz
 pkgs/1-stage1.pkg: downloads/busybox-1.36.1.tar.bz2
-	@echo "### Makefile: creating a temporary build area tmp/build/1..."
-	rm -rf tmp/build/1-stage1; mkdir -p tmp/build/1-stage1
+pkgs/1-stage1.pkg:
+	@echo "### Makefile: creating temporary builddir tmp/build/1-stage1..."
+	rm -rf tmp/build/1-stage1
+	DISORDER=$(USE_DISORDERFS) helpers/builddir create tmp/build/1-stage1
 	@echo "### Makefile: injecting dependencies..."
 	helpers/inject tmp/build/1-stage1 $^
 	@echo "### Makefile: seeding special stage 1 (and patching sources)..."
 	DESTDIR=tmp/build/1-stage1 recipes/1-stage1/seed.host-executed.sh
 	@echo "### Makefile: special stage 1: executing stage1.c with tcc-seed"
+	DISORDER=$(USE_DISORDERFS) helpers/builddir pre-build tmp/build/1-stage1
 	env -i unshare -nr chroot ./tmp/build/1-stage1 \
 		/store/0-tcc-seed -nostdinc -nostdlib -Werror \
-			-run recipes/1-stage1.c; \
+			-run recipes/1-stage1.c
+	DISORDER=$(USE_DISORDERFS) \
+	       helpers/builddir post-build tmp/build/1-stage1
 	$(TAR_REPR) -Izstd -cf pkgs/1-stage1.pkg -C tmp/build/1-stage1 \
 		store/1-stage1
-	rm -rf tmp/build/1-stage1
+	DISORDER=$(USE_DISORDERFS) helpers/builddir remove tmp/build/1-stage1
 	@echo "### Makefile: 1-stage1 has been built as pkgs/1-stage1.pkg"
 
 # Consequent stages split up into packages have it simpler:
@@ -103,7 +109,7 @@ pkgs/%.pkg: recipes/%.sh
 		rm -rf "tmp/build/$*"; \
 	fi
 	[ ! -e "tmp/build/$*" ]
-	mkdir -p "tmp/build/$*"
+	DISORDER=$(USE_DISORDERFS) helpers/builddir create "tmp/build/$*"
 	helpers/inject "tmp/build/$*" $^
 ifeq ($(USE_CCACHE), 1)
 	@echo "### Makefile: unpacking ccache from previous builds $*..."
@@ -124,6 +130,7 @@ ifeq ($(USE_NIX_CACHE), 1)
 			"tmp/build/$*/prev/nix-db.tar"; \
 	fi
 endif
+	DISORDER=$(USE_DISORDERFS) helpers/builddir pre-build "tmp/build/$*"
 	@echo "### Makefile: building $* ..."
 	env \
 		DESTDIR="./tmp/build/$*" \
@@ -135,6 +142,7 @@ endif
 		echo "### Makefile: extracting/excluding nix db cache..."; \
 		mv "tmp/build/$*/store/$*/nix-db.tar" tmp/prev-nix-db.tar; \
 	fi
+	DISORDER=$(USE_DISORDERFS) helpers/builddir post-build "tmp/build/$*"
 	@echo "### Makefile: packing up $* ..."
 	$(TAR_REPR) -Izstd -cf "pkgs/$*.pkg" -C "tmp/build/$*" "store/$*"
 ifeq ($(USE_CCACHE), 1)
@@ -148,11 +156,7 @@ ifeq ($(USE_CCACHE), 1)
 	fi
 endif
 	@echo "### Makefile: cleaning up after $*"
-	if ! rm -rf "tmp/build/$*" 2>/dev/null; then \
-		chmod -R +w "tmp/build/$*"; \
-		rm -rf "tmp/build/$*"; \
-	fi
-	[ ! -e "tmp/build/$*" ]
+	DISORDER=$(USE_DISORDERFS) helpers/builddir remove "tmp/build/$*"
 	@echo "### Makefile: $* has been built as pkgs/$*.pkg"
 
 # Dependency graph:

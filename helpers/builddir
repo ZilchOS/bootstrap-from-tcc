@@ -1,0 +1,70 @@
+#!/bin/sh
+
+: ${DISORDER=0}
+
+set -uex
+
+verb=$1
+front=$2
+back=$front-back
+
+[ "tmp/build/${front#tmp/build/}" == "$front" ]
+[ "tmp/build/${back#tmp/build/}" == "$back" ]
+
+remove_hard() {
+	if [ -e "$1" ]; then
+		sudo umount "$1" 2>/dev/null || true
+		if ! rm -rf "$1" 2>/dev/null; then
+			chmod -R +w "$1"
+			rm -rf "$1"
+		fi
+	fi
+}
+
+if [ "$verb" = create ]; then
+	echo "### helpers/builddir: creating $front..."
+	remove_hard "$front"; remove_hard "$back"
+	mkdir -p "$front"
+	if [ "$DISORDER" == 1 ]; then
+		sudo umount "$back" || true
+		rm -rf "$back"
+		mkdir -p "$front" "$back"
+		sudo mount -o size=8G -t tmpfs tmpfs "$back"
+		sudo mount --bind "$back" "$front"
+		[ $(findmnt -no FSTYPE "$front") == tmpfs ]
+	fi
+elif [ "$verb" = pre-build ]; then
+	[ -e "$front" ]
+	if [ "$DISORDER" == 1 ]; then
+		echo "### helpers/builddir: disordering $front..."
+		[ -e "$back" ]
+		[ $(findmnt -no FSTYPE "$back") == tmpfs ]
+		sudo umount "$front"
+		sudo disorderfs --shuffle-dirents=yes \
+				-o allow_other --multi-user=yes \
+				"$back" "$front"
+		[ $(findmnt -no FSTYPE "$front") == fuse.disorderfs ]
+	fi
+elif [ "$verb" = post-build ]; then
+	if [ "$DISORDER" == 1 ]; then
+		echo "### helpers/disorderfs: ordering $front..."
+		[ ! -e "$front" ] && [ ! -e "$back" ]
+		[ $(findmnt -no FSTYPE "$front") == fuse.disorderfs ]
+		[ $(findmnt -no FSTYPE "$back") == tmpfs ]
+		sudo umount "$front"
+		sudo mount --bind "$back" "$front"
+	fi
+elif [ "$verb" = remove ]; then
+	echo "### helpers/disorderfs: removing $front..."
+	if [ "$DISORDER" == 1 ]; then
+		[ $(findmnt -no FSTYPE "$back") == tmpfs ]
+		sudo umount "$front"
+		sudo umount "$back"
+		rm -d "$front" "$back"
+	else
+		remove_hard "$front"; remove_hard "$back"
+	fi
+	[ ! -e "$front" ] && [ ! -e "$back" ]
+else
+	exit 9
+fi
