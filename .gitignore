@@ -9,5 +9,6 @@ tcc-seed
 /result*
 /scratch
 /pkgs
+/trees
 
 /TODO

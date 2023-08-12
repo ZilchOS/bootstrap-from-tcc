@@ -25,6 +25,7 @@ NPROC ?= 1 # for inner make invocations, one can pass -j# this way
 USE_CCACHE ?= 0  # for faster iterative debugging only
 USE_NIX_CACHE ?= 0  # for faster iterative debugging only
 USE_DISORDERFS ?= 0  # for more thorough reproducibility testing
+SAVE_MISMATCHING_BUILD_TREES ?= 0  # for more thorough reproducibility testing
 
 SOURCE_DATE_EPOCH ?= $(shell date '--date=01 Jan 1970 00:00:00 UTC' +%s)
 TAR := tar
@@ -153,6 +154,19 @@ ifeq ($(USE_CCACHE), 1)
 			/store/_2a0-ccache/bin/ccache -sz; \
 		$(TAR_REPR) -Izstd -cf "tmp/ccache/$*.tar.zstd" \
 			-C "tmp/build/$*/ccache" .; \
+	fi
+	rm -rf "tmp/build/$*/store/_2a0-ccache"
+	rm -rf "tmp/build/$*/ccache"
+endif
+ifeq ($(SAVE_MISMATCHING_BUILD_TREES), 1)
+	computed_csum=$$(zstd -qcd "pkgs/$*.pkg" | sha256sum); \
+	computed_csum=$$(<<<$$computed_csum tr ' ' '\t' | cut -f1); \
+	if ! grep -q "$$computed_csum pkgs/$*" verify.pkgs.sha256; then \
+		short_csum=$$(<<<$$computed_csum head -c7); \
+		echo "### Makefile: packing up $* buildtree"; \
+		mkdir -p trees; \
+		$(TAR_REPR) -Izstd -cf "trees/$*-$$short_csum.pkg" \
+			-C "tmp/build/$*" .; \
 	fi
 endif
 	@echo "### Makefile: cleaning up after $*"
