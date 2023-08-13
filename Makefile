@@ -221,7 +221,7 @@ pkgs/2a5-gnugcc10.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/2a5-gnugcc10.pkg: pkgs/2a1-static-binutils.pkg
 pkgs/2a5-gnugcc10.pkg: pkgs/2a3-intermediate-musl.pkg
 pkgs/2a5-gnugcc10.pkg: pkgs/2a4-gnugcc4-cpp.pkg
-pkgs/2a5-gnugcc10.pkg: downloads/gcc-10.3.0.tar.xz
+pkgs/2a5-gnugcc10.pkg: downloads/gcc-10.5.0.tar.xz
 pkgs/2a5-gnugcc10.pkg: downloads/gmp-6.1.0.tar.xz
 pkgs/2a5-gnugcc10.pkg: downloads/mpc-1.0.3.tar.gz
 pkgs/2a5-gnugcc10.pkg: downloads/mpfr-3.1.4.tar.xz
@@ -456,7 +456,7 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/gmp-4.3.2.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpfr-2.4.2.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpc-0.8.1.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/musl-1.2.4.tar.gz
-pkgs/4-rebootstrap-using-nix.pkg: downloads/gcc-10.3.0.tar.xz
+pkgs/4-rebootstrap-using-nix.pkg: downloads/gcc-10.5.0.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/gmp-6.1.0.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpfr-3.1.4.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpc-1.0.3.tar.gz

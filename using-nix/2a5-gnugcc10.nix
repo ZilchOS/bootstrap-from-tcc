@@ -3,9 +3,9 @@
 
 let
   source-tarball-gcc = fetchurl {
-    # local = /downloads/gcc-10.3.0.tar.xz;
-    url = "https://ftp.gnu.org/gnu/gcc/gcc-10.3.0/gcc-10.3.0.tar.xz";
-    sha256 = "64f404c1a650f27fc33da242e1f2df54952e3963a49e06e73f6940f3223ac344";
+    # local = /downloads/gcc-10.5.0.tar.xz;
+    url = "https://ftp.gnu.org/gnu/gcc/gcc-10.5.0/gcc-10.5.0.tar.xz";
+    sha256 = "25109543fdf46f397c347b5d8b7a2c7e5694a5a51cce4b9c6e1ea8a71ca307c1";
   };
   source-tarball-gmp = fetchurl {
     # local = /downloads/gmp-6.1.0.tar.xz;

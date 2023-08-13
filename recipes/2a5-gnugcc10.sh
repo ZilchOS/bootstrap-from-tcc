@@ -12,8 +12,8 @@
 #> FETCH 6b8b0fd7f81d0a957beb3679c81bbb34ccc7568d5682844d8924424a0dadcb1b
 #>  FROM http://gcc.gnu.org/pub/gcc/infrastructure/isl-0.18.tar.bz2
 
-#> FETCH 64f404c1a650f27fc33da242e1f2df54952e3963a49e06e73f6940f3223ac344
-#>  FROM https://ftp.gnu.org/gnu/gcc/gcc-10.3.0/gcc-10.3.0.tar.xz
+#> FETCH 25109543fdf46f397c347b5d8b7a2c7e5694a5a51cce4b9c6e1ea8a71ca307c1
+#>  FROM https://ftp.gnu.org/gnu/gcc/gcc-10.5.0/gcc-10.5.0.tar.xz
 
 set -uex
 
@@ -33,7 +33,7 @@ SYSROOT=/store/2a3-intermediate-musl
 
 echo "### $0: unpacking GNU GCC 10 sources..."
 mkdir gmp mpfr mpc isl
-tar --strip-components=1 -xf /downloads/gcc-10.3.0.tar.xz
+tar --strip-components=1 -xf /downloads/gcc-10.5.0.tar.xz
 tar --strip-components=1 -xf /downloads/gmp-6.1.0.tar.xz -C gmp
 tar --strip-components=1 -xf /downloads/mpfr-3.1.4.tar.xz -C mpfr
 tar --strip-components=1 -xf /downloads/mpc-1.0.3.tar.gz -C mpc
