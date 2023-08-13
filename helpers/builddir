@@ -47,7 +47,7 @@ elif [ "$verb" = pre-build ]; then
 	fi
 elif [ "$verb" = post-build ]; then
 	if [ "$DISORDER" == 1 ]; then
-		echo "### helpers/disorderfs: ordering $front..."
+		echo "### helpers/builddir: ordering $front..."
 		[ ! -e "$front" ] && [ ! -e "$back" ]
 		[ $(findmnt -no FSTYPE "$front") == fuse.disorderfs ]
 		[ $(findmnt -no FSTYPE "$back") == tmpfs ]
@@ -55,7 +55,7 @@ elif [ "$verb" = post-build ]; then
 		sudo mount --bind "$back" "$front"
 	fi
 elif [ "$verb" = remove ]; then
-	echo "### helpers/disorderfs: removing $front..."
+	echo "### helpers/builddir: removing $front..."
 	if [ "$DISORDER" == 1 ]; then
 		[ $(findmnt -no FSTYPE "$back") == tmpfs ]
 		sudo umount "$front"
