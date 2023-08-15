@@ -23,6 +23,12 @@ in
         rm src/getopt.h
         for f in src/getopt.c src/getopt1.c lib/fnmatch.c; do :> $f; done
         for f in lib/glob.c lib/xmalloc.c lib/error.c; do :> $f; done
+      # embrace chaos
+        shuffle_comment='\/\* Handle shuffle mode argument.  \*\/'
+        shuffle_default='if (!shuffle_mode) shuffle_mode = xstrdup(\"random\");'
+        sed -i "s|$shuffle_comment|$shuffle_comment\n$shuffle_default|" \
+               src/main.c
+        grep 'if (!shuffle_mode) shuffle_mode = xstrdup("random");' src/main.c
       # configure:
         ash ./configure \
                 --build x86_64-linux \

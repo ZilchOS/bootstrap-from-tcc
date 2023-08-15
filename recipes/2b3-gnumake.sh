@@ -15,6 +15,13 @@ if [ -e /ccache/setup ]; then . /ccache/setup; fi
 echo "### $0: unpacking GNU Make sources..."
 tar --strip-components=1 -xf /downloads/make-4.4.1.tar.gz
 
+echo "### $0: fixing up GNU Make sources..."
+# embrace chaos
+shuffle_comment='\/\* Handle shuffle mode argument.  \*\/'
+shuffle_default='if (!shuffle_mode) shuffle_mode = xstrdup(\"random\");'
+sed -i "s|$shuffle_comment|$shuffle_comment\n$shuffle_default|" src/main.c
+grep 'if (!shuffle_mode) shuffle_mode = xstrdup("random");' src/main.c
+
 echo "### $0: building GNU Make..."
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' build-aux/install-sh
 ash ./configure \

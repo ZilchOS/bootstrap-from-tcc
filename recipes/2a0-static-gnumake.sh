@@ -20,6 +20,11 @@ sed -i 's|/bin/sh|/store/1-stage1/protobusybox/bin/ash|' \
 rm src/getopt.h
 for f in src/getopt.c src/getopt1.c; do :> $f; done
 for f in lib/fnmatch.c lib/glob.c lib/xmalloc.c lib/error.c; do :> $f; done
+# embrace chaos
+shuffle_comment='\/\* Handle shuffle mode argument.  \*\/'
+shuffle_default='if (!shuffle_mode) shuffle_mode = xstrdup(\"random\");'
+sed -i "s|$shuffle_comment|$shuffle_comment\n$shuffle_default|" src/main.c
+grep 'if (!shuffle_mode) shuffle_mode = xstrdup("random");' src/main.c
 
 echo "### $0: building static GNU Make..."
 ash ./configure \
