@@ -29,7 +29,7 @@ if [ "$verb" = create ]; then
 		sudo umount "$back" || true
 		rm -rf "$back"
 		mkdir -p "$front" "$back"
-		sudo mount -o size=8G -t tmpfs tmpfs "$back"
+		sudo mount -o size=16G -t tmpfs tmpfs "$back"
 		sudo mount --bind "$back" "$front"
 		[ $(findmnt -no FSTYPE "$front") == tmpfs ]
 	fi
