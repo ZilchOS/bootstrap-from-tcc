@@ -117,6 +117,8 @@ make -C build -j $NPROC runtimes  # continue in parallel again
 
 NEW_LIB_DIR="$(pwd)/build/lib/x86_64-unknown-linux-musl"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$NEW_LIB_DIR"
+# race condition on config_site
+mkdir -p build/include/x86_64-unknown-linux-musl/c++/v1
 make -C build -j $NPROC stage2-build
 
 echo "### $0: installing LLVM/Clang..."
