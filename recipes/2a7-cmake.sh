@@ -1,7 +1,7 @@
 #!/store/1-stage1/protobusybox/bin/ash
 
-#> FETCH d9570a95c215f4c9886dd0f0564ca4ef8d18c30750f157238ea12669c2985978
-#>  FROM https://github.com/Kitware/CMake/releases/download/v3.21.4/cmake-3.21.4.tar.gz
+#> FETCH 0a905ca8635ca81aa152e123bdde7e54cbe764fdd9a70d62af44cad8b92967af
+#>  FROM https://github.com/Kitware/CMake/releases/download/v3.27.4/cmake-3.27.4.tar.gz
 
 set -uex
 
@@ -16,7 +16,7 @@ mkdir -p /tmp/2a7-cmake; cd /tmp/2a7-cmake
 if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking CMake sources..."
-tar --strip-components=1 -xf /downloads/cmake-3.21.4.tar.gz
+tar --strip-components=1 -xf /downloads/cmake-3.27.4.tar.gz
 
 echo "### $0: fixing up CMake sources..."
 sed -i "s|/bin/sh|$SHELL|" bootstrap
@@ -29,8 +29,8 @@ cp -H /store/2a5-gnugcc10/lib/libgcc_s.so.1 /store/2a7-cmake/bundled-runtime/
 
 echo "### $0: building CMake..."
 ash configure \
-	CFLAGS="-DCPU_SETSIZE=128" \
-	CXXFLAGS="-I/store/2a6-linux-headers/include" \
+	CFLAGS="-DCPU_SETSIZE=128 -D_GNU_SOURCE" \
+	CXXFLAGS="-isystem /store/2a6-linux-headers/include" \
 	LDFLAGS="-Wl,-rpath /store/2a7-cmake/bundled-runtime" \
 	--prefix=/store/2a7-cmake \
 	--parallel=$NPROC \
