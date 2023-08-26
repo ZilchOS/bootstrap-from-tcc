@@ -37,6 +37,9 @@ in
                 --host x86_64-linux --build x86_64-linux \
                 --prefix=$out
       # build:
+        make -j $NPROC \
+                all-libiberty all-gas all-bfd all-libctf all-zlib all-gprof
+        make all-ld  # race condition on ld/.deps/ldwrite.Po, serialize
         make -j $NPROC
       # install:
         make -j $NPROC install

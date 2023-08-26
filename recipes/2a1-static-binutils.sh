@@ -34,6 +34,8 @@ ash configure \
 	--enable-deterministic-archives \
 	--host x86_64-linux --build x86_64-linux \
 	--prefix=/store/2a1-static-binutils
+make -j $NPROC all-libiberty all-gas all-bfd all-libctf all-zlib all-gprof
+make all-ld  # race condition on ld/.deps/ldwrite.Po, serialize
 make -j $NPROC
 
 echo "### $0: installing static binutils..."
