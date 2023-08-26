@@ -1,7 +1,7 @@
 #!/store/1-stage1/protobusybox/bin/ash
 
-#> FETCH 5a99f8e7a6a11a7b98b4e75e0d1303d3832cada5534068f69c7b6222a7b1b002
-#>  FROM https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tar.xz
+#> FETCH 85cd12e9cf1d6d5a45f17f7afe1cebe7ee628d3282281c492e86adf636defa3f
+#>  FROM https://www.python.org/ftp/python/3.11.5/Python-3.11.5.tar.xz
 
 set -uex
 
@@ -20,7 +20,7 @@ mkdir aliases; ln -s /store/1-stage1/protobusybox/bin/ash aliases/sh
 export PATH="/tmp/2a8-python/aliases:$PATH"
 
 echo "### $0: unpacking CPython sources..."
-tar --strip-components=1 -xf /downloads/Python-3.10.0.tar.xz
+tar --strip-components=1 -xf /downloads/Python-3.11.5.tar.xz
 
 echo "### $0: fixing up CPython sources..."
 sed -i "s|/bin/sh|$SHELL|" configure
@@ -42,4 +42,4 @@ make -j $NPROC
 echo "### $0: installing CPython..."
 make -j $NPROC install
 # restore compileall just in case
-cat Lib/compileall.py.bak > /store/2a8-python/lib/python3.10/compileall.py
+cat Lib/compileall.py.bak > /store/2a8-python/lib/python3.11/compileall.py

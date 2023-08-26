@@ -247,7 +247,7 @@ pkgs/2a8-python.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/2a8-python.pkg: pkgs/2a1-static-binutils.pkg
 pkgs/2a8-python.pkg: pkgs/2a3-intermediate-musl.pkg
 pkgs/2a8-python.pkg: pkgs/2a5-gnugcc10.pkg
-pkgs/2a8-python.pkg: downloads/Python-3.10.0.tar.xz
+pkgs/2a8-python.pkg: downloads/Python-3.11.5.tar.xz
 
 pkgs/2a9-intermediate-clang.pkg: pkgs/1-stage1.pkg
 pkgs/2a9-intermediate-clang.pkg: pkgs/2a0-static-gnumake.pkg
@@ -463,7 +463,7 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/mpc-1.0.3.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/isl-0.18.tar.bz2
 pkgs/4-rebootstrap-using-nix.pkg: downloads/linux-5.15.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/cmake-3.27.4.tar.gz
-pkgs/4-rebootstrap-using-nix.pkg: downloads/Python-3.10.0.tar.xz
+pkgs/4-rebootstrap-using-nix.pkg: downloads/Python-3.11.5.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/llvm-project-13.0.0.src.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/busybox-1.36.1.tar.bz2
 
