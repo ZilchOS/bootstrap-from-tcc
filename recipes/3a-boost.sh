@@ -1,7 +1,7 @@
 #!/store/2b2-busybox/bin/ash
 
-#> FETCH fc9f85fc030e233142908241af7a846e60630aa7388de9a5fafb1f3a26840854
-#>  FROM https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/boost_1_77_0.tar.bz2
+#> FETCH 6478edfe2f3305127cffe8caf73ea0176c53769f4bf1585be237eb30798c3b8e
+#>  FROM https://boostorg.jfrog.io/artifactory/main/release/1.83.0/source/boost_1_83_0.tar.bz2
 
 set -uex
 
@@ -18,26 +18,28 @@ mkdir aliases; ln -s /store/2b2-busybox/bin/ash aliases/sh
 export PATH="/tmp/3a-boost/aliases:$PATH"
 
 echo "### $0: unpacking Boost sources..."
-tar --strip-components=1 -xf /downloads/boost_1_77_0.tar.bz2
+tar --strip-components=1 -xf /downloads/boost_1_83_0.tar.bz2
 
 echo "### $0: patching up Boost sources..."
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' \
-	bootstrap.sh \
+	bootstrap.sh
+sed -i 's|/usr/bin/env sh|/store/2b2-busybox/bin/ash|' \
 	tools/build/src/engine/build.sh
 sed -i 's|/bin/sh|sh|' \
 	tools/build/src/engine/execunix.cpp \
 	boost/process/detail/posix/shell_path.hpp
-EXTRA_INCL='/tmp/2b1-clang/extra_includes'
+EXTRA_INCL='/tmp/3a-boost/extra_includes'
 mkdir -p $EXTRA_INCL
-cp /store/2b1-clang/lib/clang/13.0.0/include/*mmintrin.h $EXTRA_INCL/
-cp /store/2b1-clang/lib/clang/13.0.0/include/mm_malloc.h $EXTRA_INCL/
-cp /store/2b1-clang/lib/clang/13.0.0/include/unwind.h $EXTRA_INCL/
+cp /store/2b1-clang/lib/clang/17/include/*intrin*.h $EXTRA_INCL/
+cp /store/2b1-clang/lib/clang/17/include/mm_malloc.h $EXTRA_INCL/
+cp /store/2b1-clang/lib/clang/17/include/unwind.h $EXTRA_INCL/
 
 echo "### $0: building Boost..."
 ash bootstrap.sh
 ./b2 --without-python -j $NPROC \
 	include=/store/2a6-linux-headers/include \
-	include=$EXTRA_INCL
+	include=$EXTRA_INCL \
+	include=/store/2b1-clang/include/x86_64-unknown-linux-musl/c++/v1
 
 echo "### $0: installing Boost..."
 ./b2 install --prefix=/store/3a-boost

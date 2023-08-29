@@ -21,7 +21,7 @@ sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' \
 	Makefile.in src/Makefile.in doc/Makefile.in
 
 echo "### $0: building GNU gperf..."
-ash configure --prefix=/store/3a-gnugperf
+ash configure --prefix=/store/3a-gnugperf CXXFLAGS=-Wno-register
 make -j $NPROC
 
 echo "### $0: installing GNU gperf..."

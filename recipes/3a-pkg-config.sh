@@ -15,12 +15,14 @@ if [ -e /ccache/setup ]; then . /ccache/setup; fi
 echo "### $0: unpacking pkg-config sources..."
 tar --strip-components=1 -xf /downloads/pkg-config-0.29.2.tar.gz
 
-echo "### $0: building pkg-config..."
+echo "### $0: patching pkg-config..."
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' \
 	configure glib/configure \
 	install-sh glib/install-sh
 
-ash configure --prefix=/store/3a-pkg-config --with-internal-glib
+echo "### $0: building pkg-config..."
+ash configure --prefix=/store/3a-pkg-config --with-internal-glib \
+	CFLAGS=-Wno-int-conversion
 make -j $NPROC
 
 echo "### $0: installing pkg-config..."

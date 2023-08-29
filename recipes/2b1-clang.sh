@@ -1,7 +1,7 @@
 #!/store/1-stage1/protobusybox/bin/ash
 
-#> FETCH 6075ad30f1ac0e15f07c1bf062c1e1268c241d674f11bd32cdf0e040c71f2bf3
-#>  FROM https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/llvm-project-13.0.0.src.tar.xz
+#> FETCH 60493f4e974fcca7b739aea4901af2d957b0eaea34b42815359be59cf6c88fa2
+#>  FROM https://github.com/llvm/llvm-project/releases/download/llvmorg-17.0.0-rc3/llvm-project-17.0.0rc3.src.tar.xz
 
 set -uex
 
@@ -29,7 +29,7 @@ ln -s /store/2b0-musl/lib/* $SYSROOT/lib/
 ln -s /store/2b0-musl/include/* $SYSROOT/include/
 
 echo "### $0: unpacking LLVM/Clang sources..."
-tar --strip-components=1 -xf /downloads/llvm-project-13.0.0.src.tar.xz
+tar --strip-components=1 -xf /downloads/llvm-project-17.0.0rc3.src.tar.xz
 
 echo "### $0: fixing up LLVM/Clang sources..."
 sed -i "s|COMMAND sh|COMMAND $SHELL|" \
@@ -44,8 +44,6 @@ sed -i "s|${BEGINEND} =|${BEGINEND} = false; ${BEGINEND}_unused =|" \
 REL_ORIGIN='_install_rpath \"\$ORIGIN/../lib${LLVM_LIBDIR_SUFFIX}\"'
 sed -i "s|_install_rpath \"\\\\\$ORIGIN/..|_install_rpath \"$OUT|" \
 	llvm/cmake/modules/AddLLVM.cmake
-sed -i 's|intrinsics_gen|intrinsics_gen\n  ClangDriverOptions|' \
-	clang/lib/Interpreter/CMakeLists.txt
 
 echo "### $0: building LLVM/Clang..."
 export LD_LIBRARY_PATH="/store/2b0-musl/lib:$PREV_CLANG/lib"
@@ -56,10 +54,11 @@ C_INCLUDES="$C_INCLUDES:$LINUX_HEADERS_INCLUDES"
 
 EXTRA_INCL='/tmp/2b1-clang/extra_includes'
 mkdir -p $EXTRA_INCL
-cp clang/lib/Headers/*mmintrin.h $EXTRA_INCL/
+cp clang/lib/Headers/*intrin*.h $EXTRA_INCL/
 cp clang/lib/Headers/mm_malloc.h $EXTRA_INCL/
+[ -e $EXTRA_INCL/immintrin.h ]
 
-export VERBOSE=1
+
 OPTS=''
 add_opt() {
 	OPTS="$OPTS -D$1"
@@ -73,8 +72,10 @@ add_opt CMAKE_INSTALL_PREFIX=$OUT
 add_opt LLVM_INSTALL_BINUTILS_SYMLINKS=YES
 add_opt LLVM_INSTALL_CCTOOLS_SYMLINKS=YES
 add_opt CMAKE_INSTALL_DO_STRIP=YES
+add_opt LLVM_ENABLE_PER_TARGET_RUNTIME_DIR=YES
 add_opt LLVM_TARGET_ARCH=X86
 add_opt LLVM_TARGETS_TO_BUILD=Native
+add_opt LLVM_BUILTIN_TARGETS=x86_64-unknown-linux-musl
 add_opt LLVM_DEFAULT_TARGET_TRIPLE=x86_64-unknown-linux-musl
 add_opt LLVM_HOST_TRIPLE=x86_64-unknown-linux-musl
 add_opt COMPILER_RT_DEFAULT_TARGET_TRIPLE=x86_64-unknown-linux-musl
@@ -83,6 +84,8 @@ add_opt LLVM_INCLUDE_TESTS=NO
 add_opt LLVM_INCLUDE_EXAMPLES=NO
 add_opt LLVM_INCLUDE_BENCHMARKS=NO
 add_opt LLVM_ENABLE_BACKTRACES=NO
+add_opt LLVM_ENABLE_EH=YES
+add_opt LLVM_ENABLE_RTTI=YES
 add_opt CLANG_ENABLE_ARCMT=NO
 add_opt CLANG_ENABLE_STATIC_ANALYZER=NO
 add_opt COMPILER_RT_BUILD_SANITIZERS=NO
@@ -97,6 +100,8 @@ add_opt CLANG_DEFAULT_LINKER=lld
 add_opt CLANG_DEFAULT_RTLIB=compiler-rt
 add_opt LIBCXX_HAS_MUSL_LIBC=YES
 add_opt LIBCXX_USE_COMPILER_RT=YES
+add_opt LIBCXX_INCLUDE_BENCHMARKS=NO
+add_opt LIBCXX_CXX_ABI=libcxxabi
 add_opt LIBCXXABI_USE_COMPILER_RT=YES
 add_opt LIBCXXABI_USE_LLVM_UNWINDER=YES
 add_opt LLVM_INSTALL_TOOLCHAIN_ONLY=YES
@@ -108,24 +113,20 @@ cmake -S llvm -B build -G 'Unix Makefiles' \
 	-DCMAKE_CXX_COMPILER=$PREV_CLANG/bin/clang++ \
 	-DLLVM_ENABLE_PROJECTS='clang;lld' \
 	-DLLVM_ENABLE_RUNTIMES='compiler-rt;libcxx;libcxxabi;libunwind' \
-	-DCMAKE_C_FLAGS="--sysroot=$SYSROOT" \
+	-DCMAKE_C_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
 	-DCMAKE_CXX_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
-	-DCMAKE_C_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER" \
-	-DCMAKE_CXX_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER" \
+	-DCMAKE_C_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER -D_LARGEFILE64_SOURCE" \
+	-DCMAKE_CXX_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER -D_LARGEFILE64_SOURCE" \
 	-DLLVM_BUILD_LLVM_DYLIB=YES \
 	-DLLVM_LINK_LLVM_DYLIB=YES \
 	-DCLANG_LINK_LLVM_DYLIB=YES \
 	$OPTS
         # TODO: remove _LARGEFILE64_SOURCE stopgap on update
 
-	#-DLLVM_ENABLE_LTO=Thin \
-
-make -C build -j $NPROC clang  # runs OK in parallel
-make -C build runtimes-configure  # sometimes explodes when run in parallel =(
-make -C build -j $NPROC runtimes  # continue in parallel again
+make -C build -j $NPROC clang lld runtimes
 
 echo "### $0: installing LLVM/Clang..."
-make -C build install/strip  # again, serial because flaky
+make -C build -j $NPROC install/strip
 ln -s $OUT/lib/x86_64-unknown-linux-musl/* $OUT/lib/
 
 echo "### $0: setting up generic names..."
@@ -133,6 +134,13 @@ ln -s $OUT/bin/clang $OUT/bin/cc
 ln -s $OUT/bin/clang++ $OUT/bin/c++
 ln -s $OUT/bin/clang-cpp $OUT/bin/cpp
 ln -s $OUT/bin/lld $OUT/bin/ld
+
+echo "### $0: HACK making linux target work..."
+# FIXME boost wants it at lib/clang/17/lib/linux/libclang_rt.builtins-x86_64.a
+OUTLIB=$OUT/lib/clang/17/lib
+ln -s $OUTLIB/x86_64-unknown-linux-musl $OUTLIB/linux
+ln -s $OUTLIB/x86_64-unknown-linux-musl/libclang_rt.builtins.a \
+	$OUTLIB/x86_64-unknown-linux-musl/libclang_rt.builtins-x86_64.a
 
 echo "### $0: mixing new stuff into sysroot..."
 ln -s $OUT/lib/* $OUT/sysroot/lib/

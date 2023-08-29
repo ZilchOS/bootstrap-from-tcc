@@ -257,7 +257,7 @@ pkgs/2a9-intermediate-clang.pkg: pkgs/2a5-gnugcc10.pkg
 pkgs/2a9-intermediate-clang.pkg: pkgs/2a6-linux-headers.pkg
 pkgs/2a9-intermediate-clang.pkg: pkgs/2a7-cmake.pkg
 pkgs/2a9-intermediate-clang.pkg: pkgs/2a8-python.pkg
-pkgs/2a9-intermediate-clang.pkg: downloads/llvm-project-13.0.0.src.tar.xz
+pkgs/2a9-intermediate-clang.pkg: downloads/llvm-project-17.0.0rc3.src.tar.xz
 
 pkgs/2b0-musl.pkg: pkgs/1-stage1.pkg
 pkgs/2b0-musl.pkg: pkgs/2a0-static-gnumake.pkg
@@ -274,7 +274,7 @@ pkgs/2b1-clang.pkg: pkgs/2a7-cmake.pkg
 pkgs/2b1-clang.pkg: pkgs/2a8-python.pkg
 pkgs/2b1-clang.pkg: pkgs/2a9-intermediate-clang.pkg
 pkgs/2b1-clang.pkg: pkgs/2b0-musl.pkg
-pkgs/2b1-clang.pkg: downloads/llvm-project-13.0.0.src.tar.xz
+pkgs/2b1-clang.pkg: downloads/llvm-project-17.0.0rc3.src.tar.xz
 
 pkgs/2b2-busybox.pkg: pkgs/1-stage1.pkg
 pkgs/2b2-busybox.pkg: pkgs/2a0-static-gnumake.pkg
@@ -306,7 +306,7 @@ pkgs/3a-boost.pkg: pkgs/2b1-clang.pkg
 pkgs/3a-boost.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-boost.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-boost.pkg: pkgs/2a6-linux-headers.pkg
-pkgs/3a-boost.pkg: downloads/boost_1_77_0.tar.bz2
+pkgs/3a-boost.pkg: downloads/boost_1_83_0.tar.bz2
 
 pkgs/3a-mbedtls.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-mbedtls.pkg: pkgs/2b1-clang.pkg
@@ -464,7 +464,7 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/isl-0.18.tar.bz2
 pkgs/4-rebootstrap-using-nix.pkg: downloads/linux-5.15.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/cmake-3.27.4.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/Python-3.11.5.tar.xz
-pkgs/4-rebootstrap-using-nix.pkg: downloads/llvm-project-13.0.0.src.tar.xz
+pkgs/4-rebootstrap-using-nix.pkg: downloads/llvm-project-17.0.0rc3.src.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/busybox-1.36.1.tar.bz2
 
 ################################################################################
