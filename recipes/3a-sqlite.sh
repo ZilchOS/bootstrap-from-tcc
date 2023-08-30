@@ -1,7 +1,7 @@
 #!/store/2b2-busybox/bin/ash
 
-#> FETCH bd90c3eb96bee996206b83be7065c9ce19aef38c3f4fb53073ada0d0b69bbce3
-#>  FROM https://www.sqlite.org/2021/sqlite-autoconf-3360000.tar.gz
+#> FETCH 49008dbf3afc04d4edc8ecfc34e4ead196973034293c997adad2f63f01762ae1
+#>  FROM https://sqlite.org/2023/sqlite-autoconf-3430000.tar.gz
 
 set -uex
 
@@ -13,7 +13,7 @@ mkdir -p /tmp/3a-sqlite; cd /tmp/3a-sqlite
 if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking SQLite archive..."
-tar --strip-components=1 -xf /downloads/sqlite-autoconf-3360000.tar.gz
+tar --strip-components=1 -xf /downloads/sqlite-autoconf-3430000.tar.gz
 
 echo "### $0: building SQLite..."
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' configure install-sh

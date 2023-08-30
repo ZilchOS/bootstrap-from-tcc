@@ -299,7 +299,7 @@ pkgs/3a-sqlite.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-sqlite.pkg: pkgs/2b1-clang.pkg
 pkgs/3a-sqlite.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-sqlite.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3a-sqlite.pkg: downloads/sqlite-autoconf-3360000.tar.gz
+pkgs/3a-sqlite.pkg: downloads/sqlite-autoconf-3430000.tar.gz
 
 pkgs/3a-boost.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-boost.pkg: pkgs/2b1-clang.pkg
