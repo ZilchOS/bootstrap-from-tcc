@@ -293,7 +293,7 @@ pkgs/3a-gnubash.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-gnubash.pkg: pkgs/2b1-clang.pkg
 pkgs/3a-gnubash.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-gnubash.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3a-gnubash.pkg: downloads/bash-5.1.8.tar.gz
+pkgs/3a-gnubash.pkg: downloads/bash-5.2.15.tar.gz
 
 pkgs/3a-sqlite.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-sqlite.pkg: pkgs/2b1-clang.pkg

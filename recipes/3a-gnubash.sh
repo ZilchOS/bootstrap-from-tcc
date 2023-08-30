@@ -1,7 +1,7 @@
 #!/store/2b2-busybox/bin/ash
 
-#> FETCH 0cfb5c9bb1a29f800a97bd242d19511c997a1013815b805e0fdd32214113d6be
-#>  FROM https://ftp.gnu.org/gnu/bash/bash-5.1.8.tar.gz
+#> FETCH 13720965b5f4fc3a0d4b61dd37e7565c741da9a5be24edc2ae00182fc1b3588c
+#>  FROM https://ftp.gnu.org/gnu/bash/bash-5.2.15.tar.gz
 
 set -uex
 
@@ -13,7 +13,7 @@ mkdir -p /tmp/3a-gnubash; cd /tmp/3a-gnubash
 if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking GNU Bash sources..."
-tar --strip-components=1 -xf /downloads/bash-5.1.8.tar.gz
+tar --strip-components=1 -xf /downloads/bash-5.2.15.tar.gz
 
 echo "### $0: building GNU Bash..."
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' configure
