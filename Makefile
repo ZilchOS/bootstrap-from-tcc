@@ -232,7 +232,7 @@ pkgs/2a6-linux-headers.pkg: pkgs/2a0-static-gnumake.pkg
 pkgs/2a6-linux-headers.pkg: pkgs/2a1-static-binutils.pkg
 pkgs/2a6-linux-headers.pkg: pkgs/2a3-intermediate-musl.pkg
 pkgs/2a6-linux-headers.pkg: pkgs/2a5-gnugcc10.pkg
-pkgs/2a6-linux-headers.pkg: downloads/linux-5.15.tar.xz
+pkgs/2a6-linux-headers.pkg: downloads/linux-6.4.12.tar.xz
 
 pkgs/2a7-cmake.pkg: pkgs/1-stage1.pkg
 pkgs/2a7-cmake.pkg: pkgs/2a0-static-gnumake.pkg
@@ -461,7 +461,7 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/gmp-6.1.0.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpfr-3.1.4.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/mpc-1.0.3.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/isl-0.18.tar.bz2
-pkgs/4-rebootstrap-using-nix.pkg: downloads/linux-5.15.tar.xz
+pkgs/4-rebootstrap-using-nix.pkg: downloads/linux-6.4.12.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/cmake-3.27.4.tar.gz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/Python-3.11.5.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/llvm-project-17.0.0rc3.src.tar.xz
