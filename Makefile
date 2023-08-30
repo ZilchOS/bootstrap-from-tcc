@@ -352,7 +352,7 @@ pkgs/3a-seccomp.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-seccomp.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-seccomp.pkg: pkgs/3a-gnugperf.pkg
 pkgs/3a-seccomp.pkg: pkgs/2a6-linux-headers.pkg
-pkgs/3a-seccomp.pkg: downloads/libseccomp-2.5.3.tar.gz
+pkgs/3a-seccomp.pkg: downloads/libseccomp-2.5.4.tar.gz
 
 pkgs/3a-libarchive.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-libarchive.pkg: pkgs/2b1-clang.pkg
