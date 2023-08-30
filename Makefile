@@ -312,7 +312,7 @@ pkgs/3a-mbedtls.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-mbedtls.pkg: pkgs/2b1-clang.pkg
 pkgs/3a-mbedtls.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-mbedtls.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3a-mbedtls.pkg: downloads/mbedtls-3.0.0.tar.gz
+pkgs/3a-mbedtls.pkg: downloads/mbedtls-3.4.1.tar.gz
 
 pkgs/3a-pkg-config.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-pkg-config.pkg: pkgs/2b1-clang.pkg
