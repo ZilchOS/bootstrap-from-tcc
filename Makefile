@@ -359,7 +359,7 @@ pkgs/3a-libarchive.pkg: pkgs/2b1-clang.pkg
 pkgs/3a-libarchive.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-libarchive.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-libarchive.pkg: pkgs/3a-pkg-config.pkg
-pkgs/3a-libarchive.pkg: downloads/libarchive-3.5.2.tar.xz
+pkgs/3a-libarchive.pkg: downloads/libarchive-3.7.1.tar.xz
 
 pkgs/3a-libsodium.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-libsodium.pkg: pkgs/2b1-clang.pkg

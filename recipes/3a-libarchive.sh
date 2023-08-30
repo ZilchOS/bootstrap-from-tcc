@@ -1,7 +1,7 @@
 #!/store/2b2-busybox/bin/ash
 
-#> FETCH f0b19ff39c3c9a5898a219497ababbadab99d8178acc980155c7e1271089b5a0
-#>  FROM https://libarchive.org/downloads/libarchive-3.5.2.tar.xz
+#> FETCH b17403ce670ff18d8e06fea05a9ea9accf70678c88f1b9392a2e29b51127895f
+#>  FROM http://libarchive.org/downloads/libarchive-3.7.1.tar.xz
 
 set -uex
 
@@ -14,7 +14,7 @@ mkdir -p /tmp/3a-libarchive; cd /tmp/3a-libarchive
 if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking libarchive sources..."
-tar --strip-components=1 -xf /downloads/libarchive-3.5.2.tar.xz
+tar --strip-components=1 -xf /downloads/libarchive-3.7.1.tar.xz
 
 echo "### $0: fixing up libarchive sources..."
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' \
@@ -22,7 +22,8 @@ sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' \
 
 echo "### $0: building libarchive..."
 ash configure --prefix=/store/3a-libarchive \
-	--disable-dependency-tracking
+	--disable-dependency-tracking \
+	--without-openssl
 make -j $NPROC
 
 echo "### $0: installing libarchive..."
