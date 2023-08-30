@@ -326,7 +326,7 @@ pkgs/3a-curl.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-curl.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-curl.pkg: pkgs/3a-mbedtls.pkg
 pkgs/3a-curl.pkg: pkgs/3a-pkg-config.pkg
-pkgs/3a-curl.pkg: downloads/curl-7.80.0.tar.xz
+pkgs/3a-curl.pkg: downloads/curl-8.2.1.tar.xz
 
 pkgs/3a-editline.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-editline.pkg: pkgs/2b1-clang.pkg
