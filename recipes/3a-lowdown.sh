@@ -1,8 +1,8 @@
 #!/store/2b2-busybox/bin/ash
 
-#> FETCH 1b1896b334861db1c588adc6b72ecd88b9e143a397f04d96a6fdeb633f915208
-#>  FROM https://github.com/kristapsdz/lowdown/archive/refs/tags/VERSION_0_10_0.tar.gz
-#>    AS lowdown-0.10.0.tar.gz
+#> FETCH 049b7883874f8a8e528dc7c4ed7b27cf7ceeb9ecf8fe71c3a8d51d574fddf84b
+#>  FROM https://github.com/kristapsdz/lowdown/archive/refs/tags/VERSION_1_0_2.tar.gz
+#>    AS lowdown-1.0.2.tar.gz
 
 set -uex
 
@@ -17,7 +17,7 @@ mkdir -p /tmp/3a-lowdown; cd /tmp/3a-lowdown
 if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking lowdown sources..."
-tar --strip-components=1 -xf /downloads/lowdown-0.10.0.tar.gz
+tar --strip-components=1 -xf /downloads/lowdown-1.0.2.tar.gz
 
 echo "### $0: fixing up lowdown sources..."
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' configure
@@ -27,4 +27,4 @@ ash configure PREFIX=/store/3a-lowdown
 make -j $NPROC
 
 echo "### $0: installing lowdown..."
-make -j $NPROC install
+make -j $NPROC install_shared

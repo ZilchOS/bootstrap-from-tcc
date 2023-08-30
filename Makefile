@@ -372,7 +372,7 @@ pkgs/3a-lowdown.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-lowdown.pkg: pkgs/2b1-clang.pkg
 pkgs/3a-lowdown.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-lowdown.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3a-lowdown.pkg: downloads/lowdown-0.10.0.tar.gz
+pkgs/3a-lowdown.pkg: downloads/lowdown-1.0.2.tar.gz
 
 pkgs/3b-busybox-static.pkg: pkgs/2b0-musl.pkg
 pkgs/3b-busybox-static.pkg: pkgs/2b1-clang.pkg
