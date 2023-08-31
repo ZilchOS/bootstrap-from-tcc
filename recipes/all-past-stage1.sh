@@ -31,6 +31,7 @@ export SOURCE_DATE_EPOCH=0
 /recipes/3a-libarchive.sh
 /recipes/3a-libsodium.sh
 /recipes/3a-lowdown.sh
+/recipes/3a-nlohmann-json.sh
 /recipes/3b-busybox-static.sh
 /recipes/3b-tinycc-static.sh
 /recipes/3b-nix.sh

@@ -374,6 +374,12 @@ pkgs/3a-lowdown.pkg: pkgs/2b2-busybox.pkg
 pkgs/3a-lowdown.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3a-lowdown.pkg: downloads/lowdown-1.0.2.tar.gz
 
+pkgs/3a-nlohmann-json.pkg: pkgs/2b0-musl.pkg
+pkgs/3a-nlohmann-json.pkg: pkgs/2b1-clang.pkg
+pkgs/3a-nlohmann-json.pkg: pkgs/2b2-busybox.pkg
+pkgs/3a-nlohmann-json.pkg: pkgs/2b3-gnumake.pkg
+pkgs/3a-nlohmann-json.pkg: downloads/nlohmann-json-3.11.2.tar.xz
+
 pkgs/3b-busybox-static.pkg: pkgs/2b0-musl.pkg
 pkgs/3b-busybox-static.pkg: pkgs/2b1-clang.pkg
 pkgs/3b-busybox-static.pkg: pkgs/2b2-busybox.pkg
@@ -556,6 +562,7 @@ all-pkgs: pkgs/3a-seccomp.pkg
 all-pkgs: pkgs/3a-libarchive.pkg
 all-pkgs: pkgs/3a-libsodium.pkg
 all-pkgs: pkgs/3a-lowdown.pkg
+all-pkgs: pkgs/3a-nlohmann-json.pkg
 all-pkgs: pkgs/3b-busybox-static.pkg
 all-pkgs: pkgs/3b-tinycc-static.pkg
 all-pkgs: pkgs/3b-nix.pkg
