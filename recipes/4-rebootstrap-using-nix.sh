@@ -65,10 +65,12 @@ echo "{ tinycc = ../store/3b-tinycc-static/bin/tcc; protosrc = $PROTOSRC; }" \
 	> /using-nix/0.nix
 
 echo "### $0: rebuilding everything using nix..."
+# can't have sandbox, need deterministic build paths
+NIX_FORCE_BUILD_PATH=/build \
 nix-build \
+	-j1 \
 	--extra-experimental-features ca-derivations \
 	--option build-users-group '' \
-	--option sandbox false \
 	--option compress-build-log false \
 	--no-substitute \
 	--cores $NPROC \

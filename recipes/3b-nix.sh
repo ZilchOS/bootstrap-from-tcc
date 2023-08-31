@@ -1,7 +1,7 @@
 #!/store/2b2-busybox/bin/ash
 
-#> FETCH bb2e48c487e736916583233ab63fde898117161c0107a2aa3008387a53b40101
-#>  FROM https://github.com/ZilchOS/nix/releases/download/nix-2.5.1-zilched/nix-2.5.1-zilched.tar.xz
+#> FETCH f3f8016621cf3971e0768404f05b89d4a7fc1911dddae5a9a7ed4bf62519302c
+#>  FROM https://github.com/ZilchOS/nix/releases/download/nix-2.17.0-zilched/nix-2.17.0-zilched.tar.xz
 
 #> FETCH 3659cd137c320991a78413dd370a92fd18e0a8bc36d017d554f08677a37d7d5a
 #>  FROM https://raw.githubusercontent.com/somasis/musl-compat/c12ea3af4e6ee53158a175d992049c2148db5ff6/include/sys/queue.h
@@ -29,6 +29,7 @@ export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-seccomp/lib/pkgconfig"
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-libarchive/lib/pkgconfig"
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-libsodium/lib/pkgconfig"
 export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-lowdown/lib/pkgconfig"
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/store/3a-nlohmann-json/lib/pkgconfig"
 #LIBDIRS="$(pkg-config --variable=libdir openssl)"
 LIBDIRS=""
 #LIBDIRS="$LIBDIRS:$(pkg-config --variable=libdir bzip2)"
@@ -49,7 +50,7 @@ if [ -e /ccache/setup ]; then . /ccache/setup; fi
 
 echo "### $0: unpacking Nix sources..."
 tar --strip-components=1 \
-	-xf /downloads/nix-2.5.1-zilched.tar.xz
+	-xf /downloads/nix-2.17.0-zilched.tar.xz
 
 echo "### $0: copying queue.h..."
 mkdir -p compat-includes/sys
@@ -64,6 +65,7 @@ sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' configure
 
 echo "### $0: building Nix..."
 PCDEPS='libbrotlicommon libbrotlienc libbrotlidec sqlite3 libseccomp lowdown'
+PCDEPS="$PCDEPS nlohmann_json"
 INC="-I/store/2a6-linux-headers/include -I$(pwd)/compat-includes"
 export CFLAGS="$(pkg-config --cflags $PCDEPS) $INC"
 export CXXFLAGS="$CFLAGS"

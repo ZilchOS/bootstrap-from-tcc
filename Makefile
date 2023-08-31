@@ -409,9 +409,10 @@ pkgs/3b-nix.pkg: pkgs/3a-seccomp.pkg
 pkgs/3b-nix.pkg: pkgs/3a-libarchive.pkg
 pkgs/3b-nix.pkg: pkgs/3a-libsodium.pkg
 pkgs/3b-nix.pkg: pkgs/3a-lowdown.pkg
+pkgs/3b-nix.pkg: pkgs/3a-nlohmann-json.pkg
 pkgs/3b-nix.pkg: pkgs/3b-busybox-static.pkg
 pkgs/3b-nix.pkg: downloads/queue.h
-pkgs/3b-nix.pkg: downloads/nix-2.5.1-zilched.tar.xz
+pkgs/3b-nix.pkg: downloads/nix-2.17.0-zilched.tar.xz
 
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/2b0-musl.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/2b1-clang.pkg
@@ -426,6 +427,7 @@ pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-seccomp.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-libarchive.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-libsodium.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-lowdown.pkg
+pkgs/4-rebootstrap-using-nix.pkg: pkgs/3a-nlohmann-json.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3b-tinycc-static.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3b-busybox-static.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/3b-nix.pkg
