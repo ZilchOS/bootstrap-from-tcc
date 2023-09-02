@@ -45,6 +45,8 @@ sed -i "s|${BEGINEND} =|${BEGINEND} = false; ${BEGINEND}_unused =|" \
 REL_ORIGIN='_install_rpath \"\$ORIGIN/../lib${LLVM_LIBDIR_SUFFIX}\"'
 sed -i "s|_install_rpath \"\\\\\$ORIGIN/..|_install_rpath \"$OUT|" \
 	llvm/cmake/modules/AddLLVM.cmake
+sed -i 's|numShards = 32;|numShards = 1;|' lld/*/SyntheticSections.*
+sed -i 's|numShards = 256;|numShards = 1;|' lld/*/ICF.cpp
 
 echo "### $0: building LLVM/Clang (stage 1)..."
 export LD_LIBRARY_PATH='/store/2a5-gnugcc10/lib'

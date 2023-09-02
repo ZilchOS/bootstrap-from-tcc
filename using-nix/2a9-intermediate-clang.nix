@@ -44,6 +44,8 @@ in
         REL_ORIGIN='_install_rpath \"\$ORIGIN/../lib''${LLVM_LIBDIR_SUFFIX}\"'
         sed -i "s|_install_rpath \"\\\\\$ORIGIN/..|_install_rpath \"$out|" \
           llvm/cmake/modules/AddLLVM.cmake
+        sed -i 's|numShards = 32;|numShards = 1;|' lld/*/SyntheticSections.*
+        sed -i 's|numShards = 256;|numShards = 1;|' lld/*/ICF.cpp
       # figure out includes:
         C_INCLUDES="$SYSROOT/include"
         C_INCLUDES="$C_INCLUDES:${linux-headers}/include"
