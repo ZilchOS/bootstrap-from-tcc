@@ -104,6 +104,7 @@ in
         add_opt LIBCXXABI_USE_LLVM_UNWINDER=YES
         add_opt LLVM_INSTALL_TOOLCHAIN_ONLY=YES
         add_opt LIBUNWIND_USE_COMPILER_RT=YES
+        add_opt LLVM_ENABLE_THREADS=NO
         cmake -S llvm -B build -G 'Unix Makefiles' \
           -DCMAKE_ASM_COMPILER=${intermediate-clang}/bin/clang \
           -DCMAKE_C_COMPILER=${intermediate-clang}/bin/clang \
