@@ -36,10 +36,12 @@ cp /store/2b1-clang/lib/clang/17/include/unwind.h $EXTRA_INCL/
 
 echo "### $0: building Boost..."
 ash bootstrap.sh
-./b2 --without-python -j $NPROC \
+./b2 -j $NPROC \
 	include=/store/2a6-linux-headers/include \
 	include=$EXTRA_INCL \
-	include=/store/2b1-clang/include/x86_64-unknown-linux-musl/c++/v1
+	include=/store/2b1-clang/include/x86_64-unknown-linux-musl/c++/v1 \
+	--with-context --with-thread --with-system
 
 echo "### $0: installing Boost..."
-./b2 install --prefix=/store/3a-boost
+./b2 install --prefix=/store/3a-boost \
+	--with-context --with-thread --with-system
