@@ -93,6 +93,13 @@ Then repeat stage 1 and most of stage 2 all over again, but under Nix.
 The final exports of this flake are musl, clang toolchain and a busybox
 that ZilchOS Core later bootstraps from.
 
+* stage 4 "rebootstrap with nix" (`recipes/4-rebootstrap-using-nix.sh`):
+  build the toolchain again from scratch, but using nix (`using-nix/`)
+
+* stage 5 "go beyond using nix" (`recipes/5-go-beyond-using-nix.sh`):
+  build some stale version of [ZilchOS Core](https://github.com/ZilchOS/core)
+  with the nix we've built, culminating with a bootable ZilchOS ISO.
+
 ### In more detail
 
 given:
@@ -163,7 +170,7 @@ At the end of stage 1 we have, all linked statically:
 * Build a bunch of Nix dependencies
 * Build Nix
 
-* Start over
+* Start over, build toolchain, build ZilchOS Core
 
 ### Building options
 
@@ -189,16 +196,10 @@ Very impractical, this is for increased portability only.
 
 ### Reproducibility
 
-Reproducibility is deeply cared about, but only lightly tested at this point.
+Reproducibility is deeply cared about,
+but it's a constant struggle and one cannot foresee everything.
 
-At 8a1ecde, I've tested two configurations:
+Verify with `make verify-pkgs-checksums`.
+For hard mode, set `NPROC` and `USE_DISORDERFS`.
 
-* NixOS ~21.11 master, Linux 5.14.15, btrfs filesystem, tcc built with Nix
-* NixOS 19.09 release, Linux 5.4.33, ext4 filesystem, tcc built on Alpine
-
-Checksums of all available packages of the time past stage0 matched up
-TinyCC was built from mob branch, da11cf6 commit.
-
-Something like a year change or a kernel version change still might break it,
-more rigorous testing and stricter isolation wouldn't hurt.
-
+For ZilchOS/core, see `.maint/hashes` and `.maint/tools/hashes`.

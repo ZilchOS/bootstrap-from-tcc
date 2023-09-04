@@ -35,3 +35,4 @@ export SOURCE_DATE_EPOCH=0
 /recipes/3b-tinycc-static.sh
 /recipes/3b-nix.sh
 /recipes/4-rebootstrap-using-nix.sh
+/recipes/5-go-beyond-using-nix.sh

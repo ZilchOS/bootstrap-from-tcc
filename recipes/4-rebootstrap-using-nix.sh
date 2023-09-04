@@ -43,15 +43,17 @@ export USER=notauser
 echo 'oh come on' >/dev/urandom
 
 echo "### $0: fixing up paths to shell..."
-sed -i 's|/bin/sh|/store/3b-busybox-static/bin/ash|' /using-nix/1-stage1.nix
+cp -a --reflink=auto /using-nix /default.nix /recipes ./
+sed -i 's|/bin/sh|/store/3b-busybox-static/bin/ash|' using-nix/1-stage1.nix
 
 echo "### $0: pointing to local downloads..."
-sed -i 's|url =|#remote_url =|' /using-nix/*.nix
-sed -i 's|# local = \(.*\);|url = "file://\1";|' /using-nix/*.nix
+sed -i 's| url =| #remote_url =|' using-nix/*.nix
+sed -i 's|# local = \(.*\);|url = "file://\1";|' using-nix/*.nix
 
-if [[ -e /prev/nix/store ]] && [ -e /prev/nix-db.tar ]; then
+if [ -e /prev/nix/store ] && [ -e /prev/nix-db.tar ]; then
 	echo "### $0: restoring nix store & db from previous build..."
-	mv /prev/nix /
+	mkdir -p /nix
+	cp -a --reflink=auto /prev/nix/store /nix
 	tar -xf /prev/nix-db.tar -C /
 	sqlite3 /nix/var/nix/db/db.sqlite \
 		< /nix/var/nix/db/db.sqlite.dump
@@ -60,9 +62,9 @@ fi
 
 echo "### $0: writing a 0.nix that simply injects what we've built..."
 # Makefile bootstrap injects it as /stage/protosrc, regular --- as /protosrc
-[[ -e /protosrc ]] && PROTOSRC="../protosrc" || PROTOSRC=/stage/protosrc
-echo "{ tinycc = ../store/3b-tinycc-static/bin/tcc; protosrc = $PROTOSRC; }" \
-	> /using-nix/0.nix
+[ -e /protosrc ] && PROTOSRC="/protosrc" || PROTOSRC=/stage/protosrc
+echo "{ tinycc = /store/3b-tinycc-static/bin/tcc; protosrc = $PROTOSRC; }" \
+	> using-nix/0.nix
 
 echo "### $0: rebuilding everything using nix..."
 # can't have sandbox, need deterministic build paths
@@ -76,8 +78,14 @@ nix-build \
 	--cores $NPROC \
 	--keep-failed \
 	-vvv \
-	/default.nix
+	default.nix
 rm -f /dev/urandom
+rm /dev/ptmx
+umount /dev/pts
+umount /dev/pts || true
+rm -r /dev/pts
+rm -r shelter
+rm -rf /build
 
 # this one is special wrt how the results are saved, see Makefile/USE_NIX_CACHE
 echo "### $0: exporting resulting /nix/store (reproducible)..."

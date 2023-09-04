@@ -20,7 +20,7 @@ SHELL := bash
 .DELETE_ON_ERROR:  # if only it also worked for dirs, see helpers/inject
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
-.PHONY: all all-at-once all-with-make clean-stage clean deepclean
+.PHONY: all all-at-once all-with-make clean-stage clean deepclean iso
 NPROC ?= 1 # for inner make invocations, one can pass -j# this way
 USE_CCACHE ?= 0  # for faster iterative debugging only
 USE_NIX_CACHE ?= 0  # for faster iterative debugging only
@@ -122,13 +122,10 @@ ifeq ($(USE_CCACHE), 1)
 endif
 ifeq ($(USE_NIX_CACHE), 1)
 	@echo "### Makefile: unpacking nix store and db from previous build..."
-	if [[ $* =~ .*-using-nix ]] && [[ -e tmp/prev-nix-db.tar ]] \
-			&& [[ -e "pkgs/$*.pkg" ]]; then \
+	if [[ $* =~ .*-using-nix ]] && [[ -e "pkgs/$*.pkg" ]]; then \
 		mkdir "tmp/build/$*/prev/"; \
 		tar --strip-components=2 \
 			-xf "pkgs/$*.pkg" -C "tmp/build/$*/prev/"; \
-		cp --reflink=auto tmp/prev-nix-db.tar \
-			"tmp/build/$*/prev/nix-db.tar"; \
 	fi
 endif
 	DISORDER=$(USE_DISORDERFS) helpers/builddir pre-build "tmp/build/$*"
@@ -138,11 +135,6 @@ endif
 		NPROC="$(NPROC)" \
 		SOURCE_DATE_EPOCH="$(SOURCE_DATE_EPOCH)" \
 		./helpers/chroot "/recipes/$*.sh"
-	if [[ $* =~ .*-using-nix ]] && \
-			[[ -e "tmp/build/$*/store/$*/nix-db.tar" ]]; then \
-		echo "### Makefile: extracting/excluding nix db cache..."; \
-		mv "tmp/build/$*/store/$*/nix-db.tar" tmp/prev-nix-db.tar; \
-	fi
 	DISORDER=$(USE_DISORDERFS) helpers/builddir post-build "tmp/build/$*"
 	@echo "### Makefile: packing up $* ..."
 	$(TAR_REPR) -Izstd -cf "pkgs/$*.pkg" -C "tmp/build/$*" "store/$*"
@@ -468,6 +460,103 @@ pkgs/4-rebootstrap-using-nix.pkg: downloads/Python-3.11.5.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/llvm-project-17.0.0rc3.src.tar.xz
 pkgs/4-rebootstrap-using-nix.pkg: downloads/busybox-1.36.1.tar.bz2
 
+pkgs/5-go-beyond-using-nix.pkg: pkgs/2b0-musl.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/2b1-clang.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/2b2-busybox.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-boost.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-pkg-config.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-sqlite.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-curl.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-editline.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-brotli.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-seccomp.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-libarchive.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-libsodium.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-lowdown.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3a-nlohmann-json.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3b-tinycc-static.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3b-busybox-static.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/3b-nix.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/4-rebootstrap-using-nix.pkg
+###
+pkgs/5-go-beyond-using-nix.pkg: stage/protosrc
+###
+pkgs/5-go-beyond-using-nix.pkg: recipes/1-stage1.c
+pkgs/5-go-beyond-using-nix.pkg: recipes/1-stage1/seed.host-executed.sh
+pkgs/5-go-beyond-using-nix.pkg: recipes/1-stage1/syscall.h
+pkgs/5-go-beyond-using-nix.pkg: recipes/1-stage1/protobusybox.c
+pkgs/5-go-beyond-using-nix.pkg: recipes/1-stage1/protobusybox.h
+pkgs/5-go-beyond-using-nix.pkg: recipes/1-stage1/hello.c
+###
+pkgs/5-go-beyond-using-nix.pkg: default.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/1-stage1.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2a0-static-gnumake.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2a1-static-binutils.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2a2-static-gnugcc4-c.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2a3-intermediate-musl.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2a4-gnugcc4-cpp.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2a5-gnugcc10.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2a6-linux-headers.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2a7-cmake.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2a8-python.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2a9-intermediate-clang.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2b0-musl.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2b1-clang.nix
+pkgs/5-go-beyond-using-nix.pkg: using-nix/2b2-busybox.nix
+###
+pkgs/5-go-beyond-using-nix.pkg: downloads/make-4.4.1.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/binutils-2.39.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/gcc-4.7.4.tar.bz2
+pkgs/5-go-beyond-using-nix.pkg: downloads/gmp-4.3.2.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/mpfr-2.4.2.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/mpc-0.8.1.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/musl-1.2.4.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/gcc-10.5.0.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/gmp-6.1.0.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/mpfr-3.1.4.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/mpc-1.0.3.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/isl-0.18.tar.bz2
+pkgs/5-go-beyond-using-nix.pkg: downloads/linux-6.4.12.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/cmake-3.27.4.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/Python-3.11.5.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/llvm-project-17.0.0rc3.src.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/curl-8.2.1.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/mbedtls-3.4.1.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/boost_1_83_0.tar.bz2
+pkgs/5-go-beyond-using-nix.pkg: downloads/editline-1.17.1.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/brotli-1.0.9.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/gperf-3.1.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/libsodium-1.0.18.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/libarchive-3.7.1.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/lowdown-1.0.2.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/libseccomp-2.5.4.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/nlohmann-json-3.11.2.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/bash-5.2.15.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/nix-2.17.0-zilched.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: flake.nix
+pkgs/5-go-beyond-using-nix.pkg: downloads/queue.h
+pkgs/5-go-beyond-using-nix.pkg: downloads/ZilchOS-core-2023.09.1.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/limine-5.20230830.0.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/patchelf-0.18.0.tar.bz2
+pkgs/5-go-beyond-using-nix.pkg: downloads/pkg-config-0.29.2.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/sqlite-autoconf-3430000.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/bison-3.8.2.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/m4-1.4.19.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/flex-2.6.4.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/mtools-4.0.43.tar.bz2
+pkgs/5-go-beyond-using-nix.pkg: downloads/xorriso-1.5.6.pl02.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/nasm-2.16.01.tar.xz
+pkgs/5-go-beyond-using-nix.pkg: downloads/zstd-1.5.5.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/cacert-2023-08-22.pem
+
+ISO_CHECKSUM=9b1fb7977630df14dcb5e5c7f90699799fba802db9c5f37aa715edd46f6da452
+iso: ZilchOS-core.iso
+
+ZilchOS-core.iso: pkgs/5-go-beyond-using-nix.pkg
+	tar --strip-components=2 -xf pkgs/5-go-beyond-using-nix.pkg \
+		store/5-go-beyond-using-nix/ZilchOS-core.iso
+	sha256sum -c <<<"$(ISO_CHECKSUM) ZilchOS-core.iso"
+
 ################################################################################
 
 # Separate one for tests to help readability of the above
@@ -561,6 +650,7 @@ all-pkgs: pkgs/3b-busybox-static.pkg
 all-pkgs: pkgs/3b-tinycc-static.pkg
 all-pkgs: pkgs/3b-nix.pkg
 all-pkgs: pkgs/4-rebootstrap-using-nix.pkg
+all-pkgs: pkgs/5-go-beyond-using-nix.pkg
 
 ################################################################################
 
@@ -594,6 +684,7 @@ pkgs/3b-busybox-static.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3b-tinycc-static.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3b-nix.pkg: pkgs/_2a0-ccache.pkg
 pkgs/4-rebootstrap-using-nix.pkg: pkgs/_2a0-ccache.pkg
+pkgs/5-go-beyond-using-nix.pkg: pkgs/_2a0-ccache.pkg
 endif
 
 ################################################################################
