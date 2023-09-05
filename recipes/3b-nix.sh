@@ -11,7 +11,6 @@ set -uex
 export PATH='/store/2b2-busybox/bin'
 export PATH="$PATH:/store/2b1-clang/bin"
 export PATH="$PATH:/store/2b3-gnumake/wrappers"
-export PATH="$PATH:/store/3a-gnubash/bin"
 export PATH="$PATH:/store/3a-pkg-config/bin"
 export PATH="$PATH:/store/3a-lowdown/bin"
 
@@ -57,11 +56,22 @@ mkdir -p compat-includes/sys
 cp /downloads/queue.h compat-includes/sys/
 
 echo "### $0: stubbing out commands..."
-mkdir stubs; export PATH="$PATH:$(pwd)/stubs"
+mkdir stubs; export PATH="$(pwd)/stubs:$PATH"
 ln -s /store/2b2-busybox/bin/true stubs/jq
+ln -s /store/2b2-busybox/bin/true stubs/expr
+ln -s /store/2b2-busybox/bin/ash stubs/bash
 
 echo "### $0: patching up Nix sources..."
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' configure
+sed -i 's|/bin/sh|${stdenv.busybox}/bin/ash|' configure
+# avoid an expression confusing ash
+nl configure | grep 7217 | tee configure-problematic-line
+grep -F "'X\(//\)$'" configure-problematic-line
+sed -i '7217d' configure
+nl configure | grep 7217 | tee configure-problematic-line
+! grep -F "'X\(//\)$'" configure-problematic-line
+# replace the declare confusing ash
+sed -i 's|declare \$name=.*|:|' configure
 
 echo "### $0: building Nix..."
 PCDEPS='libbrotlicommon libbrotlienc libbrotlidec sqlite3 libseccomp lowdown'
@@ -71,13 +81,15 @@ export CFLAGS="$(pkg-config --cflags $PCDEPS) $INC"
 export CXXFLAGS="$CFLAGS"
 export GLOBAL_CXXFLAGS="$CFLAGS"
 export LDFLAGS="$(pkg-config --libs $PCDEPS) -L/store/3a-boost/lib -v"
-bash configure --prefix=/store/3b-nix \
+ash configure --prefix=/store/3b-nix \
 	--with-boost=$BOOST_ROOT \
 	--disable-doc-gen \
 	--disable-gc \
 	--disable-cpuid \
 	--disable-gtest \
 	--with-sandbox-shell=/store/3b-busybox-static/bin/busybox
+sed -i "s|\${prefix}|/store/3b-nix|g" config.status
+sed -i "s|\${exec_prefix}|/store/3b-nix|g" config.status
 make -j $NPROC V=1
 
 echo "### $0: installing Nix..."

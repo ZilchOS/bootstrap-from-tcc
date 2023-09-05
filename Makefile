@@ -289,12 +289,6 @@ pkgs/2b3-gnumake.pkg: pkgs/2b1-clang.pkg
 pkgs/2b3-gnumake.pkg: pkgs/2b2-busybox.pkg
 pkgs/2b3-gnumake.pkg: downloads/make-4.4.1.tar.gz
 
-pkgs/3a-gnubash.pkg: pkgs/2b0-musl.pkg
-pkgs/3a-gnubash.pkg: pkgs/2b1-clang.pkg
-pkgs/3a-gnubash.pkg: pkgs/2b2-busybox.pkg
-pkgs/3a-gnubash.pkg: pkgs/2b3-gnumake.pkg
-pkgs/3a-gnubash.pkg: downloads/bash-5.2.15.tar.gz
-
 pkgs/3a-sqlite.pkg: pkgs/2b0-musl.pkg
 pkgs/3a-sqlite.pkg: pkgs/2b1-clang.pkg
 pkgs/3a-sqlite.pkg: pkgs/2b2-busybox.pkg
@@ -399,7 +393,6 @@ pkgs/3b-nix.pkg: pkgs/2b2-busybox.pkg
 pkgs/3b-nix.pkg: pkgs/2b3-gnumake.pkg
 pkgs/3b-nix.pkg: pkgs/2a6-linux-headers.pkg
 pkgs/3b-nix.pkg: pkgs/3a-sqlite.pkg
-pkgs/3b-nix.pkg: pkgs/3a-gnubash.pkg
 pkgs/3b-nix.pkg: pkgs/3a-boost.pkg
 pkgs/3b-nix.pkg: pkgs/3a-pkg-config.pkg
 pkgs/3b-nix.pkg: pkgs/3a-curl.pkg
@@ -551,7 +544,6 @@ all-pkgs: pkgs/2b0-musl.pkg
 all-pkgs: pkgs/2b1-clang.pkg
 all-pkgs: pkgs/2b2-busybox.pkg
 all-pkgs: pkgs/2b3-gnumake.pkg
-all-pkgs: pkgs/3a-gnubash.pkg
 all-pkgs: pkgs/3a-sqlite.pkg
 all-pkgs: pkgs/3a-boost.pkg
 all-pkgs: pkgs/3a-mbedtls.pkg
@@ -586,7 +578,6 @@ pkgs/2b0-musl.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b1-clang.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b2-busybox.pkg: pkgs/_2a0-ccache.pkg
 pkgs/2b3-gnumake.pkg: pkgs/_2a0-ccache.pkg
-pkgs/3a-gnubash.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-sqlite.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-boost.pkg: pkgs/_2a0-ccache.pkg
 pkgs/3a-mbedtls.pkg: pkgs/_2a0-ccache.pkg

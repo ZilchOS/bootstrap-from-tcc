@@ -72,7 +72,6 @@ but now using that Nix I've built (`using-nix`).
   * `busybox`
   * `gnumake`
 * stage 3 "dependencies of useful stuff" (`recipes/3a*.sh`): ???
-  * `gnubash`
   * `sqlite`
   * `boost`
   * `mbedtls`
