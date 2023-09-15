@@ -531,11 +531,10 @@ pkgs/5-go-beyond-using-nix.pkg: downloads/libarchive-3.7.1.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: downloads/lowdown-1.0.2.tar.gz
 pkgs/5-go-beyond-using-nix.pkg: downloads/libseccomp-2.5.4.tar.gz
 pkgs/5-go-beyond-using-nix.pkg: downloads/nlohmann-json-3.11.2.tar.xz
-pkgs/5-go-beyond-using-nix.pkg: downloads/bash-5.2.15.tar.gz
 pkgs/5-go-beyond-using-nix.pkg: downloads/nix-2.17.0-zilched.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: flake.nix
 pkgs/5-go-beyond-using-nix.pkg: downloads/queue.h
-pkgs/5-go-beyond-using-nix.pkg: downloads/ZilchOS-core-2023.09.1.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/ZilchOS-core-2023.09.2.tar.gz
 pkgs/5-go-beyond-using-nix.pkg: downloads/limine-5.20230830.0.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: downloads/patchelf-0.18.0.tar.bz2
 pkgs/5-go-beyond-using-nix.pkg: downloads/pkg-config-0.29.2.tar.gz
@@ -549,7 +548,7 @@ pkgs/5-go-beyond-using-nix.pkg: downloads/nasm-2.16.01.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: downloads/zstd-1.5.5.tar.gz
 pkgs/5-go-beyond-using-nix.pkg: downloads/cacert-2023-08-22.pem
 
-ISO_CHECKSUM=9b1fb7977630df14dcb5e5c7f90699799fba802db9c5f37aa715edd46f6da452
+ISO_CHECKSUM=fb869fd66b1257017544a829a382b9e5238df35d4efe030eb5e9d86ba14a0445
 iso: ZilchOS-core.iso
 
 ZilchOS-core.iso: pkgs/5-go-beyond-using-nix.pkg

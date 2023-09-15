@@ -1,7 +1,7 @@
 #!/store/2b2-busybox/bin/ash
-#> FETCH ccd7332529ee29615c0e98c7d5067e51ab74b49e14201c814454ad98898fc009
-#>  FROM https://github.com/ZilchOS/core/archive/2023.09.1.tar.gz
-#>    AS ZilchOS-core-2023.09.1.tar.gz
+#> FETCH a89c924200af9f8831224221ef2df5dce46180ca36d0db048da1cd829cc14889
+#>  FROM https://github.com/ZilchOS/core/archive/2023.09.2.tar.gz
+#>    AS ZilchOS-core-2023.09.2.tar.gz
 
 #> FETCH ddd417f9caab3ef0f3031b938815a5c33367c3a50c09830138d208bd3126c98f
 #>  FROM https://github.com/limine-bootloader/limine/releases/download/v5.20230830.0/limine-5.20230830.0.tar.xz
@@ -123,7 +123,7 @@ echo "{ tinycc = /store/3b-tinycc-static/bin/tcc; protosrc = $PROTOSRC; }" \
 
 echo "### $0: unpacking ZilchOS/core archive..."
 mkdir ZilchOS-core
-tar -xf /downloads/ZilchOS-core-2023.09.1.tar.gz --strip-components=1 \
+tar -xf /downloads/ZilchOS-core-2023.09.2.tar.gz --strip-components=1 \
 	-C ZilchOS-core
 [[ -e ZilchOS-core/flake.nix ]]
 cd ZilchOS-core
