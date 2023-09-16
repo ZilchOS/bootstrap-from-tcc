@@ -45,3 +45,6 @@ ash bootstrap.sh
 echo "### $0: installing Boost..."
 ./b2 install --prefix=/store/3a-boost \
 	--with-context --with-thread --with-system
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/3a /store/3a-boost )

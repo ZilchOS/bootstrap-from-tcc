@@ -21,8 +21,13 @@ sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' \
 	Makefile.in src/Makefile.in doc/Makefile.in
 
 echo "### $0: building GNU gperf..."
-ash configure --prefix=/store/3a-gnugperf CXXFLAGS=-Wno-register
+REWRITE="-ffile-prefix-map=$(pwd)=/builddir/"
+ash configure --prefix=/store/3a-gnugperf \
+	CFLAGS=$REWRITE CXXFLAGS="$REWRITE -Wno-register"
 make -j $NPROC
 
 echo "### $0: installing GNU gperf..."
 make -j $NPROC install
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/3a /store/3a-gnugperf )

@@ -20,6 +20,10 @@ tar --strip-components=1 -xf /downloads/cmake-3.27.4.tar.gz
 
 echo "### $0: fixing up CMake sources..."
 sed -i "s|/bin/sh|$SHELL|" bootstrap
+sed -i 's|__FILE__|"__FILE__"|' \
+	Source/CPack/IFW/cmCPackIFWCommon.h \
+	Source/CPack/cmCPack*.h \
+	Source/cmCTest.h
 
 echo "### $0: bundling libraries..."
 # poor man's static linking, a way for cmake to be self-contained later
@@ -39,3 +43,6 @@ ash configure \
 make -j $NPROC
 echo "### $0: installing CMake..."
 make -j $NPROC install/strip
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2a7 /store/2a7-cmake )

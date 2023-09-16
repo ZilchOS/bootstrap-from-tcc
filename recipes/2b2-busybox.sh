@@ -40,3 +40,6 @@ sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
 
 echo "### $0: installing busybox..."
 make -j $NPROC $BUSYBOX_FLAGS install CONFIG_PREFIX=/store/2b2-busybox
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2b2 /store/2b2-busybox )

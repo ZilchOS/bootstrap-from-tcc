@@ -47,6 +47,8 @@ sed -i "s|_install_rpath \"\\\\\$ORIGIN/..|_install_rpath \"$OUT|" \
 	llvm/cmake/modules/AddLLVM.cmake
 sed -i 's|numShards = 32;|numShards = 1;|' lld/*/SyntheticSections.*
 sed -i 's|numShards = 256;|numShards = 1;|' lld/*/ICF.cpp
+sed -i 's|__FILE__|"__FILE__"|' \
+	compiler-rt/lib/builtins/int_util.h
 
 echo "### $0: building LLVM/Clang (stage 1)..."
 export LD_LIBRARY_PATH='/store/2a5-gnugcc10/lib'
@@ -138,3 +140,5 @@ ln -s $OUT/bin/clang-cpp $OUT/bin/generic-names/cpp
 
 echo "### $0: mixing new stuff into sysroot..."
 ln -s $OUT/lib/* $OUT/sysroot/lib/
+
+echo "### $0: NOT checking for build path leaks - see _2a9.test.sh"

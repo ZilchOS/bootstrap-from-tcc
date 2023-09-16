@@ -46,6 +46,8 @@ sed -i "s|_install_rpath \"\\\\\$ORIGIN/..|_install_rpath \"$OUT|" \
 	llvm/cmake/modules/AddLLVM.cmake
 sed -i 's|numShards = 32;|numShards = 1;|' lld/*/SyntheticSections.*
 sed -i 's|numShards = 256;|numShards = 1;|' lld/*/ICF.cpp
+sed -i 's|__FILE__|__FILE_NAME__|' \
+	compiler-rt/lib/builtins/int_util.h
 
 echo "### $0: building LLVM/Clang..."
 export LD_LIBRARY_PATH="/store/2b0-musl/lib:$PREV_CLANG/lib"
@@ -116,10 +118,10 @@ cmake -S llvm -B build -G 'Unix Makefiles' \
 	-DCMAKE_CXX_COMPILER=$PREV_CLANG/bin/clang++ \
 	-DLLVM_ENABLE_PROJECTS='clang;lld' \
 	-DLLVM_ENABLE_RUNTIMES='compiler-rt;libcxx;libcxxabi;libunwind' \
-	-DCMAKE_C_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
-	-DCMAKE_CXX_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
-	-DCMAKE_C_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER -D_LARGEFILE64_SOURCE" \
-	-DCMAKE_CXX_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER -D_LARGEFILE64_SOURCE" \
+        -DCMAKE_C_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
+        -DCMAKE_CXX_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
+        -DCMAKE_C_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER -D_LARGEFILE64_SOURCE" \
+        -DCMAKE_CXX_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER -D_LARGEFILE64_SOURCE" \
 	-DLLVM_BUILD_LLVM_DYLIB=YES \
 	-DLLVM_LINK_LLVM_DYLIB=YES \
 	-DCLANG_LINK_LLVM_DYLIB=YES \
@@ -147,3 +149,5 @@ ln -s $OUTLIB/x86_64-unknown-linux-musl/libclang_rt.builtins.a \
 
 echo "### $0: mixing new stuff into sysroot..."
 ln -s $OUT/lib/* $OUT/sysroot/lib/
+
+echo "### $0: NOT checking for build path leaks - see _2b1.test.sh"

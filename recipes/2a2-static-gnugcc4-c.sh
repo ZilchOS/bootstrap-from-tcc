@@ -39,11 +39,14 @@ sed -i 's|/bin/sh|/store/1-stage1/protobusybox/bin/ash|' \
 	install-sh */install-sh
 sed -i 's|^\(\s*\)sh |\1/store/1-stage1/protobusybox/bin/ash |' \
 	Makefile* */Makefile*
+sed -i 's|LIBGCC2_DEBUG_CFLAGS = -g|LIBGCC2_DEBUG_CFLAGS = |' \
+	libgcc/Makefile.in
 # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
 sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh */ltmain.sh
 ash configure \
 	CONFIG_SHELL='/store/1-stage1/protobusybox/bin/ash' \
 	SHELL='/store/1-stage1/protobusybox/bin/ash' \
+	CFLAGS=-O2 CFLAGS_FOR_TARGET=-O2 \
 	--with-sysroot=/store/1-stage1/protomusl \
 	--with-native-system-header-dir=/include \
 	--with-build-time-tools=/store/2a1-static-binutils/bin \
@@ -63,3 +66,6 @@ make -j $NPROC
 
 echo "### $0: installing static GNU GCC 4 (statically linked, C only)"
 make -j $NPROC install
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2a2 /store/2a2-static-gnugcc4-c )

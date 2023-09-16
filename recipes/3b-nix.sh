@@ -77,7 +77,8 @@ echo "### $0: building Nix..."
 PCDEPS='libbrotlicommon libbrotlienc libbrotlidec sqlite3 libseccomp lowdown'
 PCDEPS="$PCDEPS nlohmann_json"
 INC="-I/store/2a6-linux-headers/include -I$(pwd)/compat-includes"
-export CFLAGS="$(pkg-config --cflags $PCDEPS) $INC"
+REWRITE="-ffile-prefix-map=$(pwd)=/builddir/"
+export CFLAGS="$(pkg-config --cflags $PCDEPS) $INC $REWRITE"
 export CXXFLAGS="$CFLAGS"
 export GLOBAL_CXXFLAGS="$CFLAGS"
 export LDFLAGS="$(pkg-config --libs $PCDEPS) -L/store/3a-boost/lib -v"
@@ -94,3 +95,6 @@ make -j $NPROC V=1
 
 echo "### $0: installing Nix..."
 make -j $NPROC install
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/3b /store/3b-nix )

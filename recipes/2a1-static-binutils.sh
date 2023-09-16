@@ -28,7 +28,8 @@ sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh
 ash configure \
 	CONFIG_SHELL=/store/1-stage1/protobusybox/bin/ash \
 	SHELL=/store/1-stage1/protobusybox/bin/ash \
-	CFLAGS='-D__LITTLE_ENDIAN__=1' \
+	CFLAGS='-O2 -D__LITTLE_ENDIAN__=1' \
+	CFLAGS_FOR_TARGET=-O2 \
 	MAKEINFO=/store/1-stage1/protobusybox/bin/true \
 	--disable-gprofng \
 	--enable-deterministic-archives \
@@ -40,3 +41,7 @@ make -j $NPROC
 
 echo "### $0: installing static binutils..."
 make -j $NPROC install
+rm /store/2a1-static-binutils/lib/*.la  # broken, reference builddir
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2a1 /store/2a1-static-binutils )

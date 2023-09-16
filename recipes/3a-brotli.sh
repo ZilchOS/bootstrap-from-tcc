@@ -41,3 +41,6 @@ for l in common enc dec; do
 		-e 's|-R|-Wl,-rpath=|g' \
 		> /store/3a-brotli/lib/pkgconfig/libbrotli${l}.pc
 done
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/3a /store/3a-brotli )

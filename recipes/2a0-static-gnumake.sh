@@ -38,7 +38,7 @@ ash ./build.sh
 echo "### $0: testing static GNU Make by remaking it with itself..."
 mv make make-intermediate
 ./make-intermediate -j $NPROC clean
-./make-intermediate -j $NPROC
+./make-intermediate -j $NPROC CFLAGS=-O2
 
 echo "### $0: installing static GNU Make..."
 ./make -j $NPROC install
@@ -49,3 +49,6 @@ mkdir /store/2a0-static-gnumake/wrappers; cd /store/2a0-static-gnumake/wrappers
 echo "#!/store/1-stage1/protobusybox/bin/ash" > make
 echo "exec /store/2a0-static-gnumake/bin/make SHELL=\$SHELL \"\$@\"" \ >> make
 chmod +x make
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2a0 /store/2a0-static-gnumake )

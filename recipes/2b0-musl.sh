@@ -22,10 +22,15 @@ sed -i 's|/bin/sh|/store/1-stage1/protobusybox/bin/ash|' \
 # patch popen/system to search in PATH instead of hardcoding /bin/sh
 sed -i 's|posix_spawn(&pid, "/bin/sh",|posix_spawnp(\&pid, "sh",|' \
 	src/stdio/popen.c src/process/system.c
-ash ./configure --prefix=/store/2b0-musl CFLAGS='-O2'
+# avoid absolute path references
+sed -i 's/__FILE__/__FILE_NAME__/' include/assert.h
+ash ./configure --prefix=/store/2b0-musl CFLAGS=-O2
 make -j $NPROC
 
 echo "### $0: installing musl..."
 make -j $NPROC install
 mkdir /store/2b0-musl/bin
 ln -s /store/2b0-musl/lib/libc.so /store/2b0-musl/bin/ldd
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2b0 /store/2b0-musl )

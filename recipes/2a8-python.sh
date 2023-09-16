@@ -29,9 +29,15 @@ sed -i "s|/bin/sh|$SHELL|" configure
 # break their generation
 mv Lib/compileall.py Lib/compileall.py.bak
 echo 'import sys; sys.exit(0)' > Lib/compileall.py; chmod +x Lib/compileall.py
+sed -i 's|__FILE__|"__FILE__"|' \
+	Python/errors.c \
+	Include/pyerrors.h \
+	Include/cpython/object.h \
+	Modules/pyexpat.c
 
 echo "### $0: building CPython..."
 ash configure \
+	OPT='-DNDEBUG -fwrapv -O3 -Wall' \
 	--without-static-libpython \
 	--build x86_64-linux-musl \
 	--prefix=/store/2a8-python \
@@ -41,5 +47,12 @@ make -j $NPROC
 
 echo "### $0: installing CPython..."
 make -j $NPROC install
+# strip builddir mentions
+sed -i "s|/tmp/2a8-python|...|" \
+	/store/2a8-python/lib/python3.*/_sysconfigdata__*.py \
+	/store/2a8-python/lib/python3.*/config-3.11-x86_64-linux-musl/Makefile
 # restore compileall just in case
 cat Lib/compileall.py.bak > /store/2a8-python/lib/python3.11/compileall.py
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2a8 /store/2a8-python )

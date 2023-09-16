@@ -41,6 +41,7 @@ echo 'exec gcc $_SYSROOT -Wl,$_LDFLAG "$@"' >> wrappers/cc
 echo 'exec /store/2a2-static-gnugcc4-c/bin/cpp $_NEWINC "$@"' >> wrappers/cpp
 echo 'exec /store/2a1-static-binutils/bin/ld $_LDFLAG "$@"' >> wrappers/ld
 chmod +x wrappers/cc wrappers/cpp wrappers/ld
+export PATH="/tmp/2a4-gnugcc4-cpp/wrappers:$PATH"
 
 echo "### $0: unpacking GNU GCC 4 sources..."
 mkdir mpfr mpc gmp
@@ -54,7 +55,10 @@ sed -i 's|/bin/sh|/store/1-stage1/protobusybox/bin/ash|' \
 	missing move-if-change mkdep mkinstalldirs symlink-tree \
 	gcc/genmultilib */*.sh gcc/exec-tool.in \
 	install-sh */install-sh
-sed -i 's|^\(\s*\)sh |\1/store/1-stage1/protobusybox/bin/ash |' Makefile* */Makefile*
+sed -i 's|^\(\s*\)sh |\1/store/1-stage1/protobusybox/bin/ash |' \
+	Makefile* */Makefile*
+sed -i 's|LIBGCC2_DEBUG_CFLAGS = -g|LIBGCC2_DEBUG_CFLAGS = |' \
+	libgcc/Makefile.in
 sed -i "s|/lib64/ld-linux-x86-64.so.2|$SYSROOT/lib/libc.so|" \
 	gcc/config/i386/linux64.h
 sed -i 's|"os/gnu-linux"|"os/generic"|' libstdc++-v3/configure.host
@@ -66,9 +70,8 @@ ash configure \
 	cache_file=nonex \
 	CONFIG_SHELL='/store/1-stage1/protobusybox/bin/ash' \
 	SHELL='/store/1-stage1/protobusybox/bin/ash' \
-	CC=/tmp/2a4-gnugcc4-cpp/wrappers/cc \
-	CPP=/tmp/2a4-gnugcc4-cpp/wrappers/cpp \
-	LD=/tmp/2a4-gnugcc4-cpp/wrappers/ld \
+	CC=cc CPP=cpp LD=ld \
+	CFLAGS=-O2 CFLAGS_FOR_TARGET=-O2 \
 	--with-sysroot=$SYSROOT \
 	--with-native-system-header-dir=/include \
 	--with-build-time-tools=/store/2a1-static-binutils/bin \
@@ -89,3 +92,6 @@ ash configure \
 make -j $NPROC
 echo "### $0: installing GNU GCC 4 (dynamically linked, with C++ support)"
 make -j $NPROC install-strip
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2a4 /store/2a4-gnugcc4-cpp )

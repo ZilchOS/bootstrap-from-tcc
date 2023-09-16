@@ -24,8 +24,13 @@ sed -i 's|posix_spawn(&pid, "/bin/sh",|posix_spawnp(\&pid, "sh",|' \
 	src/stdio/popen.c src/process/system.c
 sed -i 's|execl("/bin/sh", "sh", "-c",|execlp("sh", "-c",|'\
 	src/misc/wordexp.c
+# eliminiate a source path reference
+sed -i 's/__FILE__/"__FILE__"/' include/assert.h
 ash ./configure --prefix=/store/2a3-intermediate-musl
 make -j $NPROC
 
 echo "### $0: installing musl..."
 make -j $NPROC install
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2a3 /store/2a3-intermediate-musl )

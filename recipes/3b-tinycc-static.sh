@@ -37,3 +37,6 @@ make -j $NPROC tcc
 echo "### $0: installing TinyCC..."
 mkdir -p /store/3b-tinycc-static/bin
 cp tcc /store/3b-tinycc-static/bin/
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/3b /store/3b-tinycc-static )

@@ -24,3 +24,6 @@ make -j $NPROC
 
 echo "### $0: installing editline..."
 make -j $NPROC install-strip
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/3a /store/3a-editline )

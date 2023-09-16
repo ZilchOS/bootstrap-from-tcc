@@ -24,7 +24,10 @@ sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|' configure
 
 echo "### $0: building lowdown..."
 ash configure PREFIX=/store/3a-lowdown
-make -j $NPROC
+make -j $NPROC CFLAGS=-ffile-prefix-map=$(pwd)=/builddir/
 
 echo "### $0: installing lowdown..."
 make -j $NPROC install_shared
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/3a /store/3a-lowdown )

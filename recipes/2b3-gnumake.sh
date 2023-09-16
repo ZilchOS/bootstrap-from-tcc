@@ -40,3 +40,6 @@ mkdir /store/2b3-gnumake/wrappers; cd /store/2b3-gnumake/wrappers
 echo "#!/store/2b2-busybox/bin/ash" > make
 echo "exec /store/2b3-gnumake/bin/make SHELL=\$SHELL \"\$@\"" \ >> make
 chmod +x make
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2b3 /store/2b3-gnumake )

@@ -24,3 +24,6 @@ sed < cmake/pkg-config.pc.in \
 	-e 's|${PROJECT_VERSION}|3.11.2|' \
 	-e 's|${CMAKE_INSTALL_FULL_INCLUDEDIR}|/store/3a-nlohmann-json/include|' \
 	> /store/3a-nlohmann-json/lib/pkgconfig/nlohmann_json.pc
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/3a /store/3a-nlohmann-json )

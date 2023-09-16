@@ -45,6 +45,8 @@ sed -i 's|/bin/sh|/store/1-stage1/protobusybox/bin/ash|' \
 	gcc/exec-tool.in libgcc/mkheader.sh
 sed -i 's|^\(\s*\)sh |\1/store/1-stage1/protobusybox/bin/ash |' \
 	libgcc/Makefile.in
+sed -i 's|LIBGCC2_DEBUG_CFLAGS = -g|LIBGCC2_DEBUG_CFLAGS = |' \
+	libgcc/Makefile.in
 sed -i "s|/lib/ld-musl-x86_64.so.1|$SYSROOT/lib/libc.so|" \
 	gcc/config/i386/linux64.h
 sed -i 's|m64=../lib64|m64=../lib|' gcc/config/i386/t-linux64
@@ -56,6 +58,8 @@ echo "### $0: building GNU GCC 10"
 ash configure \
 	CONFIG_SHELL='/store/1-stage1/protobusybox/bin/ash' \
 	SHELL='/store/1-stage1/protobusybox/bin/ash' \
+	CFLAGS=-O2 CXX_FLAGS=-O2 \
+	CFLAGS_FOR_TARGET=-O2 CXXFLAGS_FOR_TARGET=-O2 \
 	--with-sysroot=$SYSROOT \
 	--with-native-system-header-dir=/include \
 	--with-build-time-tools=/store/2a1-static-binutils/bin \
@@ -81,3 +85,6 @@ ash configure \
 make -j $NPROC
 echo "### $0: installing GNU GCC 10"
 make -j $NPROC install-strip
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/2a5 /store/2a5-gnugcc10 )

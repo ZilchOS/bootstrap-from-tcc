@@ -27,3 +27,6 @@ make -j $NPROC lib
 
 echo "### $0: installing mbedtls..."
 make -j $NPROC install
+
+echo "### $0: checking for build path leaks..."
+( ! grep -RF /tmp/3a /store/3a-mbedtls )
