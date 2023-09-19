@@ -17,6 +17,7 @@ in
       "${gnugcc10}/bin"
     ];
     script = ''
+        mkdir build-dir; cd build-dir
         export SHELL=${stage1.protobusybox}/bin/ash
       # alias ash to sh:
         mkdir aliases; ln -s ${stage1.protobusybox}/bin/ash aliases/sh
@@ -31,8 +32,14 @@ in
         mv Lib/compileall.py Lib/compileall.py.bak
         echo 'import sys; sys.exit(0)' > Lib/compileall.py
         chmod +x Lib/compileall.py
+        sed -i 's|__FILE__|"__FILE__"|' \
+          Python/errors.c \
+          Include/pyerrors.h \
+          Include/cpython/object.h \
+          Modules/pyexpat.c
       # configure:
         ash configure \
+          OPT='-DNDEBUG -fwrapv -O3 -Wall' \
           --without-static-libpython \
           --build x86_64-linux-musl \
           --prefix=$out \
@@ -42,8 +49,14 @@ in
         make -j $NPROC
       # install:
         make -j $NPROC install
+      # strip builddir mentions
+        sed -i "s|$(pwd)|...|" \
+          $out/lib/python3.*/_sysconfigdata__*.py \
+          $out/lib/python3.*/config-3.11-x86_64-linux-musl/Makefile
         # restore compileall just in case
         cat Lib/compileall.py.bak > $out/lib/python3.11/compileall.py
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
   }
 

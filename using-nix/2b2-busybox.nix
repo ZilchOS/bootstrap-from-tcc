@@ -16,6 +16,7 @@ in
       "${clang}/bin"
     ];
     script = ''
+        mkdir build-dir; cd build-dir
       # alias ash to sh:
         mkdir aliases; ln -s ${stage1.protobusybox}/bin/ash aliases/sh
         export PATH="$(pwd)/aliases:$PATH"
@@ -42,6 +43,8 @@ in
         sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
       # install:
         make -j $NPROC $BUSYBOX_FLAGS install CONFIG_PREFIX=$out
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
     extra.allowedRequisites = [ "out" musl clang ];
     extra.allowedReferences = [ "out" musl clang ];

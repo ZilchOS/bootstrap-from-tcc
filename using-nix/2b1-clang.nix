@@ -20,6 +20,7 @@ in
       # to prevent confusion
     ];
     script = ''
+        mkdir build-dir; cd build-dir
         export SHELL=${stage1.protobusybox}/bin/ash
         # llvm cmake configuration should pick up ccache automatically from PATH
         export PATH="$PATH:/ccache/bin"
@@ -46,6 +47,7 @@ in
           llvm/cmake/modules/AddLLVM.cmake
         sed -i 's|numShards = 32;|numShards = 1;|' lld/*/SyntheticSections.*
         sed -i 's|numShards = 256;|numShards = 1;|' lld/*/ICF.cpp
+        sed -i 's|__FILE__|"__FILE__"|' compiler-rt/lib/builtins/int_util.h
       # figure out includes:
         C_INCLUDES="$SYSROOT/include"
         C_INCLUDES="$C_INCLUDES:${linux-headers}/include"
@@ -105,22 +107,25 @@ in
         add_opt LLVM_INSTALL_TOOLCHAIN_ONLY=YES
         add_opt LIBUNWIND_USE_COMPILER_RT=YES
         add_opt LLVM_ENABLE_THREADS=NO
+        REWRITE="-ffile-prefix-map=$(pwd)=/builddir/"
+        CFLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL $REWRITE"
+        LDFLAGS="-Wl,--dynamic-linker=$LOADER"
         cmake -S llvm -B build -G 'Unix Makefiles' \
           -DCMAKE_ASM_COMPILER=${intermediate-clang}/bin/clang \
           -DCMAKE_C_COMPILER=${intermediate-clang}/bin/clang \
           -DCMAKE_CXX_COMPILER=${intermediate-clang}/bin/clang++ \
           -DLLVM_ENABLE_PROJECTS='clang;lld' \
           -DLLVM_ENABLE_RUNTIMES='compiler-rt;libcxx;libcxxabi;libunwind' \
-          -DCMAKE_C_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL" \
-          -DCMAKE_CXX_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL" \
-          -DCMAKE_C_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER" \
-          -DCMAKE_CXX_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER" \
+          -DCMAKE_C_FLAGS="$CFLAGS" \
+          -DCMAKE_CXX_FLAGS="$CFLAGS" \
+          -DCMAKE_C_LINK_FLAGS="$LDFLAGS" \
+          -DCMAKE_CXX_LINK_FLAGS="$LDFLAGS" \
           -DLLVM_BUILD_LLVM_DYLIB=YES \
           -DLLVM_LINK_LLVM_DYLIB=YES \
           -DCLANG_LINK_LLVM_DYLIB=YES \
           $OPTS
       # build:
-        make -C build -j $NPROC clang lld runtimes
+        make -C build -j $NPROC clang lld runtimes VERBOSE=1
       # install:
         make -C build install/strip
         ln -s $out/lib/x86_64-unknown-linux-musl/* $out/lib/
@@ -129,8 +134,10 @@ in
         ln -s $out/bin/clang++ $out/bin/c++
         ln -s $out/bin/clang-cpp $out/bin/cpp
         ln -s $out/bin/lld $out/bin/ld
-      # mix new stuff into sysroot
+      # mix new stuff into sysroot:
         ln -s $out/lib/* $out/sysroot/lib/
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
     extra.allowedRequisites = [ "out" musl ];
     extra.allowedReferences = [ "out" musl ];

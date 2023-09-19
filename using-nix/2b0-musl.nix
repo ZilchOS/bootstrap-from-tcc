@@ -18,6 +18,7 @@ in
     ];
     script = ''
       # unpack:
+        mkdir build-dir; cd build-dir
         unpack ${source-tarball-musl}
       # fixup:
         sed -i 's|/bin/sh|${stage1.protobusybox}/bin/ash|' tools/*.sh \
@@ -26,14 +27,18 @@ in
                 src/stdio/popen.c src/process/system.c
         sed -i 's|execl("/bin/sh", "sh", "-c",|execlp("sh", "-c",|'\
                 src/misc/wordexp.c
+        # avoid absolute path references
+        sed -i 's/__FILE__/__FILE_NAME__/' include/assert.h
       # configure:
-        ash ./configure --prefix=$out CFLAGS='-O2'
+        ash ./configure --prefix=$out CFLAGS=-O2
       # build:
         make -j $NPROC
       # install:
         make -j $NPROC install
         mkdir $out/bin
         ln -s $out/lib/libc.so $out/bin/ldd
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
     extra.allowedRequisites = [ "out" ];
     extra.allowedReferences = [ "out" ];

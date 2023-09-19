@@ -17,6 +17,7 @@ in
     ];
     script = ''
       # unpack:
+        mkdir build-dir; cd build-dir
         unpack ${source-tarball-linux} \
           linux-6.4.12/Makefile \
           linux-6.4.12/arch/x86 \
@@ -32,5 +33,7 @@ in
         find usr/include -name '.*' | xargs rm
         mkdir -p $out
         cp -rv usr/include $out/
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
   }

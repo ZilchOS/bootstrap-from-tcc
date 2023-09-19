@@ -15,6 +15,7 @@ in
       "${static-gnumake}/bin"
     ];
     script = ''
+        mkdir build-dir; cd build-dir
       # unpack:
         unpack ${source-tarball-binutils}
       # fixup:
@@ -31,7 +32,7 @@ in
         ash ./configure \
                 CONFIG_SHELL='${stage1.protobusybox}/bin/ash' \
                 SHELL='${stage1.protobusybox}/bin/ash' \
-                CFLAGS='-D__LITTLE_ENDIAN__=1' \
+                CFLAGS='-O2 -D__LITTLE_ENDIAN__=1' \
                 --enable-deterministic-archives \
                 --disable-gprofng \
                 --host x86_64-linux --build x86_64-linux \
@@ -43,5 +44,8 @@ in
         make -j $NPROC
       # install:
         make -j $NPROC install
+        rm $out/lib/*.la  # broken, reference builddir
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
   }

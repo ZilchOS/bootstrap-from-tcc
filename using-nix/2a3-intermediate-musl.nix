@@ -17,6 +17,7 @@ in
       "${static-gnugcc4-c}/bin"
     ];
     script = ''
+        mkdir build-dir; cd build-dir
       # unpack:
         unpack ${source-tarball-musl}
       # fixup:
@@ -27,11 +28,15 @@ in
                 src/stdio/popen.c src/process/system.c
         sed -i 's|execl("/bin/sh", "sh", "-c",|execlp("sh", "-c",|'\
                 src/misc/wordexp.c
+        # eliminate a source path reference
+        sed -i 's/__FILE__/"__FILE__"/' include/assert.h
       # configure:
         ash ./configure --prefix=$out
       # build:
         make -j $NPROC
       # install:
         make -j $NPROC install
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
   }

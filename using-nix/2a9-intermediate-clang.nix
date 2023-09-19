@@ -20,6 +20,7 @@ in
       "${python}/bin"
     ];
     script = ''
+        mkdir build-dir; cd build-dir
         export SHELL=${stage1.protobusybox}/bin/ash
         # llvm cmake configuration should pick up ccache automatically from PATH
         export PATH="$PATH:/ccache/bin"
@@ -46,6 +47,7 @@ in
           llvm/cmake/modules/AddLLVM.cmake
         sed -i 's|numShards = 32;|numShards = 1;|' lld/*/SyntheticSections.*
         sed -i 's|numShards = 256;|numShards = 1;|' lld/*/ICF.cpp
+        sed -i 's|__FILE__|"__FILE__"|' compiler-rt/lib/builtins/int_util.h
       # figure out includes:
         C_INCLUDES="$SYSROOT/include"
         C_INCLUDES="$C_INCLUDES:${linux-headers}/include"
@@ -124,5 +126,7 @@ in
         ln -s $out/bin/clang-cpp $out/bin/generic-names/cpp
       # mix new stuff into sysroot
         ln -s $out/lib/* $out/sysroot/lib/
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
   }

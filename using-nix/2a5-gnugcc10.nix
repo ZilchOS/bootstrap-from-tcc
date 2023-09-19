@@ -37,6 +37,7 @@ in
       "${gnugcc4-cpp}/bin"
     ];
     script = ''
+        mkdir build-dir; cd build-dir
       # alias ash to sh:
         mkdir aliases; ln -s ${stage1.protobusybox}/bin/ash aliases/sh
         export PATH="$(pwd)/aliases:$PATH"
@@ -58,12 +59,16 @@ in
           gcc/config/i386/linux64.h
         sed -i 's|m64=../lib64|m64=../lib|' gcc/config/i386/t-linux64
         sed -i 's|"os/gnu-linux"|"os/generic"|' libstdc++-v3/configure.host
+        sed -i 's|LIBGCC2_DEBUG_CFLAGS = -g|LIBGCC2_DEBUG_CFLAGS = |' \
+          libgcc/Makefile.in
         # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
         sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh */ltmain.sh
       # configure:
         ash configure \
           CONFIG_SHELL='${stage1.protobusybox}/bin/ash' \
           SHELL='${stage1.protobusybox}/bin/ash' \
+          CFLAGS=-O2 CXXFLAGS=-O2 \
+          CFLAGS_FOR_TARGET=-O2 CXXFLAGS_FOR_TARGET=-O2 \
           --with-sysroot=$SYSROOT \
           --with-native-system-header-dir=/include \
           --with-build-time-tools=${static-binutils}/bin \
@@ -90,5 +95,7 @@ in
         make -j $NPROC
       # install:
         make -j $NPROC install
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
   }

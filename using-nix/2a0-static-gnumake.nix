@@ -14,6 +14,7 @@ in
       "${stage1.protobusybox}/bin"
     ];
     script = ''
+        mkdir build-dir; cd build-dir
       # unpack:
         unpack ${source-tarball-gnumake}
       # fixup:
@@ -54,9 +55,11 @@ in
       # test:
         mv make make-intermediate
         ./make-intermediate -j $NPROC clean
-        ./make-intermediate -j $NPROC
+        ./make-intermediate -j $NPROC CFLAGS=-O2
       # install:
         ./make -j $NPROC install
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
       # wrap:
         # FIXME: patch make to use getenv?
         mkdir -p $out/wrappers; cd $out/wrappers

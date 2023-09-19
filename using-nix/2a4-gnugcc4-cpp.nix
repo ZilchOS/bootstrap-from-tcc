@@ -33,6 +33,7 @@ in
       "${static-gnugcc4-c}/bin"
     ];
     script = ''
+        mkdir build-dir; cd build-dir
       # alias ash to sh:
         mkdir aliases; ln -s ${stage1.protobusybox}/bin/ash aliases/sh
         export PATH="$(pwd)/aliases:$PATH"
@@ -52,6 +53,7 @@ in
         echo 'exec ${static-binutils}/bin/ld $_LDFLAG "$@"' \
           >> wrappers/ld
         chmod +x wrappers/cc wrappers/cpp wrappers/ld
+        export PATH="$(pwd)/wrappers:$PATH"
       # unpack:
         unpack ${source-tarball-gcc}
         mkdir mpfr mpc gmp
@@ -68,6 +70,8 @@ in
         sed -i "s|/lib64/ld-linux-x86-64.so.2|$SYSROOT/lib/libc.so|" \
           gcc/config/i386/linux64.h
         sed -i 's|"os/gnu-linux"|"os/generic"|' libstdc++-v3/configure.host
+        sed -i 's|LIBGCC2_DEBUG_CFLAGS = -g|LIBGCC2_DEBUG_CFLAGS = |' \
+          libgcc/Makefile.in
         # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
         sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh */ltmain.sh
       # configure:
@@ -75,9 +79,8 @@ in
           cache_file=nonex \
           CONFIG_SHELL='${stage1.protobusybox}/bin/ash' \
           SHELL='${stage1.protobusybox}/bin/ash' \
-          CC=$(pwd)/wrappers/cc \
-          CPP=$(pwd)/wrappers/cpp \
-          LD=$(pwd)/wrappers/ld \
+          CC=cc CPP=cpp LD=ld \
+          CFLAGS=-O2 CFLAGS_FOR_TARGET=-O2 \
           --with-sysroot=$SYSROOT \
           --with-native-system-header-dir=/include \
           --with-build-time-tools=${static-binutils}/bin \
@@ -99,5 +102,7 @@ in
         make -j $NPROC
       # install:
         make -j $NPROC install
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
   }

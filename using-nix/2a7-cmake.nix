@@ -17,11 +17,16 @@ in
       "${gnugcc10}/bin"
     ];
     script = ''
+        mkdir build-dir; cd build-dir
         export SHELL=${stage1.protobusybox}/bin/ash
       # unpack:
         unpack ${source-tarball-cmake}
       # fixup:
         sed -i 's|/bin/sh|${stage1.protobusybox}/bin/ash|' bootstrap
+        sed -i 's|__FILE__|"__FILE__"|' \
+          Source/CPack/IFW/cmCPackIFWCommon.h \
+          Source/CPack/cmCPack*.h \
+          Source/cmCTest.h
       # bundle libraries:
         # poor man's static linking, a way for cmake to be self-contained later
         mkdir -p $out/bundled-runtime
@@ -40,5 +45,7 @@ in
         make -j $NPROC
       # install:
         make -j $NPROC install/strip
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
   }

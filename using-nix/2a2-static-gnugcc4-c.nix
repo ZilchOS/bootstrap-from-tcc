@@ -30,6 +30,7 @@ in
       "${static-gnumake}/bin"
     ];
     script = ''
+        mkdir build-dir; cd build-dir
       # alias ash to sh:
         mkdir aliases; ln -s ${stage1.protobusybox}/bin/ash aliases/sh
         export PATH="$(pwd)/aliases:$PATH"
@@ -46,12 +47,15 @@ in
           install-sh */install-sh
         sed -i 's|^\(\s*\)sh |\1${stage1.protobusybox}/bin/ash |' \
           Makefile* */Makefile*
+        sed -i 's|LIBGCC2_DEBUG_CFLAGS = -g|LIBGCC2_DEBUG_CFLAGS = |' \
+          libgcc/Makefile.in
         # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
         sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh */ltmain.sh
       # configure:
         ash configure \
           CONFIG_SHELL='${stage1.protobusybox}/bin/ash' \
           SHELL='${stage1.protobusybox}/bin/ash' \
+          CFLAGS=-O2 CFLAGS_FOR_TARGET=-O2 \
           --with-sysroot=${stage1.protomusl} \
           --with-native-system-header-dir=/include \
           --with-build-time-tools=${static-binutils}/bin \
@@ -71,5 +75,7 @@ in
         make -j $NPROC
       # install:
         make -j $NPROC install
+      # check for build path leaks:
+        ( ! grep -RF $(pwd) $out )
     '';
   }
