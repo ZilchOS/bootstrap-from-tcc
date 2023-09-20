@@ -1,7 +1,7 @@
 #!/store/1-stage1/protobusybox/bin/ash
 
-#> FETCH 60493f4e974fcca7b739aea4901af2d957b0eaea34b42815359be59cf6c88fa2
-#>  FROM https://github.com/llvm/llvm-project/releases/download/llvmorg-17.0.0-rc3/llvm-project-17.0.0rc3.src.tar.xz
+#> FETCH b0e42aafc01ece2ca2b42e3526f54bebc4b1f1dc8de6e34f46a0446a13e882b9
+#>  FROM https://github.com/llvm/llvm-project/releases/download/llvmorg-17.0.1/llvm-project-17.0.1.src.tar.xz
 
 set -uex
 
@@ -30,7 +30,7 @@ ln -s /store/2a3-intermediate-musl/lib/* $SYSROOT/lib/
 ln -s /store/2a3-intermediate-musl/include/* $SYSROOT/include/
 
 echo "### $0: unpacking LLVM/Clang sources..."
-tar --strip-components=1 -xf /downloads/llvm-project-17.0.0rc3.src.tar.xz
+tar --strip-components=1 -xf /downloads/llvm-project-17.0.1.src.tar.xz
 
 echo "### $0: fixing up LLVM/Clang sources..."
 sed -i "s|COMMAND sh|COMMAND $SHELL|" \
