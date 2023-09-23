@@ -12,7 +12,6 @@ export PATH="$PATH:/store/2a8-python/bin"
 # 2a9-intermediate-clang intentionally not added to $PATH to prevent confusion
 
 export SHELL=/store/1-stage1/protobusybox/bin/ash
-LINUX_HEADERS_INCLUDES="/store/2a6-linux-headers/include"
 PREV_CLANG=/store/2a9-intermediate-clang
 
 mkdir -p /tmp/2b1-clang; cd /tmp/2b1-clang
@@ -46,22 +45,21 @@ sed -i "s|_install_rpath \"\\\\\$ORIGIN/..|_install_rpath \"$OUT|" \
 	llvm/cmake/modules/AddLLVM.cmake
 sed -i 's|numShards = 32;|numShards = 1;|' lld/*/SyntheticSections.*
 sed -i 's|numShards = 256;|numShards = 1;|' lld/*/ICF.cpp
-sed -i 's|__FILE__|__FILE_NAME__|' \
-	compiler-rt/lib/builtins/int_util.h
+sed -i 's|__FILE__|__FILE_NAME__|' compiler-rt/lib/builtins/int_util.h
+sed -i 's|"@LLVM_SRC_ROOT@"|"REDACTED"|' \
+	llvm/tools/llvm-config/BuildVariables.inc.in
+sed -i 's|"@LLVM_OBJ_ROOT@"|"REDACTED"|' \
+	llvm/tools/llvm-config/BuildVariables.inc.in
 
 echo "### $0: building LLVM/Clang..."
 export LD_LIBRARY_PATH="/store/2b0-musl/lib:$PREV_CLANG/lib"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/tmp/2b1-clang/build/lib" # libLLVM
-
-C_INCLUDES="$SYSROOT/include"
-C_INCLUDES="$C_INCLUDES:$LINUX_HEADERS_INCLUDES"
 
 EXTRA_INCL='/tmp/2b1-clang/extra_includes'
 mkdir -p $EXTRA_INCL
 cp clang/lib/Headers/*intrin*.h $EXTRA_INCL/
 cp clang/lib/Headers/mm_malloc.h $EXTRA_INCL/
 [ -e $EXTRA_INCL/immintrin.h ]
-
 
 OPTS=''
 add_opt() {
@@ -71,7 +69,6 @@ add_opt CMAKE_BUILD_TYPE=Release
 add_opt LLVM_OPTIMIZED_TABLEGEN=YES
 add_opt LLVM_CCACHE_BUILD=$USE_CCACHE
 add_opt DEFAULT_SYSROOT=$SYSROOT
-add_opt C_INCLUDE_DIRS=$C_INCLUDES
 add_opt CMAKE_INSTALL_PREFIX=$OUT
 add_opt LLVM_INSTALL_BINUTILS_SYMLINKS=YES
 add_opt LLVM_INSTALL_CCTOOLS_SYMLINKS=YES
@@ -108,25 +105,28 @@ add_opt LIBCXX_INCLUDE_BENCHMARKS=NO
 add_opt LIBCXX_CXX_ABI=libcxxabi
 add_opt LIBCXXABI_USE_COMPILER_RT=YES
 add_opt LIBCXXABI_USE_LLVM_UNWINDER=YES
+add_opt LIBCXX_ADDITIONAL_COMPILE_FLAGS=-I/store/2a6-linux-headers/include
 add_opt LLVM_INSTALL_TOOLCHAIN_ONLY=YES
 add_opt LIBUNWIND_USE_COMPILER_RT=YES
 add_opt LLVM_ENABLE_THREADS=NO
 
+REWRITE="-ffile-prefix-map=$(pwd)=/builddir/"
+CFLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL $REWRITE"
+LDFLAGS="-Wl,--dynamic-linker=$LOADER"
 cmake -S llvm -B build -G 'Unix Makefiles' \
 	-DCMAKE_ASM_COMPILER=$PREV_CLANG/bin/clang \
 	-DCMAKE_C_COMPILER=$PREV_CLANG/bin/clang \
 	-DCMAKE_CXX_COMPILER=$PREV_CLANG/bin/clang++ \
 	-DLLVM_ENABLE_PROJECTS='clang;lld' \
 	-DLLVM_ENABLE_RUNTIMES='compiler-rt;libcxx;libcxxabi;libunwind' \
-        -DCMAKE_C_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
-        -DCMAKE_CXX_FLAGS="--sysroot=$SYSROOT -I$EXTRA_INCL -D_LARGEFILE64_SOURCE" \
-        -DCMAKE_C_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER -D_LARGEFILE64_SOURCE" \
-        -DCMAKE_CXX_LINK_FLAGS="-Wl,--dynamic-linker=$LOADER -D_LARGEFILE64_SOURCE" \
+        -DCMAKE_C_FLAGS="$CFLAGS" \
+        -DCMAKE_CXX_FLAGS="$CFLAGS" \
+        -DCMAKE_C_LINK_FLAGS="$LDFLAGS" \
+        -DCMAKE_CXX_LINK_FLAGS="$LDFLAGS" \
 	-DLLVM_BUILD_LLVM_DYLIB=YES \
 	-DLLVM_LINK_LLVM_DYLIB=YES \
 	-DCLANG_LINK_LLVM_DYLIB=YES \
 	$OPTS
-        # TODO: remove _LARGEFILE64_SOURCE stopgap on update
 
 make -C build -j $NPROC clang lld runtimes
 

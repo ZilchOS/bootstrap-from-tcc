@@ -13,7 +13,6 @@ export PATH="$PATH:/store/2a7-cmake/bin"
 export PATH="$PATH:/store/2a8-python/bin"
 
 export SHELL=/store/1-stage1/protobusybox/bin/ash
-LINUX_HEADERS_INCLUDES="/store/2a6-linux-headers/include"
 GCC_PATH=/store/2a5-gnugcc10
 
 mkdir -p /tmp/2a9-intermediate-clang; cd /tmp/2a9-intermediate-clang
@@ -47,15 +46,14 @@ sed -i "s|_install_rpath \"\\\\\$ORIGIN/..|_install_rpath \"$OUT|" \
 	llvm/cmake/modules/AddLLVM.cmake
 sed -i 's|numShards = 32;|numShards = 1;|' lld/*/SyntheticSections.*
 sed -i 's|numShards = 256;|numShards = 1;|' lld/*/ICF.cpp
-sed -i 's|__FILE__|"__FILE__"|' \
-	compiler-rt/lib/builtins/int_util.h
+sed -i 's|__FILE__|"__FILE__"|' compiler-rt/lib/builtins/int_util.h
+sed -i 's|"@LLVM_SRC_ROOT@"|"REDACTED"|' \
+	llvm/tools/llvm-config/BuildVariables.inc.in
+sed -i 's|"@LLVM_OBJ_ROOT@"|"REDACTED"|' \
+	llvm/tools/llvm-config/BuildVariables.inc.in
 
 echo "### $0: building LLVM/Clang (stage 1)..."
 export LD_LIBRARY_PATH='/store/2a5-gnugcc10/lib'
-#export LD_LIBRARY_PATH="/store/2a8-python/lib:$LD_LIBRARY_PATH"
-
-C_INCLUDES="$SYSROOT/include"
-C_INCLUDES="$C_INCLUDES:$LINUX_HEADERS_INCLUDES"
 
 EXTRA_INCL='/tmp/2a9-intermediate-clang/extra_includes'
 mkdir -p $EXTRA_INCL
@@ -71,7 +69,6 @@ add_opt CMAKE_BUILD_TYPE=MinSizeRel
 add_opt LLVM_OPTIMIZED_TABLEGEN=YES
 add_opt LLVM_CCACHE_BUILD=$USE_CCACHE
 add_opt DEFAULT_SYSROOT=$SYSROOT
-add_opt C_INCLUDE_DIRS=$C_INCLUDES
 add_opt CMAKE_INSTALL_PREFIX=$OUT
 add_opt LLVM_INSTALL_BINUTILS_SYMLINKS=YES
 add_opt LLVM_INSTALL_CCTOOLS_SYMLINKS=YES
@@ -106,6 +103,7 @@ add_opt LIBCXX_HAS_MUSL_LIBC=YES
 add_opt LIBCXX_USE_COMPILER_RT=YES
 add_opt LIBCXX_INCLUDE_BENCHMARKS=NO
 add_opt LIBCXX_CXX_ABI=libcxxabi
+add_opt LIBCXX_ADDITIONAL_COMPILE_FLAGS=-I/store/2a6-linux-headers/include
 add_opt LIBCXXABI_USE_COMPILER_RT=YES
 add_opt LIBCXXABI_USE_LLVM_UNWINDER=YES
 add_opt LLVM_INSTALL_TOOLCHAIN_ONLY=YES

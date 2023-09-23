@@ -23,8 +23,8 @@ echo "### $0: configuring busybox..."
 BUSYBOX_FLAGS='CONFIG_SHELL=/store/2b2-busybox/bin/ash'
 BUSYBOX_FLAGS='SHELL=/store/2b2-busybox/bin/ash'
 BUSYBOX_FLAGS="$BUSYBOX_FLAGS CC=cc HOSTCC=cc"
-BUSYBOX_FLAGS="$BUSYBOX_FLAGS CFLAGS=-I/store/2a6-linux-headers/include"
 BUSYBOX_FLAGS="$BUSYBOX_FLAGS KCONFIG_NOTIMESTAMP=y"
+BUSYBOX_CFLAGS='CFLAGS=-O2 -isystem /store/2a6-linux-headers/include'
 echo -e '#!/store/2b2-busybox/bin/ash\nprintf 9999' \
 	> scripts/gcc-version.sh
 sed -i 's|/bin/sh|/store/2b2-busybox/bin/ash|g' \
@@ -38,11 +38,12 @@ sed -i 's|CONFIG_FEATURE_SHARED_BUSYBOX=y|CONFIG_FEATURE_SHARED_BUSYBOX=n|' \
 	.config
 
 echo "### $0: building busybox..."
-make -j $NPROC $BUSYBOX_FLAGS busybox busybox.links CFLAGS=-O2
+make -j $NPROC $BUSYBOX_FLAGS "$BUSYBOX_CFLAGS" busybox busybox.links
 sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
 
 echo "### $0: installing busybox..."
-make -j $NPROC $BUSYBOX_FLAGS install CONFIG_PREFIX=/store/3b-busybox-static
+make -j $NPROC $BUSYBOX_FLAGS "$BUSYBOX_CFLAGS" \
+	install CONFIG_PREFIX=/store/3b-busybox-static
 
 echo "### $0: checking for build path leaks..."
 ( ! grep -RF /tmp/3b /store/3b-busybox-static )

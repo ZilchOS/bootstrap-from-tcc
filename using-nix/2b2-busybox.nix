@@ -34,15 +34,16 @@ in
         echo "### $0: configuring busybox..."
         BUSYBOX_FLAGS='CONFIG_SHELL=${stage1.protobusybox}/bin/ash'
         BUSYBOX_FLAGS="$BUSYBOX_FLAGS CC=cc HOSTCC=cc"
-        BUSYBOX_FLAGS="$BUSYBOX_FLAGS CFLAGS=-I${linux-headers}/include"
         BUSYBOX_FLAGS="$BUSYBOX_FLAGS KCONFIG_NOTIMESTAMP=y"
-        make -j $NPROC $BUSYBOX_FLAGS defconfig
+        BUSYBOX_CFLAGS="CFLAGS=-I${linux-headers}/include"
+        make -j $NPROC $BUSYBOX_FLAGS "$BUSYBOX_CFLAGS" defconfig
         sed -i 's|CONFIG_INSTALL_NO_USR=y|CONFIG_INSTALL_NO_USR=n|' .config
       # build:
-        make -j $NPROC $BUSYBOX_FLAGS busybox busybox.links CFLAGS=-O2
+        make -j $NPROC $BUSYBOX_FLAGS "$BUSYBOX_CFLAGS" busybox busybox.links
         sed -i 's|^/usr/s\?bin/|/bin/|' busybox.links
       # install:
-        make -j $NPROC $BUSYBOX_FLAGS install CONFIG_PREFIX=$out
+        make -j $NPROC $BUSYBOX_FLAGS "$BUSYBOX_CFLAGS" \
+          install CONFIG_PREFIX=$out
       # check for build path leaks:
         ( ! grep -RF $(pwd) $out )
     '';

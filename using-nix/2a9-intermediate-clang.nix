@@ -48,9 +48,11 @@ in
         sed -i 's|numShards = 32;|numShards = 1;|' lld/*/SyntheticSections.*
         sed -i 's|numShards = 256;|numShards = 1;|' lld/*/ICF.cpp
         sed -i 's|__FILE__|"__FILE__"|' compiler-rt/lib/builtins/int_util.h
+        sed -i 's|"@LLVM_SRC_ROOT@"|"REDACTED"|' \
+          llvm/tools/llvm-config/BuildVariables.inc.in
+        sed -i 's|"@LLVM_OBJ_ROOT@"|"REDACTED"|' \
+          llvm/tools/llvm-config/BuildVariables.inc.in
       # figure out includes:
-        C_INCLUDES="$SYSROOT/include"
-        C_INCLUDES="$C_INCLUDES:${linux-headers}/include"
         EXTRA_INCL="$(pwd)/extra_includes"
         mkdir -p $EXTRA_INCL
         cp clang/lib/Headers/*intrin*.h $EXTRA_INCL/
@@ -66,7 +68,6 @@ in
         add_opt LLVM_OPTIMIZED_TABLEGEN=YES
         add_opt LLVM_CCACHE_BUILD=$USE_CCACHE
         add_opt DEFAULT_SYSROOT=$SYSROOT
-        add_opt C_INCLUDE_DIRS=$C_INCLUDES
         add_opt CMAKE_INSTALL_PREFIX=$out
         add_opt LLVM_INSTALL_BINUTILS_SYMLINKS=YES
         add_opt LLVM_INSTALL_CCTOOLS_SYMLINKS=YES
@@ -103,6 +104,7 @@ in
         add_opt LIBCXX_CXX_ABI=libcxxabi
         add_opt LIBCXXABI_USE_COMPILER_RT=YES
         add_opt LIBCXXABI_USE_LLVM_UNWINDER=YES
+        add_opt LIBCXX_ADDITIONAL_COMPILE_FLAGS=-I${linux-headers}/include
         add_opt LLVM_INSTALL_TOOLCHAIN_ONLY=YES
         add_opt LIBUNWIND_USE_COMPILER_RT=YES
         add_opt LLVM_ENABLE_THREADS=NO
