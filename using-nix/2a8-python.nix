@@ -39,17 +39,22 @@ in
           Modules/pyexpat.c
       # configure:
         ash configure \
+          ac_cv_broken_sem_getvalue=yes \
+          ac_cv_posix_semaphores_enabled=no \
           OPT='-DNDEBUG -fwrapv -O3 -Wall' \
           --without-static-libpython \
           --build x86_64-linux-musl \
           --prefix=$out \
           --enable-shared \
           --with-ensurepip=no
+        # ensure reproducibility in case of no /dev/shm
+        grep 'define POSIX_SEMAPHORES_NOT_ENABLED 1' pyconfig.h
+        grep 'define HAVE_BROKEN_SEM_GETVALUE 1' pyconfig.h
       # build:
         make -j $NPROC
       # install:
         make -j $NPROC install
-      # strip builddir mentions
+      # strip builddir mentions:
         sed -i "s|$(pwd)|...|" \
           $out/lib/python3.*/_sysconfigdata__*.py \
           $out/lib/python3.*/config-3.11-x86_64-linux-musl/Makefile

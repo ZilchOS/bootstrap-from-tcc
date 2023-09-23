@@ -37,12 +37,17 @@ sed -i 's|__FILE__|"__FILE__"|' \
 
 echo "### $0: building CPython..."
 ash configure \
+	ac_cv_broken_sem_getvalue=yes \
+	ac_cv_posix_semaphores_enabled=no \
 	OPT='-DNDEBUG -fwrapv -O3 -Wall' \
 	--without-static-libpython \
 	--build x86_64-linux-musl \
 	--prefix=/store/2a8-python \
 	--enable-shared \
 	--with-ensurepip=no
+# ensure reproducibility in case of no /dev/shm
+grep 'define POSIX_SEMAPHORES_NOT_ENABLED 1' pyconfig.h
+grep 'define HAVE_BROKEN_SEM_GETVALUE 1' pyconfig.h
 make -j $NPROC
 
 echo "### $0: installing CPython..."
