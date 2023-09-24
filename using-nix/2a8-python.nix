@@ -37,6 +37,8 @@ in
           Include/pyerrors.h \
           Include/cpython/object.h \
           Modules/pyexpat.c
+        sed -i 's|TIME __TIME__|TIME "xx:xx:xx"|' Modules/getbuildinfo.c
+        sed -i 's|DATE __DATE__|DATE "xx/xx/xx"|' Modules/getbuildinfo.c
       # configure:
         ash configure \
           ac_cv_broken_sem_getvalue=yes \
