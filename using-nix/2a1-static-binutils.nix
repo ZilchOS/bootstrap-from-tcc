@@ -23,16 +23,21 @@ in
                 missing install-sh mkinstalldirs
         # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
         sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh
+        sed -i 's|__FILE__|"__FILE__"|' \
+          ld/*.c ld/*.h bfd/*.* libctf/*.* opcodes/*.*
+        sed -i 's| -g | |' ld/Makefile*
       # alias makeinfo to true
         mkdir aliases
         ln -s ${stage1.protobusybox}/bin/true aliases/makeinfo
         PATH="$(pwd)/aliases/:$PATH"
       # configure:
         export lt_cv_sys_max_cmd_len=32768
+        export ac_cv_func_strncmp_works=no
         ash ./configure \
                 CONFIG_SHELL='${stage1.protobusybox}/bin/ash' \
                 SHELL='${stage1.protobusybox}/bin/ash' \
                 CFLAGS='-O2 -D__LITTLE_ENDIAN__=1' \
+                CFLAGS_FOR_TARGET=-O2 \
                 --enable-deterministic-archives \
                 --disable-gprofng \
                 --host x86_64-linux --build x86_64-linux \

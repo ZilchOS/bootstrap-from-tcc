@@ -51,7 +51,11 @@ in
           libgcc/Makefile.in
         # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
         sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh */ltmain.sh
+        sed -i 's|#define HAVE_HOST_CORE2 1||' mpfr/configure
       # configure:
+        export ac_cv_func_strncmp_works=no
+        export ac_cv_func_alloca_works=no
+        export ac_cv_prog_make_make_set=no
         ash configure \
           CONFIG_SHELL='${stage1.protobusybox}/bin/ash' \
           SHELL='${stage1.protobusybox}/bin/ash' \

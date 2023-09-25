@@ -52,7 +52,7 @@ in
         SYSROOT=${intermediate-musl}
         sed -i 's|/bin/sh|${stage1.protobusybox}/bin/ash|' \
           missing move-if-change mkdep mkinstalldirs symlink-tree install-sh \
-          gcc/exec-tool.in libgcc/mkheader.sh
+          gcc/exec-tool.in gcc/genmultilib libgcc/mkheader.sh
         sed -i 's|^\(\s*\)sh |\1${stage1.protobusybox}/bin/ash |' \
           libgcc/Makefile.in
         sed -i "s|/lib/ld-musl-x86_64.so.1|$SYSROOT/lib/libc.so|" \
@@ -64,6 +64,9 @@ in
         # see libtool's 74c8993c178a1386ea5e2363a01d919738402f30
         sed -i 's/| \$NL2SP/| sort | $NL2SP/' ltmain.sh */ltmain.sh
       # configure:
+        export ac_cv_func_strncmp_works=no
+        export ac_cv_prog_make_make_set=no
+        export glibcxx_cv_dev_random=no
         ash configure \
           CONFIG_SHELL='${stage1.protobusybox}/bin/ash' \
           SHELL='${stage1.protobusybox}/bin/ash' \
