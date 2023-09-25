@@ -25,4 +25,4 @@ echo "### $0: installing SQLite..."
 make -j $NPROC install-strip
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3a /store/3a-sqlite )
+( ! grep -rF /tmp/3a /store/3a-sqlite )

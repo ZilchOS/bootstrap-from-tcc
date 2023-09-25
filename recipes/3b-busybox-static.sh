@@ -46,4 +46,4 @@ make -j $NPROC $BUSYBOX_FLAGS "$BUSYBOX_CFLAGS" \
 	install CONFIG_PREFIX=/store/3b-busybox-static
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3b /store/3b-busybox-static )
+( ! grep -rF /tmp/3b /store/3b-busybox-static )

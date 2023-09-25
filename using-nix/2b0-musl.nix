@@ -38,7 +38,7 @@ in
         mkdir $out/bin
         ln -s $out/lib/libc.so $out/bin/ldd
       # check for build path leaks:
-        ( ! grep -RF $(pwd) $out )
+        ( ! grep -rF $(pwd) $out )
     '';
     extra.allowedRequisites = [ "out" ];
     extra.allowedReferences = [ "out" ];

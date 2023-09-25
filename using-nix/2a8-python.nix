@@ -63,7 +63,7 @@ in
         # restore compileall just in case
         cat Lib/compileall.py.bak > $out/lib/python3.11/compileall.py
       # check for build path leaks:
-        ( ! grep -RF $(pwd) $out )
+        ( ! grep -rF $(pwd) $out )
     '';
   }
 

@@ -97,4 +97,4 @@ echo "### $0: installing Nix..."
 make -j $NPROC install
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3b /store/3b-nix )
+( ! grep -rF /tmp/3b /store/3b-nix )

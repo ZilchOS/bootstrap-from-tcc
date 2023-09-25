@@ -33,4 +33,4 @@ find usr/include -name '.*' | xargs rm
 cp -rv usr/include /store/2a6-linux-headers/
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2a6 /store/2a6-linux-headers )
+( ! grep -rF /tmp/2a6 /store/2a6-linux-headers )

@@ -29,4 +29,4 @@ echo "### $0: installing mbedtls..."
 make -j $NPROC install
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3a /store/3a-mbedtls )
+( ! grep -rF /tmp/3a /store/3a-mbedtls )

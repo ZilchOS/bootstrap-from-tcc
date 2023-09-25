@@ -87,4 +87,4 @@ echo "### $0: installing GNU GCC 10"
 make -j $NPROC install-strip
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2a5 /store/2a5-gnugcc10 )
+( ! grep -rF /tmp/2a5 /store/2a5-gnugcc10 )

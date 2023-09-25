@@ -46,6 +46,6 @@ grep /store/2b0-musl/lib/libc.so cpp_test
 [ "$(./cpp_test)" == 'this is c++' ]
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2b1 /store/2b1-clang )
+( ! grep -rF /tmp/2b1 /store/2b1-clang )
 
 touch /store/_2b1.test  # indicator of successful completion

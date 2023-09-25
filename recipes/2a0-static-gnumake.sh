@@ -51,4 +51,4 @@ echo "exec /store/2a0-static-gnumake/bin/make SHELL=\$SHELL \"\$@\"" \ >> make
 chmod +x make
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2a0 /store/2a0-static-gnumake )
+( ! grep -rF /tmp/2a0 /store/2a0-static-gnumake )

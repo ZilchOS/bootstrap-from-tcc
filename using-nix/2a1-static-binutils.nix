@@ -46,6 +46,6 @@ in
         make -j $NPROC install
         rm $out/lib/*.la  # broken, reference builddir
       # check for build path leaks:
-        ( ! grep -RF $(pwd) $out )
+        ( ! grep -rF $(pwd) $out )
     '';
   }

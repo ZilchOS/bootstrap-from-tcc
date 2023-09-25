@@ -45,4 +45,4 @@ echo "### $0: installing CMake..."
 make -j $NPROC install/strip
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2a7 /store/2a7-cmake )
+( ! grep -rF /tmp/2a7 /store/2a7-cmake )

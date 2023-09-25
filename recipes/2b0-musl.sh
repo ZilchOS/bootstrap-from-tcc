@@ -33,4 +33,4 @@ mkdir /store/2b0-musl/bin
 ln -s /store/2b0-musl/lib/libc.so /store/2b0-musl/bin/ldd
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2b0 /store/2b0-musl )
+( ! grep -rF /tmp/2b0 /store/2b0-musl )

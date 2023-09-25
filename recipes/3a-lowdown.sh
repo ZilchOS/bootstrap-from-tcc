@@ -30,4 +30,4 @@ echo "### $0: installing lowdown..."
 make -j $NPROC install_shared
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3a /store/3a-lowdown )
+( ! grep -rF /tmp/3a /store/3a-lowdown )

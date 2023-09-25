@@ -94,4 +94,4 @@ echo "### $0: installing GNU GCC 4 (dynamically linked, with C++ support)"
 make -j $NPROC install-strip
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2a4 /store/2a4-gnugcc4-cpp )
+( ! grep -rF /tmp/2a4 /store/2a4-gnugcc4-cpp )

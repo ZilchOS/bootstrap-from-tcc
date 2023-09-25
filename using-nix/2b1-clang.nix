@@ -139,7 +139,7 @@ in
       # mix new stuff into sysroot:
         ln -s $out/lib/* $out/sysroot/lib/
       # check for build path leaks:
-        ( ! grep -RF $(pwd) $out )
+        ( ! grep -rF $(pwd) $out )
     '';
     extra.allowedRequisites = [ "out" musl ];
     extra.allowedReferences = [ "out" musl ];

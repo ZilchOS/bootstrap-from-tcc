@@ -43,4 +43,4 @@ for l in common enc dec; do
 done
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3a /store/3a-brotli )
+( ! grep -rF /tmp/3a /store/3a-brotli )

@@ -34,6 +34,6 @@ in
         mkdir -p $out
         cp -rv usr/include $out/
       # check for build path leaks:
-        ( ! grep -RF $(pwd) $out )
+        ( ! grep -rF $(pwd) $out )
     '';
   }

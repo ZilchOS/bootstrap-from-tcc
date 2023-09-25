@@ -30,4 +30,4 @@ echo "### $0: installing libarchive..."
 make -j $NPROC install-strip
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3a /store/3a-libarchive )
+( ! grep -rF /tmp/3a /store/3a-libarchive )

@@ -103,6 +103,6 @@ in
       # install:
         make -j $NPROC install
       # check for build path leaks:
-        ( ! grep -RF $(pwd) $out )
+        ( ! grep -rF $(pwd) $out )
     '';
   }

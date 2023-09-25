@@ -30,4 +30,4 @@ echo "### $0: installing GNU gperf..."
 make -j $NPROC install
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3a /store/3a-gnugperf )
+( ! grep -rF /tmp/3a /store/3a-gnugperf )

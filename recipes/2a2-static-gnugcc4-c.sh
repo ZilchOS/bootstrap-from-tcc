@@ -68,4 +68,4 @@ echo "### $0: installing static GNU GCC 4 (statically linked, C only)"
 make -j $NPROC install
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2a2 /store/2a2-static-gnugcc4-c )
+( ! grep -rF /tmp/2a2 /store/2a2-static-gnugcc4-c )

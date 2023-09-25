@@ -44,4 +44,4 @@ make -j $NPROC install
 rm /store/2a1-static-binutils/lib/*.la  # broken, reference builddir
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2a1 /store/2a1-static-binutils )
+( ! grep -rF /tmp/2a1 /store/2a1-static-binutils )

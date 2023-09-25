@@ -26,4 +26,4 @@ sed < cmake/pkg-config.pc.in \
 	> /store/3a-nlohmann-json/lib/pkgconfig/nlohmann_json.pc
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3a /store/3a-nlohmann-json )
+( ! grep -rF /tmp/3a /store/3a-nlohmann-json )

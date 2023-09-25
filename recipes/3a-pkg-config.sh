@@ -29,4 +29,4 @@ echo "### $0: installing pkg-config..."
 make -j $NPROC install-strip
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3a /store/3a-pkg-config )
+( ! grep -rF /tmp/3a /store/3a-pkg-config )

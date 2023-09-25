@@ -62,4 +62,4 @@ sed -i "s|/tmp/2a8-python|...|" \
 cat Lib/compileall.py.bak > /store/2a8-python/lib/python3.11/compileall.py
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2a8 /store/2a8-python )
+( ! grep -rF /tmp/2a8 /store/2a8-python )

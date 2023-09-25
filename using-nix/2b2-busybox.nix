@@ -45,7 +45,7 @@ in
         make -j $NPROC $BUSYBOX_FLAGS "$BUSYBOX_CFLAGS" \
           install CONFIG_PREFIX=$out
       # check for build path leaks:
-        ( ! grep -RF $(pwd) $out )
+        ( ! grep -rF $(pwd) $out )
     '';
     extra.allowedRequisites = [ "out" musl clang ];
     extra.allowedReferences = [ "out" musl clang ];

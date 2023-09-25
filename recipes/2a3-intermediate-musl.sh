@@ -33,4 +33,4 @@ echo "### $0: installing musl..."
 make -j $NPROC install
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/2a3 /store/2a3-intermediate-musl )
+( ! grep -rF /tmp/2a3 /store/2a3-intermediate-musl )

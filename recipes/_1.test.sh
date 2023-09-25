@@ -8,7 +8,7 @@ mkdir -p /tmp/_1.test; cd /tmp/_1.test
 
 
 echo "### $0: checking that /protosrc has not leaked into outputs..."
-! grep -RF /protosrc /store/1-stage1
+! grep -rF /protosrc /store/1-stage1
 
 echo "### $0: checking compilation..."
 cat > va_test.c <<\EOF
@@ -30,11 +30,11 @@ hello=$(echo hello | bzip2 -1 | bzip2 -d)
 [ "$hello" == hello ]
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/_1.test . )
-( ! grep -RF /tmp/1-stage1 . )
-( ! grep -RF /store/1-stage1 . )
-( ! grep -RF va_test . )
-( ! grep -RF /tmp/1-stage1 /store/1-stage1 )
-( ! grep -RF /tmp/_1.test /store/1-stage1 )
+( ! grep -rF /tmp/_1.test . )
+( ! grep -rF /tmp/1-stage1 . )
+( ! grep -rF /store/1-stage1 . )
+( ! grep -rF va_test . )
+( ! grep -rF /tmp/1-stage1 /store/1-stage1 )
+( ! grep -rF /tmp/_1.test /store/1-stage1 )
 
 touch /store/_1.test  # indicator of successful completion

@@ -47,4 +47,4 @@ echo "### $0: installing Boost..."
 	--with-context --with-thread --with-system
 
 echo "### $0: checking for build path leaks..."
-( ! grep -RF /tmp/3a /store/3a-boost )
+( ! grep -rF /tmp/3a /store/3a-boost )
