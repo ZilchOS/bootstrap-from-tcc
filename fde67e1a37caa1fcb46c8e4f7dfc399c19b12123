@@ -3,3 +3,5 @@ Built-on: loquat how=nix
 Built-on: lychee how=nix
 
 Built-on: cocoa how=nix
+
+Built-on: cocoa how=make USE_CCACHE=1
