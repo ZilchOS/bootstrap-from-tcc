@@ -10,7 +10,9 @@ tcc-seed
 /scratch
 /pkgs
 /trees
+/nix-checksums-stage4
 
 /ZilchOS-core.iso
+/ZilchOS-core-raw.iso
 
 /TODO

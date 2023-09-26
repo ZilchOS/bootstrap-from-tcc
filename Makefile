@@ -8,10 +8,21 @@ all:
 	@echo 'This Makefile is for debugging purposes, use ./build.sh'
 	exit 1
 
-all-at-once: build.sh seed.sh download.sh recipes/*.sh recipes/*/*
-	./build.sh
+ISO_CHECKSUM=fb869fd66b1257017544a829a382b9e5238df35d4efe030eb5e9d86ba14a0445
 
-all-with-make: all-pkgs all-tests verify-all-pkgs-checksums
+# the no-dependencies way: full bootstrap with no make
+all-raw: build.sh seed.sh download.sh recipes/*.sh recipes/*/* using-nix/*
+	./build.sh
+	cp stage/store/5-go-beyond-using-nix/ZilchOS-core.iso \
+		ZilchOS-core-raw.iso
+	sha256sum -c <<<"$(ISO_CHECKSUM) ZilchOS-core-raw.iso"
+
+# the make scaffolding way: full bootstrap with make
+all-with-make: iso all-pkgs all-tests verify-all-pkgs-checksums \
+	verify-all-nix-stage4-checksums
+
+# the your-nix way: build just the using-nix/ part with your nix
+all-with-nix: verify-all-nix-plain-checksums
 
 ################################################################################
 
@@ -20,7 +31,11 @@ SHELL := bash
 .DELETE_ON_ERROR:  # if only it also worked for dirs, see helpers/inject
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
-.PHONY: all all-at-once all-with-make clean-stage clean deepclean iso
+.PHONY: all all-at-once all-with-make clean-stage clean deepclean iso \
+	verify-all-pkgs-checksums verify-pkgs-checksums update-pkgs-checksums \
+	verify-all-nix-stage4-checksums \
+	verify-all-nix-plain-checksums verify-nix-plain-checksums \
+	me-suffer
 NPROC ?= 1 # for inner make invocations, one can pass -j# this way
 USE_CCACHE ?= 0  # for faster iterative debugging only
 USE_NIX_CACHE ?= 0  # for faster iterative debugging only
@@ -549,7 +564,6 @@ pkgs/5-go-beyond-using-nix.pkg: downloads/nasm-2.16.01.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: downloads/zstd-1.5.5.tar.gz
 pkgs/5-go-beyond-using-nix.pkg: downloads/cacert-2023-08-22.pem
 
-ISO_CHECKSUM=fb869fd66b1257017544a829a382b9e5238df35d4efe030eb5e9d86ba14a0445
 iso: ZilchOS-core.iso
 
 ZilchOS-core.iso: pkgs/5-go-beyond-using-nix.pkg
@@ -740,6 +754,43 @@ update-pkgs-checksums:
 	done
 verify.pkgs.sha256: all-pkgs update-pkgs-checksums
 
+nix-checksums-stage4: pkgs/4-rebootstrap-using-nix.pkg  # TODO: add 5
+	tar tf pkgs/4-rebootstrap-using-nix.pkg store \
+		| grep -E 'store/[a-z0-9]{32}-[^/]*/?$$' \
+		| sed -E 's|.*/([a-z0-9]{32}-[^/]*)/?|\1|' \
+		| sort \
+		> nix-checksums-stage4
+
+verify-all-nix-stage4-checksums: nix-checksums-stage4 verify.nix
+	@status=true; \
+	while IFS=" " read ref_hash pkg; do \
+		if grep -Fq "$$ref_hash-bootstrap" nix-checksums-stage4; then \
+			echo "  $$ref_hash $$pkg"; \
+		else \
+			status=false; \
+			echo "! $$ref_hash $$pkg MISSING"; \
+		fi; \
+	done < verify.nix; $$status
+
+NIX_BUILD_X = nix build --no-warn-dirty --option substitute false --no-link
+verify-nix-plain-checksums: verify.nix
+	@status=true; \
+	while IFS=" " read ref_hash pkg; do \
+		plain_hash=$$($(NIX_BUILD_X) ".#$$pkg" --print-out-paths \
+				| sed -E 's|.*/([a-z0-9]{32})-.*|\1|'); \
+		if [[ "$$ref_hash" == "$$plain_hash" ]]; then \
+			echo "  $$ref_hash $$pkg"; \
+		else \
+			status=false; \
+			echo "- $$ref_hash $$pkg"; \
+			echo "+ $$plain_hash $$pkg"; \
+		fi; \
+	done < verify.nix; $$status
+
+verify-all-nix-plain-checksums: verify.nix
+	@$(NIX_BUILD_X) '.#toolchain' '.#libc' '.#musl'
+	@$(MAKE) verify-nix-plain-checksums
+
 ################################################################################
 
 clean-tmp:
@@ -751,9 +802,11 @@ clean-stage:
 	rm -rf stage
 
 clean:
-	@echo "### Makefile: removing stage, tmp, pkgs, keeping downloads..."
-	rm -rf stage tmp pkgs
+	@echo "### Makefile: removing stage, tmp, pkgs, iso, keeping downloads..."
+	rm -rf stage tmp pkgs nix-checksums-stage4 \
+		ZilchOS-core.iso ZilchOS-core-raw.iso
 
 deepclean:
-	@echo "### Makefile: removing stage, tmp, pkgs and downloads..."
-	rm -rf tmp pkgs downloads
+	@echo "### Makefile: removing stage, tmp, pkgs, iso and downloads..."
+	rm -rf tmp pkgs downloads nix-checksums-stage4 \
+		ZilchOS-core.iso ZilchOS-core-raw.iso
