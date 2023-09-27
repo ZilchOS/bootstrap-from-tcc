@@ -49,7 +49,7 @@ pushd "$DESTDIR/protosrc/protomusl/" >/dev/null
 		> host-generated/sed1/bits/alltypes.h
 	sed -n -e s/__NR_/SYS_/p \
 		< arch/x86_64/bits/syscall.h.in \
-		>> host-generated/sed2/bits/syscall.h
+		> host-generated/sed2/bits/syscall.h
 	# more frivolous patching
 	echo '#define VERSION "1.2.2"' > src/internal/version.h
 	sed -i 's/@PLT//' src/signal/x86_64/sigsetjmp.s
@@ -68,7 +68,7 @@ popd >/dev/null
 echo "### $0: patching up tinycc stage 1 sources..."
 pushd "$DESTDIR/protosrc/tinycc" >/dev/null
 	:> config.h
-	# eliminiate a source path reference
+	# eliminate a source path reference
 	sed -i 's/__FILE__/"__FILE__"/' tcc.h
 	# don't hardcode paths
 	sed -i 's/SHN_ABS, filename);/SHN_ABS, "FILE stub");/' tccdbg.c
@@ -80,7 +80,7 @@ echo "### $0: patching up protobusybox stage 1 sources..."
 pushd "$DESTDIR/protosrc/protobusybox" >/dev/null
 	:> include/NUM_APPLETS.h
 	:> include/common_bufsiz.h
-	# eliminiate a source path reference
+	# eliminate a source path reference
 	sed -i 's/__FILE__/"__FILE__"/' miscutils/fbsplash.c include/libbb.h
 	# already fixed in an unreleased version
 	sed -i 's/extern struct test_statics \*const test_ptr_to_statics/extern struct test_statics *BB_GLOBAL_CONST test_ptr_to_statics/' coreutils/test.c

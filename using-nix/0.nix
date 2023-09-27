@@ -27,7 +27,7 @@ let
   syscall_h_reference = "/nix/store/678g5j997qzp0srprfg4gqqxcp8mr3g9-syscall.h";
   syscall_h_is_unmodified = (syscall_h_ours == syscall_h_reference);
   stage1_seeder_ours = "${../recipes/1-stage1/seed.host-executed.sh}";
-  stage1_seeder_reference = "/nix/store/xxjsa35m7zfr3ffvp5jnxk2c7c0fvly5-seed.host-executed.sh";
+  stage1_seeder_reference = "/nix/store/qv4rmbdclws5nrx3m1vw1pb98qacw226-seed.host-executed.sh";
   stage1_seeder_is_unmodified = (stage1_seeder_ours == stage1_seeder_reference);
 in
   if (and [ syscall_h_is_unmodified stage1_seeder_is_unmodified ])
