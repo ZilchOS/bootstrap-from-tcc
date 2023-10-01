@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -ueo pipefail
+
+COMMIT=${1-HEAD}
+
+commit=$(git show -s --no-notes "$COMMIT")
+echo "$commit"
+if grep -q '^\s*Builds-required: none$' <<<"$commit"; then
+	echo '---'
+	echo '`Builds-required: none` in commit message, skipping commit'
+	exit 0
+fi
+echo '---'
+
+if grep -q '^\s*Builds-required: ' <<<"$commit"; then
+	verification_line=$(grep '^\s*Builds-required:' <<<"$commit")
+	verspec=$(sed 's|^\s*Builds-required:||' <<<"$verification_line")
+	if ! grep -Eq '^ make=[0-9]+ raw=[0-9]+ nix=[0-9]+$' <<<"$verspec"; then
+		echo 'Malformed `Builds-required:` line' >&2
+		exit 7
+	fi
+	required_make=$(sed -E 's|.* make=([0-9]+).*|\1|' <<<"$verspec")
+	(( required_make >= 0 ))
+	required_raw=$(sed -E 's|.* raw=([0-9]+).*|\1|' <<<"$verspec")
+	(( required_raw >= 0 ))
+	required_nix=$(sed -E 's|.* nix=([0-9]+).*|\1|' <<<"$verspec")
+	(( required_nix >= 0 ))
+else
+	required_make=2
+	required_raw=1
+	required_nix=2
+fi
+
+git fetch origin refs/notes/commits:refs/notes/commits
+notes=$(git notes show "$COMMIT" \
+	| grep ^Built-on: \
+	| grep -v USE_CCACHE \
+	| sort -u)
+using_make=$(grep -Fw how=make <<<"$notes" | wc -l) || true
+using_raw=$(grep -Fw how=raw <<<"$notes" | wc -l) || true
+using_nix=$(grep -Fw how=nix <<<"$notes" | wc -l) || true
+echo "$notes"
+
+status=true
+text=""
+if (( using_make < required_make )); then
+	text+="Not enough how=make commits: $using_make < $required_make\n"
+	status=false
+fi
+if (( using_raw < required_raw )); then
+	text+="Not enough how=raw commits: $using_raw < $required_raw\n"
+	status=false
+fi
+if (( using_nix < required_nix )); then
+	text+="Not enough how=nix commits: $using_nix < $required_nix\n"
+	status=false
+fi
+
+echo '---'
+echo "${using_make} out of ${required_make} required how=make builds"
+echo "${using_raw} out of ${required_raw} required how=raw builds"
+echo "${using_nix} out of ${required_nix} required how=nix builds"
+if ! $status; then
+	echo -ne "---\n$text"
+fi
+$status
