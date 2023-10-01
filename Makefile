@@ -29,6 +29,10 @@ all-with-nix: verify-all-nix-plain-checksums
 SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
 .DELETE_ON_ERROR:  # if only it also worked for dirs, see helpers/inject
+CHROOT ?= $(shell command -v chroot 2>/dev/null || \
+	PATH=/sbin:/usr/sbin/ command -v chroot 2>/dev/null || \
+	echo chroot \
+)
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 .PHONY: all all-at-once all-with-make clean-stage clean deepclean iso \
@@ -107,7 +111,7 @@ pkgs/1-stage1.pkg:
 	DESTDIR=tmp/build/1-stage1 recipes/1-stage1/seed.host-executed.sh
 	@echo "### Makefile: special stage 1: executing stage1.c with tcc-seed"
 	DISORDER=$(USE_DISORDERFS) helpers/builddir pre-build tmp/build/1-stage1
-	env -i unshare -nr chroot ./tmp/build/1-stage1 \
+	env -i unshare -nr $(CHROOT) ./tmp/build/1-stage1 \
 		/store/0-tcc-seed -nostdinc -nostdlib -Werror \
 			-run recipes/1-stage1.c
 	DISORDER=$(USE_DISORDERFS) \
@@ -157,7 +161,7 @@ ifeq ($(USE_CCACHE), 1)
 	@echo "### Makefile: packing up $* ccache cache..."
 	if [[ -e "tmp/build/$*/store/_2a0-ccache/bin/ccache" ]]; then \
 		mkdir -p tmp/ccache; \
-		unshare -nr chroot "tmp/build/$*" \
+		unshare -nr $(CHROOT) "tmp/build/$*" \
 			/store/_2a0-ccache/bin/ccache -sz; \
 		$(TAR_REPR) -Izstd -cf "tmp/ccache/$*.tar.zstd" \
 			-C "tmp/build/$*/ccache" .; \
