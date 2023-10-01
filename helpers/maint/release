@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -uex
 
 # check that two extra files have not been modified
