@@ -19,6 +19,15 @@ set -uex
 : ${NPROC:=1}
 : ${SOURCE_DATE_EPOCH:=0}
 
+CHROOT=$(command -v chroot)
+if [[ ! -x "$CHROOT" ]]; then
+	if [[ -x /sbin/chroot ]]; then
+		CHROOT=/sbin/chroot
+	elif [[ -x /usr/sbin/chroot ]]; then
+		CHROOT=/usr/sbin/chroot
+	fi
+fi
+
 if [[ -e /run/wrappers/bin/mount.real ]]; then
 	MOUNT=$(cat /run/wrappers/bin/mount.real)
 else
@@ -28,4 +37,4 @@ mkdir -p "$DESTDIR/dev"; :> "$DESTDIR/dev/null"
 $MOUNT --bind /dev/null "$DESTDIR/dev/null"
 
 exec env -i "NPROC=$NPROC" "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH" \
-	chroot "$DESTDIR" "$@"
+	$CHROOT "$DESTDIR" "$@"
