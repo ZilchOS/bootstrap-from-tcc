@@ -6,41 +6,41 @@ NIXPKGS=nixpkgs/21f524672f25f8c3e7a0b5775e6505fee8fe43ce
 
 mkdir -p $DESTDIR/cheat
 
-if [[ ! -e $DESTDIR/cheat/make ]]; then
+if [ ! -e $DESTDIR/cheat/make ]; then
 	nix build "$NIXPKGS#pkgsStatic.gnumake"
 	cp result/bin/make $DESTDIR/cheat/make
 	rm result
 fi
 
-if [[ ! -e $DESTDIR/cheat/bash ]]; then
+if [ ! -e $DESTDIR/cheat/bash ]; then
 	nix build "$NIXPKGS#pkgsStatic.bash"
 	cp result/bin/bash $DESTDIR/cheat/bash
 	rm result
 fi
 
-if [[ ! -e $DESTDIR/cheat/strace ]]; then
+if [ ! -e $DESTDIR/cheat/strace ]; then
 	nix build "$NIXPKGS#pkgsStatic.strace"
 	cp result/bin/strace $DESTDIR/cheat/
 	rm result
 fi
 
-if [[ ! -e $DESTDIR/cheat/busybox ]]; then
+if [ ! -e $DESTDIR/cheat/busybox ]; then
 	nix build "$NIXPKGS#pkgsStatic.busybox"
 	cp result/bin/busybox $DESTDIR/cheat/busybox
 	for f in $(ls result/bin/); do
-		[[ $(basename $f) == busybox ]] ||
+		[ $(basename $f) = busybox ] ||
 			ln -s /cheat/busybox $DESTDIR/cheat/$(basename $f)
 	done
 	rm result
 fi
 
-if [[ -z "$@" ]]; then
+if [ -z "$@" ]; then
 	_PATH=''
 	for bindir in $DESTDIR/store/*/bin $DESTDIR/store/*/*/bin; do
 		_PATH="${bindir##$DESTDIR}:$_PATH"
 	done
 	LIBC=$(find $DESTDIR/store/*/lib/libc.so | tail -n1)
-	if [[ -n "$LIBC" ]] && [[ ! -h $DESTDIR/cheat/ldd ]]; then
+	if [ -n "$LIBC" ] && [ ! -h $DESTDIR/cheat/ldd ]; then
 		ln -s "${LIBC##$DESTDIR}" $DESTDIR/cheat/ldd
 	fi
 	helpers/chroot /cheat/env "PATH=$_PATH" /cheat/ash

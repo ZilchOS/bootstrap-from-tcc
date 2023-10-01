@@ -8,8 +8,8 @@ verb=$1
 front=$2
 back=$front-back
 
-[ "tmp/build/${front#tmp/build/}" == "$front" ]
-[ "tmp/build/${back#tmp/build/}" == "$back" ]
+[ "tmp/build/${front#tmp/build/}" = "$front" ]
+[ "tmp/build/${back#tmp/build/}" = "$back" ]
 
 remove_hard() {
 	if [ -e "$1" ]; then
@@ -25,39 +25,39 @@ if [ "$verb" = create ]; then
 	echo "### helpers/builddir: creating $front..."
 	remove_hard "$front"; remove_hard "$back"
 	mkdir -p "$front"
-	if [ "$DISORDER" == 1 ]; then
+	if [ "$DISORDER" = 1 ]; then
 		sudo umount "$back" || true
 		rm -rf "$back"
 		mkdir -p "$front" "$back"
 		sudo mount -o size=16G -t tmpfs tmpfs "$back"
 		sudo mount --bind "$back" "$front"
-		[ $(findmnt -no FSTYPE "$front") == tmpfs ]
+		[ $(findmnt -no FSTYPE "$front") = tmpfs ]
 	fi
 elif [ "$verb" = pre-build ]; then
 	[ -e "$front" ]
-	if [ "$DISORDER" == 1 ]; then
+	if [ "$DISORDER" = 1 ]; then
 		echo "### helpers/builddir: disordering $front..."
 		[ -e "$back" ]
-		[ $(findmnt -no FSTYPE "$back") == tmpfs ]
+		[ $(findmnt -no FSTYPE "$back") = tmpfs ]
 		sudo umount "$front"
 		sudo disorderfs --shuffle-dirents=yes \
 				-o allow_other --multi-user=yes \
 				"$back" "$front"
-		[ $(findmnt -no FSTYPE "$front") == fuse.disorderfs ]
+		[ $(findmnt -no FSTYPE "$front") = fuse.disorderfs ]
 	fi
 elif [ "$verb" = post-build ]; then
-	if [ "$DISORDER" == 1 ]; then
+	if [ "$DISORDER" = 1 ]; then
 		echo "### helpers/builddir: ordering $front..."
 		[ ! -e "$front" ] && [ ! -e "$back" ]
-		[ $(findmnt -no FSTYPE "$front") == fuse.disorderfs ]
-		[ $(findmnt -no FSTYPE "$back") == tmpfs ]
+		[ $(findmnt -no FSTYPE "$front") = fuse.disorderfs ]
+		[ $(findmnt -no FSTYPE "$back") = tmpfs ]
 		sudo umount "$front"
 		sudo mount --bind "$back" "$front"
 	fi
 elif [ "$verb" = remove ]; then
 	echo "### helpers/builddir: removing $front..."
-	if [ "$DISORDER" == 1 ]; then
-		[ $(findmnt -no FSTYPE "$back") == tmpfs ]
+	if [ "$DISORDER" = 1 ]; then
+		[ $(findmnt -no FSTYPE "$back") = tmpfs ]
 		sudo umount "$front"
 		sudo umount "$back"
 		rm -d "$front" "$back"
