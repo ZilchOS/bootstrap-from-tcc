@@ -1,0 +1,77 @@
+name: "build stage1"
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+      - staging
+jobs:
+  stage1-nix-plain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v23
+        with:
+          extra_nix_config: "experimental-features = flakes nix-command ca-derivations"
+      - run: nix build -L '.#protosrc'
+      - run: nix build -L '.#tcc-seed'
+      - run: nix build -L '.#stage1^*'
+      - name: trim verification list
+        run: |
+          head -n3 verify.nix > verify.nix.tmp
+          mv verify.nix.tmp verify.nix
+          grep -F stage1^protomusl verify.nix
+          grep -F stage1^protobusybox verify.nix
+          grep -F stage1^tinycc verify.nix
+      - run: make verify-nix-plain-checksums
+
+  stage1-make-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v23
+        with:
+          extra_nix_config: "experimental-features = flakes nix-command ca-derivations"
+      # run: sudo apt -y install make wget zstd  # are installed by default
+      - run: make tcc-seed  # using nix
+      - run: make pkgs/1-stage1.pkg TAR=$(nix build 'nixpkgs#gnutar' --no-link --print-out-paths)/bin/tar  # tar <1.35 had different hashes
+      - name: trim verification list
+        run: |
+          head -n2 verify.pkgs.sha256 > verify.pkgs.sha256.tmp
+          mv verify.pkgs.sha256.tmp verify.pkgs.sha256
+          grep 0-tcc-seed verify.pkgs.sha256
+          grep 1-stage1 verify.pkgs.sha256
+      - run: make verify-pkgs-checksums
+
+  stage1-make-alpine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jirutka/setup-alpine@v1
+        with:
+          branch: edge
+          packages: tar make wget zstd bash coreutils gcc build-base
+      - run: git clone https://repo.or.cz/tinycc.git tinycc
+      - run: cd tinycc && git checkout af1abf1f45d45b34f0b02437f559f4dfdba7d23c
+      - run: cd tinycc && ./configure --config-musl --enable-static --extra-ldflags=-static && make -j $(nproc)
+        shell: alpine.sh --root {0}
+      - run: cp tinycc/tcc tcc-seed
+        shell: alpine.sh --root {0}
+      - run: |
+          sed -i 's|unshare -nr||' Makefile
+          sed -i 's|unshare -nrm|unshare -rm|' helpers/chroot
+        shell: alpine.sh --root {0}
+      - run: make pkgs/1-stage1.pkg
+        shell: alpine.sh --root {0}
+      - name: trim verification list
+        run: |
+          head -n2 verify.pkgs.sha256 > verify.pkgs.sha256.tmp
+          mv verify.pkgs.sha256.tmp verify.pkgs.sha256
+          grep 0-tcc-seed verify.pkgs.sha256
+          grep 1-stage1 verify.pkgs.sha256
+        shell: alpine.sh --root {0}
+      - run: make verify-pkgs-checksums  # warning: CUSTOM tcc is expected
+        shell: alpine.sh --root {0}

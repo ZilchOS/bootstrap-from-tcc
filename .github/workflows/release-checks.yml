@@ -1,0 +1,19 @@
+name: "release checks"
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+      - staging
+jobs:
+  release-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v23
+        with:
+          extra_nix_config: "experimental-features = flakes nix-command ca-derivations"
+      - run: helpers/maint/release  # checks hashes in 0.nix + some more
