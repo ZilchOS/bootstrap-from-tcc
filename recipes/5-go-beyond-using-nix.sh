@@ -36,6 +36,9 @@
 #> FETCH 60493f4e974fcca7b739aea4901af2d957b0eaea34b42815359be59cf6c88fa2
 #>  FROM https://github.com/llvm/llvm-project/releases/download/llvmorg-17.0.0-rc3/llvm-project-17.0.0rc3.src.tar.xz
 
+#> FETCH 85cd12e9cf1d6d5a45f17f7afe1cebe7ee628d3282281c492e86adf636defa3f
+#>  FROM https://www.python.org/ftp/python/3.11.5/Python-3.11.5.tar.xz
+
 set -uex
 
 export PATH='/store/2b2-busybox/bin'

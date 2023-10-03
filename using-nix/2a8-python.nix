@@ -3,9 +3,9 @@
 
 let
   source-tarball-python = fetchurl {
-    # local = /downloads/Python-3.11.5.tar.xz;
-    url = "https://www.python.org/ftp/python/3.11.5/Python-3.11.5.tar.xz";
-    sha256 = "85cd12e9cf1d6d5a45f17f7afe1cebe7ee628d3282281c492e86adf636defa3f";
+    # local = /downloads/Python-3.12.0.tar.xz;
+    url = "https://www.python.org/ftp/python/3.12.0/Python-3.12.0.tar.xz";
+    sha256 = "795c34f44df45a0e9b9710c8c71c15c671871524cd412ca14def212e8ccb155d";
   };
 in
   mkDerivationStage2 {
@@ -25,7 +25,8 @@ in
       # unpack:
         unpack ${source-tarball-python}
       # fixup:
-        sed -i 's|/bin/sh|${stage1.protobusybox}/bin/ash|' configure
+        sed -i 's|/bin/sh|${stage1.protobusybox}/bin/ash|' configure install-sh
+        sed -i 's|ac_sys_system=`uname -s`|ac_sys_system=Linux|' configure
         # the precompiled pyc files aren't reproducible,
         # but it's not like I need to waste time on them anyway.
         # break their generation
@@ -39,11 +40,15 @@ in
           Modules/pyexpat.c
         sed -i 's|TIME __TIME__|TIME "xx:xx:xx"|' Modules/getbuildinfo.c
         sed -i 's|DATE __DATE__|DATE "xx/xx/xx"|' Modules/getbuildinfo.c
+        # different build path length leads to different wrapping. avoid
+        sed -i 's|vars, stream=f|vars, stream=f, width=2**24|' Lib/sysconfig.py
       # configure:
+        mkdir -p $out/lib
         ash configure \
           ac_cv_broken_sem_getvalue=yes \
           ac_cv_posix_semaphores_enabled=no \
           OPT='-DNDEBUG -fwrapv -O3 -Wall' \
+          LDFLAGS="-Wl,-rpath $out/lib" \
           --without-static-libpython \
           --build x86_64-linux-musl \
           --prefix=$out \
@@ -57,11 +62,11 @@ in
       # install:
         make -j $NPROC install
       # strip builddir mentions:
-        sed -i "s|$(pwd)|...|" \
+        sed -i "s|$(pwd)|...|g" \
           $out/lib/python3.*/_sysconfigdata__*.py \
-          $out/lib/python3.*/config-3.11-x86_64-linux-musl/Makefile
+          $out/lib/python3.*/config-3.*-x86_64-linux-musl/Makefile
         # restore compileall just in case
-        cat Lib/compileall.py.bak > $out/lib/python3.11/compileall.py
+        cat Lib/compileall.py.bak > $out/lib/python3.12/compileall.py
       # check for build path leaks:
         ( ! grep -rF $(pwd) $out )
     '';
