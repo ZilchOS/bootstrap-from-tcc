@@ -5,3 +5,5 @@ Built-on: cocoa how=make
 Built-on: fig how=raw
 
 Built-on: loquat how=nix
+
+Built-on: cocoa how=nix
