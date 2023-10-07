@@ -19,7 +19,7 @@ all-raw: build.sh seed.sh download.sh recipes/*.sh recipes/*/* using-nix/*
 
 # the make scaffolding way: full bootstrap with make
 all-with-make: iso all-pkgs all-tests verify-all-pkgs-checksums \
-	verify-all-nix-stage4-checksums
+	verify-all-nix-stage4-checksums verify-all-nix-stage5-checksums
 
 # the your-nix way: build just the using-nix/ part with your nix
 all-with-nix: verify-all-nix-plain-checksums
@@ -37,7 +37,7 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 .PHONY: all all-at-once all-with-make clean-stage clean deepclean iso \
 	verify-all-pkgs-checksums verify-pkgs-checksums update-pkgs-checksums \
-	verify-all-nix-stage4-checksums \
+	verify-all-nix-stage4-checksums verify-all-nix-stage5-checksums \
 	verify-all-nix-plain-checksums verify-nix-plain-checksums \
 	me-suffer
 NPROC ?= 1 # for inner make invocations, one can pass -j# this way
@@ -757,12 +757,17 @@ update-pkgs-checksums:
 	done
 verify.pkgs.sha256: all-pkgs update-pkgs-checksums
 
-nix-checksums-stage4: pkgs/4-rebootstrap-using-nix.pkg  # TODO: add 5
+nix-checksums-stage4: pkgs/4-rebootstrap-using-nix.pkg
 	tar tf pkgs/4-rebootstrap-using-nix.pkg store \
 		| grep -E 'store/[a-z0-9]{32}-[^/]*/?$$' \
 		| sed -E 's|.*/([a-z0-9]{32}-[^/]*)/?|\1|' \
 		| sort \
 		> nix-checksums-stage4
+
+nix-checksums-stage5: pkgs/5-go-beyond-using-nix.pkg
+	tar Oxf pkgs/5-go-beyond-using-nix.pkg \
+		store/5-go-beyond-using-nix/hashes \
+		> nix-checksums-stage5
 
 verify-all-nix-stage4-checksums: nix-checksums-stage4 verify.nix
 	@status=true; \
@@ -775,6 +780,22 @@ verify-all-nix-stage4-checksums: nix-checksums-stage4 verify.nix
 		fi; \
 	done < verify.nix; $$status
 
+verify-all-nix-stage5-checksums: downloads/ZilchOS-core-2023.10.1.tar.gz
+verify-all-nix-stage5-checksums: nix-checksums-stage5 verify.nix
+	@status=true; \
+	tar -Oxf downloads/ZilchOS-core-2023.10.1.tar.gz \
+		--wildcards */.maint/hashes | \
+	while IFS=' ' read ref_hash pkg; do \
+		stage5_hash=$$(grep " $$pkg$$" nix-checksums-stage5 \
+				| sed -E 's|^([a-z0-9]{32}) .*|\1|'); \
+		if [[ "$$ref_hash" == "$$stage5_hash" ]]; then \
+			echo "  $$ref_hash $$pkg"; \
+		else \
+			status=false; \
+			echo "- $$ref_hash $$pkg"; \
+			echo "+ $$stage5_hash $$pkg"; \
+		fi; \
+	done; $$status
 NIX_BUILD_X = nix build --no-warn-dirty --option substitute false --no-link
 verify-nix-plain-checksums: verify.nix
 	@status=true; \
@@ -806,10 +827,12 @@ clean-stage:
 
 clean:
 	@echo "### Makefile: removing stage, tmp, pkgs, iso, keeping downloads..."
-	rm -rf stage tmp pkgs nix-checksums-stage4 \
+	rm -rf stage tmp pkgs \
+		nix-checksums-stage4 nix-checksums-stage5 \
 		ZilchOS-core.iso ZilchOS-core-raw.iso
 
 deepclean:
 	@echo "### Makefile: removing stage, tmp, pkgs, iso and downloads..."
-	rm -rf tmp pkgs downloads nix-checksums-stage4 \
+	rm -rf stage tmp pkgs downloads \
+		nix-checksums-stage4 nix-checksums-stage5 \
 		ZilchOS-core.iso ZilchOS-core-raw.iso

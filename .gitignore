@@ -11,6 +11,7 @@ tcc-seed
 /pkgs
 /trees
 /nix-checksums-stage4
+/nix-checksums-stage5
 
 /ZilchOS-core.iso
 /ZilchOS-core-raw.iso

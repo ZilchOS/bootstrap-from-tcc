@@ -124,10 +124,12 @@ echo "### $0: writing a 0.nix that simply injects what we've built..."
 echo "{ tinycc = /store/3b-tinycc-static/bin/tcc; protosrc = $PROTOSRC; }" \
 	> ZilchOS-bootstrap/using-nix/0.nix
 
-echo "### $0: unpacking ZilchOS/core archive..."
-mkdir ZilchOS-core
-tar -xf /downloads/ZilchOS-core-2023.10.1.tar.gz --strip-components=1 \
-	-C ZilchOS-core
+if [[ ! -e ZilchOS-core ]]; then
+	echo "### $0: unpacking ZilchOS/core archive..."
+	mkdir ZilchOS-core
+	tar -xf /downloads/ZilchOS-core-2023.10.1.tar.gz --strip-components=1 \
+		-C ZilchOS-core
+fi
 [[ -e ZilchOS-core/flake.nix ]]
 cd ZilchOS-core
 nix flake lock \
@@ -144,28 +146,42 @@ sed -i 's| url =| #remote_url =|' \
 sed -i 's|# local = \(.*\);|url = "file://\1";|' \
 	ZilchOS-core/*/*.nix ZilchOS-core/*/*/*.nix
 
+if [ -e /ccache/setup ]; then
+	echo "### $0: configuring ccache..."
+	export CCACHE_COMPILERCHECK=content
+	export CCACHE_SLOPPINESS=include_file_ctime,include_file_mtime
+	export CCACHE_MAXSIZE=0
+	export CCACHE_DIR=/ccache
+	MAYBE_CCACHE='ccachedPackages.'
+else
+	MAYBE_CCACHE=''
+fi
+
 echo "### $0: building ZilchOS/core using nix..."
-# can't have sandbox, need deterministic build paths
-NIX_FORCE_BUILD_PATH=/build \
-nix build \
-	-j1 \
-	--extra-experimental-features 'ca-derivations flakes nix-command' \
-	--option build-users-group '' \
-	--option compress-build-log false \
-	--no-substitute \
-	--cores $NPROC \
-	--keep-failed \
-	--show-trace \
-	-L \
-	-vvv \
-	'./ZilchOS-core#nix' \
-	'./ZilchOS-core#ca-bundle' \
-	'./ZilchOS-core#linux^config' \
-	'./ZilchOS-core#live-cd^limine_config' \
-	'./ZilchOS-core#live-cd^initrd' \
-	'./ZilchOS-core#live-cd^iso'
-ls -l result*
-sha256sum result*-iso
+mkdir -p /store/5-go-beyond-using-nix
+: > /store/5-go-beyond-using-nix/hashes
+while IFS=' ' read -r _unused_old_hash pkg; do
+	# can't have sandbox, need deterministic build paths
+	NIX_FORCE_BUILD_PATH=/build \
+	nix build \
+		-j1 \
+		--extra-experimental-features 'ca-derivations flakes nix-command' \
+		--option build-users-group '' \
+		--option compress-build-log false \
+		--no-substitute \
+		--cores $NPROC \
+		--keep-failed \
+		--show-trace \
+		-L \
+		-vvv \
+		-o .tmp \
+		"./ZilchOS-core#${MAYBE_CCACHE}${pkg}"
+	new_path=$(readlink .tmp*)
+	new_hash=$(echo $new_path | sed -E 's|.*/([a-z0-9]{32})-.*|\1|')
+	if [ "$pkg" != 'live-cd^iso' ]; then rm .tmp*; fi
+	echo "$new_hash $pkg" >> /store/5-go-beyond-using-nix/hashes
+done < ./ZilchOS-core/.maint/hashes
+sha256sum .tmp*-iso  # the last one is the iso
 rm -f /dev/urandom
 rm -f /dev/zero
 rm /dev/ptmx
@@ -189,4 +205,4 @@ tar --exclude nix/var/nix/db/db.sqlite \
 rm /nix/var/nix/db/db.sqlite.dump
 
 echo "### $0: exporting the iso as well..."
-cat result*-iso > /store/5-go-beyond-using-nix/ZilchOS-core.iso
+cat .tmp*-iso > /store/5-go-beyond-using-nix/ZilchOS-core.iso
