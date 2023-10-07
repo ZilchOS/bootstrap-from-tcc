@@ -829,10 +829,12 @@ clean:
 	@echo "### Makefile: removing stage, tmp, pkgs, iso, keeping downloads..."
 	rm -rf stage tmp pkgs \
 		nix-checksums-stage4 nix-checksums-stage5 \
+		nix-checksums-stage5-custom \
 		ZilchOS-core.iso ZilchOS-core-raw.iso
 
 deepclean:
 	@echo "### Makefile: removing stage, tmp, pkgs, iso and downloads..."
 	rm -rf stage tmp pkgs downloads \
 		nix-checksums-stage4 nix-checksums-stage5 \
+		nix-checksums-stage5-custom \
 		ZilchOS-core.iso ZilchOS-core-raw.iso

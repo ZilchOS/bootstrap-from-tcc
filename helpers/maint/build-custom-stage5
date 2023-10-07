@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+set -uexo pipefail
+
+CUSTOM_CORE_DIR=$1
+
+# Determine where to start from
+if [[ -e pkgs/custom-stage5.pkg ]]; then
+	BASE=pkgs/custom-stage5.pkg
+elif [[ -e pkgs/5-go-beyond-using-nix.pkg ]]; then
+	BASE=pkgs/5-go-beyond-using-nix.pkg
+elif [[ -e pkgs/4-rebootstrap-using-nix.pkg ]]; then
+	BASE=pkgs/4-rebootstrap-using-nix.pkg
+else
+	[[ "${USE_CCACHE-}" = 1 ]] && FLAGS='USE_CCACHE=1' || FLAGS=''
+	[[ -n "${NPROC-}" ]] && FLAGS="$FLAGS NPROC=$NPROC" || FLAGS=''
+	make $FLAGS pkgs/5-go-beyond-using-nix.pkg
+	BASE=pkgs/5-rebootstrap-using-nix.pkg
+fi
+
+# Inject stage5 pkg dependencies
+DESTDIR=tmp/build/custom-stage5
+helpers/builddir create "$DESTDIR"
+grep -E '^pkgs/5-go-beyond-using-nix.pkg:' Makefile \
+	| grep -v '^pkgs/5-go-beyond-using-nix.pkg: downloads/' \
+	| sed 's|^pkgs/5-go-beyond-using-nix.pkg: ||' \
+	| while IFS= read -r dep; do helpers/inject "$DESTDIR" "$dep"; done
+helpers/inject "$DESTDIR" recipes/5-go-beyond-using-nix.sh
+
+# Inject BASE and its nixdb
+helpers/inject "$DESTDIR" "$BASE"
+mkdir -p "$DESTDIR/prev/"
+tar --strip-components=2 -xf $BASE -C "$DESTDIR/prev/"
+rm -f "$DESTDIR/store/5-go-beyond-using-nix/ZilchOS-core.iso"
+
+# Inject ccache data, all stage5 ccache data we can find
+if [[ "${USE_CCACHE-}" = 1 ]]; then
+	unshare -nr chroot "$DESTDIR" /store/_2a0-ccache/bin/ccache -z
+	helpers/inject "$DESTDIR" pkgs/_2a0-ccache.pkg
+	if [[ -e tmp/ccache/5-go-beyond-using-nix.tar.zstd ]]; then
+		tar -Izstd -xf tmp/ccache/5-go-beyond-using-nix.tar.zstd \
+			-C "$DESTDIR/ccache"
+	fi
+	if [[ -e tmp/ccache/custom-stage5.tar.zstd ]]; then
+		tar -Izstd -xf tmp/ccache/custom-stage5.tar.zstd \
+			-C "$DESTDIR/ccache"
+	fi
+	ln -sf /store/_2a0-ccache/wrap-available "$DESTDIR/ccache/setup"
+	ln -sf /store/_2a0-ccache/bin "$DESTDIR/ccache/bin"
+fi
+helpers/builddir pre-build "$DESTDIR"
+
+# Inject custom ZilchOS Core code
+DESTCORE="$DESTDIR/tmp/5-go-beyond-using-nix/ZilchOS-core"
+mkdir -p "$DESTCORE"
+rm -rf "$DESTCORE"  # TODO: REMOVE
+cp -r "$CUSTOM_CORE_DIR" "$DESTCORE"
+rm -rf "$DESTCORE/.git"
+[[ -e $DESTCORE/flake.nix ]]
+hashes=$(cat $CUSTOM_CORE_DIR/.maint/hashes)
+
+# Inject custom required downloads
+DESTDIR="$DESTDIR/downloads" ./download.sh $(find $DESTCORE -name '*.nix')
+
+DESTDIR="$DESTDIR" NPROC="${NPROC-}" \
+	./helpers/chroot /recipes/5-go-beyond-using-nix.sh
+
+cat tmp/build/custom-stage5/store/5-go-beyond-using-nix/hashes \
+	> nix-checksums-stage5-custom
+
+# Collect results back
+tar -Izstd -cf "pkgs/custom-stage5.pkg" \
+	-C "$DESTDIR" "store/5-go-beyond-using-nix"
+
+# Collect ccache back
+if [[ "${USE_CCACHE-}" = 1 ]]; then
+	unshare -nr chroot "$DESTDIR" /store/_2a0-ccache/bin/ccache -sz
+	tar -Izstd -cf "tmp/ccache/custom-stage5.tar.zstd" \
+		-C "$DESTDIR/ccache" .
+fi
+
+helpers/builddir post-build "$DESTDIR"
+helpers/builddir remove "$DESTDIR"
+
+set +x
+status=true
+while IFS=' ' read ref_hash pkg; do
+	stage5_hash=$(grep " $pkg$" nix-checksums-stage5-custom \
+			| sed -E 's|^([a-z0-9]{32}) .*|\1|');
+	if [[ "$ref_hash" == "$stage5_hash" ]]; then
+		echo "  $ref_hash $pkg";
+	else
+		status=false;
+		echo "- $ref_hash $pkg";
+		echo "+ $stage5_hash $pkg";
+	fi
+done <<<"$hashes"; $status
