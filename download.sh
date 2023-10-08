@@ -65,7 +65,7 @@ process_commands_in() {
 	done < $1
 }
 
-[[ $# == 0 ]] && files='recipes/*.sh recipes/*/*.sh' || files = "$@"
+[[ $# == 0 ]] && files='recipes/*.sh recipes/*/*.sh' || files="$@"
 for f in $files; do
 	process_commands_in $f
 done
