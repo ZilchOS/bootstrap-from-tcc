@@ -162,9 +162,7 @@ mkdir -p /store/5-go-beyond-using-nix
 : > /store/5-go-beyond-using-nix/hashes
 while IFS=' ' read -r _unused_old_hash pkg; do
 	# can't have sandbox, need deterministic build paths
-	NIX_FORCE_BUILD_PATH=/build \
 	nix build \
-		-j1 \
 		--extra-experimental-features 'ca-derivations flakes nix-command' \
 		--option build-users-group '' \
 		--option compress-build-log false \
