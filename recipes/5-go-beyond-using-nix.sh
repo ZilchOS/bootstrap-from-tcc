@@ -1,7 +1,7 @@
 #!/store/2b2-busybox/bin/ash
-#> FETCH a89c924200af9f8831224221ef2df5dce46180ca36d0db048da1cd829cc14889
-#>  FROM https://github.com/ZilchOS/core/archive/2023.09.2.tar.gz
-#>    AS ZilchOS-core-2023.09.2.tar.gz
+#> FETCH 10fa524294f58c805411ddd6e5522c02a0b69ad14e036b141cc80fb53a3ef1a0
+#>  FROM https://github.com/ZilchOS/core/archive/2023.10.1.tar.gz
+#>    AS ZilchOS-core-2023.10.1.tar.gz
 
 #> FETCH ddd417f9caab3ef0f3031b938815a5c33367c3a50c09830138d208bd3126c98f
 #>  FROM https://github.com/limine-bootloader/limine/releases/download/v5.20230830.0/limine-5.20230830.0.tar.xz
@@ -32,9 +32,6 @@
 
 #> FETCH 23c2469e2a568362a62eecf1b49ed90a15621e6fa30e29947ded3436422de9b9
 #>  FROM https://curl.se/ca/cacert-2023-08-22.pem
-
-#> FETCH 60493f4e974fcca7b739aea4901af2d957b0eaea34b42815359be59cf6c88fa2
-#>  FROM https://github.com/llvm/llvm-project/releases/download/llvmorg-17.0.0-rc3/llvm-project-17.0.0rc3.src.tar.xz
 
 #> FETCH 85cd12e9cf1d6d5a45f17f7afe1cebe7ee628d3282281c492e86adf636defa3f
 #>  FROM https://www.python.org/ftp/python/3.11.5/Python-3.11.5.tar.xz
@@ -129,7 +126,7 @@ echo "{ tinycc = /store/3b-tinycc-static/bin/tcc; protosrc = $PROTOSRC; }" \
 
 echo "### $0: unpacking ZilchOS/core archive..."
 mkdir ZilchOS-core
-tar -xf /downloads/ZilchOS-core-2023.09.2.tar.gz --strip-components=1 \
+tar -xf /downloads/ZilchOS-core-2023.10.1.tar.gz --strip-components=1 \
 	-C ZilchOS-core
 [[ -e ZilchOS-core/flake.nix ]]
 cd ZilchOS-core

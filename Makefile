@@ -8,7 +8,7 @@ all:
 	@echo 'This Makefile is for debugging purposes, use ./build.sh'
 	exit 1
 
-ISO_CHECKSUM=fb869fd66b1257017544a829a382b9e5238df35d4efe030eb5e9d86ba14a0445
+ISO_CHECKSUM=22a6339a46c627bf761d5e90f936ac8dcf5717f8858975796959e47245a1320b
 
 # the no-dependencies way: full bootstrap with no make
 all-raw: build.sh seed.sh download.sh recipes/*.sh recipes/*/* using-nix/*
@@ -538,7 +538,6 @@ pkgs/5-go-beyond-using-nix.pkg: downloads/isl-0.18.tar.bz2
 pkgs/5-go-beyond-using-nix.pkg: downloads/linux-6.4.12.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: downloads/cmake-3.27.4.tar.gz
 pkgs/5-go-beyond-using-nix.pkg: downloads/Python-3.11.5.tar.xz
-pkgs/5-go-beyond-using-nix.pkg: downloads/llvm-project-17.0.0rc3.src.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: downloads/llvm-project-17.0.1.src.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: downloads/curl-8.2.1.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: downloads/mbedtls-3.4.1.tar.gz
@@ -554,7 +553,7 @@ pkgs/5-go-beyond-using-nix.pkg: downloads/nlohmann-json-3.11.2.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: downloads/nix-2.17.0-zilched.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: flake.nix
 pkgs/5-go-beyond-using-nix.pkg: downloads/queue.h
-pkgs/5-go-beyond-using-nix.pkg: downloads/ZilchOS-core-2023.09.2.tar.gz
+pkgs/5-go-beyond-using-nix.pkg: downloads/ZilchOS-core-2023.10.1.tar.gz
 pkgs/5-go-beyond-using-nix.pkg: downloads/limine-5.20230830.0.tar.xz
 pkgs/5-go-beyond-using-nix.pkg: downloads/patchelf-0.18.0.tar.bz2
 pkgs/5-go-beyond-using-nix.pkg: downloads/pkg-config-0.29.2.tar.gz
