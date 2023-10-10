@@ -1,1 +1,3 @@
 Built-on: cocoa how=make USE_CCACHE=1
+
+Built-on: loquat how=nix
