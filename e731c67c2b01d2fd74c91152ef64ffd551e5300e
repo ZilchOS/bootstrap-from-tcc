@@ -7,3 +7,5 @@ Built-on: cocoa how=make
 Built-on: cocoa how=nix
 
 Built-on: fig how=raw
+
+Built-on: fig how=make
