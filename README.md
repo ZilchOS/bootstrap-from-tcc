@@ -199,7 +199,14 @@ Very impractical, this is for increased portability only.
 Reproducibility is deeply cared about,
 but it's a constant struggle and one cannot foresee everything.
 
-Verify with `make verify-pkgs-checksums`.
-For hard mode, set `NPROC` and `USE_DISORDERFS`.
+Hashes are checked for intermediate steps for both `make` and `nix` builds.
+`raw` builds only verify the resulting ZilchOS Core ISO built during stage5.
+I try to build on different machines and note down the results in `git notes`.
+Commits require a specific (but adjustable) amount of successful
+`make`, `raw` and `nix` before getting into the main branch.
+Refer to `make all-with-make`, `make all-raw` and `make all-with-nix`
+to see what exactly is being tested.
+
+For hard mode, you can try `USE_DISORDERFS`.
 
 For ZilchOS/core, see `.maint/hashes` and `.maint/tools/hashes`.
